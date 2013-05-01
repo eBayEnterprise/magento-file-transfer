@@ -1,0 +1,11 @@
+<config>
+    <modules>
+        <TrueAction_FileTransfer>
+            <active>true</active>
+            <codePool>community</codePool>
+            <depends>
+            	<TrueAction_ActiveConfig/>
+            </depends>
+        </TrueAction_FileTransfer>
+    </modules>
+</config>
