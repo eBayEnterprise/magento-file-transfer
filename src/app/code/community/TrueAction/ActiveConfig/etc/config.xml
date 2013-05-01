@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Module configuration
+ *
+ * @author TrueAction
+ */
+-->
+<config>
+	<modules>
+		<TrueAction_ActiveConfig>
+			<version>0.1.0</version>
+		</TrueAction_ActiveConfig>
+	</modules>
+	<frontend>
+		<layout>
+		</layout>
+	</frontend>
+	<global>
+		<models>
+			<trueaction_activeconfig>
+				<class>TrueAction_ActiveConfig_Model</class>
+			</trueaction_activeconfig>
+		</models>
+	</global>
+	<default>
+	</default>
+	<crontab>
+	</crontab>
+	<phpunit>
+		<suite>
+			<modules>
+				<TrueAction_ActiveConfig />
+			</modules>
+		</suite>
+	</phpunit>
+</config>
