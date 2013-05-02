@@ -18,9 +18,9 @@
 	</frontend>
 	<global>
 		<models>
-			<trueaction_activeconfig>
+			<activeconfig>
 				<class>TrueAction_ActiveConfig_Model</class>
-			</trueaction_activeconfig>
+			</activeconfig>
 		</models>
 	</global>
 	<default>
