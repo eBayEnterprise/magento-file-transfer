@@ -12,7 +12,7 @@ class TrueAction_ActiveConfig_Block_System_Config_Form extends Mage_Adminhtml_Bl
 
 	// the import setting nodes to be replaced by the new config.
 	// Varien_Simplexml_Element
-	private $_importConfig = null;
+	private $_importNode = null;
 
 	// the fields node that will become the parent of the newly generated
 	// config nodes.
@@ -35,11 +35,11 @@ class TrueAction_ActiveConfig_Block_System_Config_Form extends Mage_Adminhtml_Bl
 	 *
 	 * @param Varien_Simplexml_Element $element
 	 * */
-	private function _readImportConfig($element)
+	private function _readImportConfig($importNode)
 	{
 		$fieldsNode = $this->_fieldsNode;
-		$this->_importConfig = $element;
-		foreach ($element->children() as $moduleName => $moduleNode) {
+		$this->_importNode = $importNode;
+		foreach ($importNode->children() as $moduleName => $moduleNode) {
 			foreach ($moduleNode->children() as $feature => $featureNode) {
 				$generator = $this->_getConfigGenerator($moduleName, $feature);
 				$config    = $generator->getConfig();

@@ -11,10 +11,10 @@ class TrueAction_ActiveConfig_Test_Block_System_Config_Form extends EcomDev_PHPU
 			'_readImportConfig'
 		);
 		$this->_readImportConfig->setAccessible(true);
-		$this->_importConfig = $this->modelClass->getProperty(
-			'_importConfig'
+		$this->_importNode = $this->modelClass->getProperty(
+			'_importNode'
 		);
-		$this->_importConfig->setAccessible(true);
+		$this->_importNode->setAccessible(true);
 		$this->_getConfigGenerator = $this->modelClass->getMethod(
 			'_getConfigGenerator'
 		);
@@ -29,7 +29,6 @@ class TrueAction_ActiveConfig_Test_Block_System_Config_Form extends EcomDev_PHPU
 	 * */
 	public function testReadImportConfig()
 	{
-		$this->markTestIncomplete();
 		$cfgNode = Mage::getConfig()->getNode(
 			'testsection/testgroup/activeconfig_import',
 			'default'
@@ -41,7 +40,7 @@ class TrueAction_ActiveConfig_Test_Block_System_Config_Form extends EcomDev_PHPU
 		);
 		$model = $this->modelClass->newInstance();
 		$this->_readImportConfig->invoke($model, $cfgNode);
-		$this->assertEquals($cfgNode, $this->_importConfig->getValue($model));
+		$this->assertEquals($cfgNode, $this->_importNode->getValue($model));
 	}
 
 	/**
