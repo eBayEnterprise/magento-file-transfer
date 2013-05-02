@@ -29,12 +29,16 @@ class TrueAction_ActiveConfig_Test_Block_System_Config_Form extends EcomDev_PHPU
 	 * */
 	public function testReadImportConfig()
 	{
-		$this->assertConfigNodeHasChild('default/sections', 'testsection');
+		$this->markTestIncomplete();
 		$cfgNode = Mage::getConfig()->getNode(
-			'sections/testsection/groups/testgroup/fields/activeconfig_import',
+			'testsection/testgroup/activeconfig_import',
 			'default'
 		);
 		$this->assertInstanceOf('Mage_Core_Model_Config_Element', $cfgNode);
+		$this->assertConfigNodeHasChild(
+			'testsection/testgroup/activeconfig_import',
+			'testmodule'
+		);
 		$model = $this->modelClass->newInstance();
 		$this->_readImportConfig->invoke($model, $cfgNode);
 		$this->assertEquals($cfgNode, $this->_importConfig->getValue($model));
@@ -46,12 +50,23 @@ class TrueAction_ActiveConfig_Test_Block_System_Config_Form extends EcomDev_PHPU
 	 * @loadFixture importConfig
 	 * @noIndexAll
 	 * */
-	public function testProcessImports()
+	public function testGetConfigGenerator()
 	{
-		$this->assertConfigNodeHasChild('/', 'activeconfig_handler');
-		$model = $this->modelClass->newInstance();
-		$cfg = null;
-		$this->_readImportConfig->invoke($model, $cfg);
+		$this->markTestIncomplete();
+		$cfgNode = Mage::getConfig()->getNode(
+			'activeconfig_handler/testmodule/testfeature'
+		);
+		$this->assertInstanceOf('Mage_Core_Model_Config_Element', $cfgNode);
+		$model          = $this->modelClass->newInstance();
+		$generatorModel = $this->_getConfigGenerator->invoke(
+			$model,
+			'testmodule',
+			'testfeature'
+		);
+		$this->assertInstanceOf(
+			'TrueAction_ActiveConfig_Model_Generator',
+			$generatorModel
+		);
 	}
 
 	/**
@@ -60,10 +75,10 @@ class TrueAction_ActiveConfig_Test_Block_System_Config_Form extends EcomDev_PHPU
 	 * @loadFixture importConfig
 	 * @noIndexAll
 	 * */
-	public function testGetConfigGenerator()
+	public function testProcessImports()
 	{
-		$this->assertConfigNodeHasChild('/', 'activeconfig_handler');
+		$this->markTestIncomplete();
+		$this->assertConfigNodeHasChild('activeconfig_handler', 'testmodule');
 		$model = $this->modelClass->newInstance();
-		$this->_getConfigGenerator->invoke($model, 'testsection', 'testfeature');
 	}
 }

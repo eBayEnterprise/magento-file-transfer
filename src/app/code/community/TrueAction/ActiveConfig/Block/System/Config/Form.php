@@ -4,6 +4,8 @@
  * */
 class TrueAction_ActiveConfig_Block_System_Config_Form extends Mage_Adminhtml_Block_System_Config_Form {
 
+	const HANDLER_TAG = 'activeconfig_handler';
+
 	// the path to the placeholder nodes relative to a group node
 	// string
 	private $_importNodePath = 'fields';
@@ -35,11 +37,11 @@ class TrueAction_ActiveConfig_Block_System_Config_Form extends Mage_Adminhtml_Bl
 	 * */
 	private function _readImportConfig($element)
 	{
-		$fieldsNode = null
+		$fieldsNode = $this->_fieldsNode;
 		$this->_importConfig = $element;
-		foreach ($element as $modulName => $config) {
-			foreach ($config as $feature => $config) {
-				$generator = $this->_getConfigGenerator($moduleName, );
+		foreach ($element->children() as $moduleName => $moduleNode) {
+			foreach ($moduleNode->children() as $feature => $featureNode) {
+				$generator = $this->_getConfigGenerator($moduleName, $feature);
 				$config    = $generator->getConfig();
 				$fieldsNode->appendChild($config);
 			}
@@ -79,13 +81,13 @@ class TrueAction_ActiveConfig_Block_System_Config_Form extends Mage_Adminhtml_Bl
 	private function _getConfigGenerator($module, $feature)
 	{
 		$generatorNode = Mage::getConfig()->getNode(
-			'trueaction_activconfig/' . $module  . '/' .  $feature
+			self::HANDLER_TAG . '/' . $module  . '/' .  $feature
 		);
-		try {
-			$model = Mage::getModel($generatorNode->innerXml());
-		} catch (Exception $e) {
-			$model = Mage::getModel('activeconfig/generator_empty');
-		}
+		// $model = Mage::getModel($generatorNode->innerXml());
+		$model = Mage::getModel('filetransfer/generator_ftp');
+		// } catch (Exception $e) {
+		// 	$model = Mage::getModel('activeconfig/generator_empty');
+		// }
 		return $model;
 	}
 
