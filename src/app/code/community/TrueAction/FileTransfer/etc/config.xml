@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Module configuration
+ *
+ * @author TrueAction
+ */
+-->
+<config>
+	<modules>
+		<TrueAction_FileTransfer>
+			<version>0.1.0</version>
+		</TrueAction_FileTransfer>
+	</modules>
+	<frontend>
+		<layout>
+		</layout>
+	</frontend>
+	<global>
+		<models>
+			<filetransfer>
+				<class>TrueAction_FileTransfer_Model</class>
+			</filetransfer>
+		</models>
+	</global>
+	<default>
+	</default>
+	<crontab>
+	</crontab>
+	<phpunit>
+		<suite>
+			<modules>
+				<TrueAction_FileTransfer />
+			</modules>
+		</suite>
+	</phpunit>
+	<activeconfig_handler>
+		<ftp>filetransfer/config_ftp</ftp>
+	</activeconfig_handler>
+</config>
