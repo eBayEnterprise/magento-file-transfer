@@ -1,4 +1,4 @@
 config:
-  default/sections/testsection/groups/testgroup/fields/activeconfig_import/testmodule/testfeature/sort_order: 100
-  default/sections/testsection/groups/testgroup/fields/activeconfig_import/testmodule/testfeature/comment: "this is a test comment"
+  default/testsection/testgroup/activeconfig_import/testmodule/testfeature/comment: "this is a test comment"
+  default/testsection/testgroup/activeconfig_import/testmodule/testfeature/sort_order: 100
   activeconfig_handler/testmodule/testfeature: "testmodule/some_model"
