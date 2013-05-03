@@ -17,7 +17,15 @@ class TrueAction_ActiveConfig_Block_System_Config_Form extends Mage_Adminhtml_Bl
 	// the fields node that will become the parent of the newly generated
 	// config nodes.
 	// Varien_Simplexml_Element
-	private $_fieldsNode = null;
+	private $_fieldsCfg = null;
+
+	public function __construct()
+	{
+		parent::__construct();
+		$this->_fieldsCfg = new Varien_Simplexml_Config();
+		$this->_fieldsCfg->loadString('<fields/>');
+	}
+
 
 	/**
 	 * expectes config to be of the following structure
@@ -33,17 +41,16 @@ class TrueAction_ActiveConfig_Block_System_Config_Form extends Mage_Adminhtml_Bl
      *    ...
      *  </activeconfig_import>
 	 *
-	 * @param Varien_Simplexml_Element $element
+	 * @param Varien_Simplexml_Element $importNode
 	 * */
 	private function _readImportConfig($importNode)
 	{
-		$fieldsNode = $this->_fieldsNode;
 		$this->_importNode = $importNode;
 		foreach ($importNode->children() as $moduleName => $moduleNode) {
 			foreach ($moduleNode->children() as $feature => $featureNode) {
 				$generator = $this->_getConfigGenerator($moduleName, $feature);
-				$config    = $generator->getConfig();
-				$fieldsNode->appendChild($config);
+				$config    = $generator->getConfig($featureNode);
+				$this->_fieldsCfg->extend($config);
 			}
 		}
 		return $this;
@@ -76,18 +83,20 @@ class TrueAction_ActiveConfig_Block_System_Config_Form extends Mage_Adminhtml_Bl
 	 * </config>
 	 *
 	 * @param string $module
-	 * @return TrueAction_ActiveConfig_Model_Generator
+	 * @return TrueAction_ActiveConfig_Model_Config_Abstract
 	 * */
 	private function _getConfigGenerator($module, $feature)
 	{
+		$model = null;
 		$generatorNode = Mage::getConfig()->getNode(
 			self::HANDLER_TAG . '/' . $module  . '/' .  $feature
 		);
-		// $model = Mage::getModel($generatorNode->innerXml());
-		$model = Mage::getModel('filetransfer/generator_ftp');
-		// } catch (Exception $e) {
-		// 	$model = Mage::getModel('activeconfig/generator_empty');
-		// }
+		if ($generatorNode) {
+			$model = Mage::getModel($generatorNode->innerXml());
+		}
+		if (!$model) {
+			$model = new TrueAction_ActiveConfig_Model_Config_Abstract();
+		}
 		return $model;
 	}
 
