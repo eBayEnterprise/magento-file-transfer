@@ -12,10 +12,6 @@
 			<version>0.1.0</version>
 		</TrueAction_ActiveConfig>
 	</modules>
-	<frontend>
-		<layout>
-		</layout>
-	</frontend>
 	<global>
 		<models>
 			<activeconfig>
@@ -23,10 +19,6 @@
 			</activeconfig>
 		</models>
 	</global>
-	<default>
-	</default>
-	<crontab>
-	</crontab>
 	<phpunit>
 		<suite>
 			<modules>

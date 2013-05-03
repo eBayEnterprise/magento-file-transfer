@@ -12,10 +12,6 @@
 			<version>0.1.0</version>
 		</TrueAction_FileTransfer>
 	</modules>
-	<frontend>
-		<layout>
-		</layout>
-	</frontend>
 	<global>
 		<models>
 			<filetransfer>
@@ -23,10 +19,9 @@
 			</filetransfer>
 		</models>
 	</global>
-	<default>
-	</default>
-	<crontab>
-	</crontab>
+	<activeconfig_handler>
+		<ftp>filetransfer/config_ftp</ftp>
+	</activeconfig_handler>
 	<phpunit>
 		<suite>
 			<modules>
@@ -34,7 +29,4 @@
 			</modules>
 		</suite>
 	</phpunit>
-	<activeconfig_handler>
-		<ftp>filetransfer/config_ftp</ftp>
-	</activeconfig_handler>
 </config>
