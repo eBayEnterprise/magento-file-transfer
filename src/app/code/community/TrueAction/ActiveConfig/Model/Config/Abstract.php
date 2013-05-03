@@ -1,5 +1,4 @@
 <?php
-
 /*
 TrueAction_ActiveConfig_Model_Config_Abstract
 
@@ -7,6 +6,7 @@ simple base class to serve as both an example as well as default
 behavior.
  */
 class TrueAction_ActiveConfig_Model_Config_Abstract
+	extends Mage_Core_Model_Abstract
 	implements TrueAction_ActiveConfig_Model_Config_Interface
 {
 	/**
@@ -14,7 +14,8 @@ class TrueAction_ActiveConfig_Model_Config_Abstract
 	 * in the magento system config
 	 * */
 	public function getConfig($importOptions) {
-		return Varien_Simplexml_Config()
-			->loadString('<fields></fields>');
+		$fields = new Varien_Simplexml_Config();
+		$fields->loadString('<fields></fields>');
+		return $fields;
 	}
 }
