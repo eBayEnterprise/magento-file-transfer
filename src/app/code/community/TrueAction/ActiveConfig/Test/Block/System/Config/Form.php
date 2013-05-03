@@ -3,6 +3,7 @@ class TrueAction_ActiveConfig_Test_Block_System_Config_Form extends EcomDev_PHPU
 {
 	public function setUp()
 	{
+		parent::setUp();
 		$this->setCurrentStore('default');
 		$this->modelClass = new ReflectionClass(
 			'TrueAction_ActiveConfig_Block_System_Config_Form'
@@ -27,34 +28,11 @@ class TrueAction_ActiveConfig_Test_Block_System_Config_Form extends EcomDev_PHPU
 	 * @loadFixture importConfig
 	 * @noIndexAll
 	 * */
-	public function testReadImportConfig()
-	{
-		$cfgNode = Mage::getConfig()->getNode(
-			'testsection/testgroup/activeconfig_import',
-			'default'
-		);
-		$this->assertInstanceOf('Mage_Core_Model_Config_Element', $cfgNode);
-		$this->assertConfigNodeHasChild(
-			'testsection/testgroup/activeconfig_import',
-			'testmodule'
-		);
-		$model = $this->modelClass->newInstance();
-		$this->_readImportConfig->invoke($model, $cfgNode);
-		$this->assertEquals($cfgNode, $this->_importNode->getValue($model));
-	}
-
-	/**
-	 * config reading test
-	 * @test
-	 * @loadFixture importConfig
-	 * @noIndexAll
-	 * */
 	public function testGetConfigGenerator()
 	{
-		$this->markTestIncomplete();
-		$cfgNode = Mage::getConfig()->getNode(
-			'activeconfig_handler/testmodule/testfeature'
-		);
+		$path = $this->modelClass->getConstant('HANDLER_TAG') . '/testmodule/testfeature';
+		$this->assertEquals('activeconfig_handler/testmodule/testfeature', $path);
+		$cfgNode = Mage::getConfig()->getNode($path);
 		$this->assertInstanceOf('Mage_Core_Model_Config_Element', $cfgNode);
 		$model          = $this->modelClass->newInstance();
 		$generatorModel = $this->_getConfigGenerator->invoke(
@@ -63,9 +41,32 @@ class TrueAction_ActiveConfig_Test_Block_System_Config_Form extends EcomDev_PHPU
 			'testfeature'
 		);
 		$this->assertInstanceOf(
-			'TrueAction_ActiveConfig_Model_Generator',
+			'TrueAction_ActiveConfig_Model_Config_Interface',
 			$generatorModel
 		);
+	}
+
+	/**
+	 * config reading test
+	 * @test
+	 * @loadFixture importConfig
+	 * @noIndexAll
+	 * */
+	public function testReadImportConfig()
+	{
+		$cfg = new Varien_Simplexml_Config();
+		$cfg->loadString('
+			<activeconfig_import>
+			 <filetransfer>
+			  <ftp/>
+			 </filetransfer>
+		    </activeconfig_import>
+		');
+		$cfgNode = $cfg->getNode();
+		$this->assertInstanceOf('Varien_Simplexml_Element', $cfgNode);
+		$model = $this->modelClass->newInstance();
+		$this->_readImportConfig->invoke($model, $cfgNode);
+		$this->assertEquals($cfgNode, $this->_importNode->getValue($model));
 	}
 
 	/**
