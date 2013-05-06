@@ -1,12 +1,12 @@
 <?php
-class TrueAction_ActiveConfig_Test_Block_System_Config_Form extends EcomDev_PHPUnit_Test_Case_Config
+class TrueAction_ActiveConfig_Test_Model_FieldInjector extends EcomDev_PHPUnit_Test_Case_Config
 {
 	public function setUp()
 	{
 		parent::setUp();
 		$this->setCurrentStore('default');
 		$this->modelClass = new ReflectionClass(
-			'TrueAction_ActiveConfig_Block_System_Config_Form'
+			'TrueAction_ActiveConfig_Model_FieldInjector'
 		);
 		$this->_readImportConfig = $this->modelClass->getMethod(
 			'_readImportConfig'
@@ -86,18 +86,6 @@ class TrueAction_ActiveConfig_Test_Block_System_Config_Form extends EcomDev_PHPU
 			<show_in_website>1</show_in_website>
 			<show_in_store>1</show_in_store>
 			<fields>
-				<activeconfig_import>
-					<testmodule>
-						<testfeature>
-							<label>Remote Path</label>
-							<frontend_type>text</frontend_type>
-							<sort_order>190</sort_order>
-							<show_in_default>1</show_in_default>
-							<show_in_website>1</show_in_website>
-							<show_in_store>1</show_in_store>
-						</testfeature>
-					</testmodule>
-				</activeconfig_import>
 				<activeconfig_import>
 					<filetransfer>
 						<ftp>
