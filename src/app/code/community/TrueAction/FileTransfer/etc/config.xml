@@ -20,7 +20,13 @@
 		</models>
 	</global>
 	<activeconfig_handler>
-		<ftp>filetransfer/config_ftp</ftp>
+		<filetransfer>
+			<ftp>TrueAction_FileTransfer_Model_Config_Ftp</ftp>
+			<ftps>filetransfer/config_ftp</ftps>
+			<sftp>filetransfer/config_sftp</sftp>
+			<http>filetransfer/config_ftp</http>
+			<https>filetransfer/config_ftp</https>
+		</filetransfer>
 	</activeconfig_handler>
 	<phpunit>
 		<suite>
