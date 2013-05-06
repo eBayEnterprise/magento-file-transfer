@@ -8,7 +8,7 @@ class TrueAction_ActiveConfig_Block_System_Config_Form extends Mage_Adminhtml_Bl
 
 	// the path to the placeholder nodes relative to a group node
 	// string
-	private $_importNodePath = 'fields';
+	private $_importNodeName = 'activeconfig_import';
 
 	// the import setting nodes to be replaced by the new config.
 	// Varien_Simplexml_Element
