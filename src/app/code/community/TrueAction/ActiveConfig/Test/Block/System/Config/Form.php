@@ -77,8 +77,50 @@ class TrueAction_ActiveConfig_Test_Block_System_Config_Form extends EcomDev_PHPU
 	 * */
 	public function testProcessImports()
 	{
-		$this->markTestIncomplete();
+		$xml = '
+		<testgroup translate="label">
+			<label>TestGroup</label>
+			<frontend_type>text</frontend_type>
+			<sort_order>1</sort_order>
+			<show_in_default>1</show_in_default>
+			<show_in_website>1</show_in_website>
+			<show_in_store>1</show_in_store>
+			<fields>
+				<activeconfig_import>
+					<testmodule>
+						<testfeature>
+							<label>Remote Path</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>190</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</testfeature>
+					</testmodule>
+				</activeconfig_import>
+				<dummyfield translate="label">
+					<label>text field</label>
+					<frontend_type>text</frontend_type>
+					<sort_order>190</sort_order>
+					<show_in_default>1</show_in_default>
+					<show_in_website>1</show_in_website>
+					<show_in_store>1</show_in_store>
+				</dummyfield>
+			</fields>
+		</testgroup>';
+
+		$processImports = $this->modelClass->getMethod('_processImports');
+		$processImports->setAccessible(true);
 		$this->assertConfigNodeHasChild('activeconfig_handler', 'testmodule');
 		$model = $this->modelClass->newInstance();
+		$groupCfg = Mage::getModel('adminhtml/config');
+		$groupCfg->loadString($xml);
+		print $groupCfg->getNode();
+		$this->assertInstanceOf('Varien_Simplexml_Element', $groupCfg->getNode());
+		$processImports->invoke($model, $groupCfg->getNode());
+
+		$fieldsCfg = $this->modelClass->getProperty('_fieldsCfg');
+		$fieldsCfg->setAccessible(true);
+		$this->assertTrue($fieldsCfg->getValue($model)->getNode());
 	}
 }
