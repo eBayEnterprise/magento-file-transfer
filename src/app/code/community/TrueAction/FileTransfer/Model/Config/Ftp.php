@@ -36,23 +36,38 @@ class TrueAction_FileTransfer_Model_Config_Ftp
 			<{$this->_fieldPrefix}_username translate=\"label\">
 				<label>Username</label>
 				<frontend_type>text</frontend_type>
+				<show_in_default>1</show_in_default>
+				<show_in_website>1</show_in_website>
+				<show_in_store>1</show_in_store>
 			</{$this->_fieldPrefix}_username>
 			<{$this->_fieldPrefix}_password translate=\"label\">
 				<label>Password</label>
 				<frontend_type>obscure</frontend_type>
 				<backend_model>adminhtml/system_config_backend_encrypted</backend_model>
+				<show_in_default>1</show_in_default>
+				<show_in_website>1</show_in_website>
+				<show_in_store>1</show_in_store>
 			</{$this->_fieldPrefix}_password>
 			<{$this->_fieldPrefix}_host translate=\"label\">
 				<label>Remote Host</label>
 				<frontend_type>text</frontend_type>
+				<show_in_default>1</show_in_default>
+				<show_in_website>1</show_in_website>
+				<show_in_store>1</show_in_store>
 			</{$this->_fieldPrefix}_host>
 			<{$this->_fieldPrefix}_port translate=\"label\">
 				<label>Remote Port</label>
 				<frontend_type>text</frontend_type>
+				<show_in_default>1</show_in_default>
+				<show_in_website>1</show_in_website>
+				<show_in_store>1</show_in_store>
 			</{$this->_fieldPrefix}_port>
 			<{$this->_fieldPrefix}_remote_path translate=\"label\">
-				<label>Remote Port</label>
+				<label>Remote Path</label>
 				<frontend_type>text</frontend_type>
+				<show_in_default>1</show_in_default>
+				<show_in_website>1</show_in_website>
+				<show_in_store>1</show_in_store>
 			</{$this->_fieldPrefix}_remote_path>
 			</fields>
 		");
