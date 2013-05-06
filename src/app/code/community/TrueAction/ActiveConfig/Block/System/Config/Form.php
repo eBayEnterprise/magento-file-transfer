@@ -107,13 +107,9 @@ class TrueAction_ActiveConfig_Block_System_Config_Form extends Mage_Adminhtml_Bl
 	 * */
 	private function _processImports($group)
 	{
-        $lookForImports = true;
-        while ($lookForImports) {
-        	$lookForImports = false;
-        	$importNode = $group->descend($this->_importNodePath);
-        	if ($importNode != $group) {
-        		$this->_readImportConfig($importNode);
-            	$lookForImports = true;
+		foreach ($group->fields as $nodeName => $fieldNode) {
+        	if ($nodeName === $this->_importNodeName) {
+        		$this->_readImportConfig($fieldNode);
         	}
         }
 		return $this;
