@@ -17,17 +17,23 @@
 			<activeconfig>
 				<class>TrueAction_ActiveConfig_Block</class>
 			</activeconfig>
-			<adminhtml>
-				<rewrite>
-					<system_config_form>TrueAction_ActiveConfig_Block_System_Config_Form</system_config_form>
-				</rewrite>
-			</adminhtml>
 		</blocks>
 		<models>
 			<activeconfig>
 				<class>TrueAction_ActiveConfig_Model</class>
 			</activeconfig>
 		</models>
+		<events>
+			<adminhtml_init_system_config>
+				<observers>
+					<config_imports_observer>
+						<type>singleton</type>
+						<class>TrueAction_ActiveConfig_Model_Observer</class>
+						<method>processConfigImports</method>
+					</config_imports_observer>
+				</observers>
+			</adminhtml_init_system_config>
+		</events>
 	</global>
 	<phpunit>
 		<suite>
