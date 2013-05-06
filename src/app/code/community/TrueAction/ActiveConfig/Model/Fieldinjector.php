@@ -2,7 +2,8 @@
 /**
  * handles inserting the external system config xml nodes.
  * */
-class TrueAction_ActiveConfig_Block_System_Config_Form extends Mage_Adminhtml_Block_System_Config_Form {
+class TrueAction_ActiveConfig_Model_FieldInjector extends Mage_Core_Model_Abstract
+{
 
 	const HANDLER_TAG = 'activeconfig_handler';
 
@@ -57,16 +58,6 @@ class TrueAction_ActiveConfig_Block_System_Config_Form extends Mage_Adminhtml_Bl
 	}
 
 	/**
-	 * removes a node and returns the node that was its immediate parent.
-	 * @return Varien_Simplexml_Element
-	 * */
-	private function _removeNode($element)
-	{
-		$parentNode = null;
-		return $parentNode;
-	}
-
-	/**
 	 * returns a concrete injection class who is responsible for inserting
 	 * new nodes into the system config structure.
 	 *
@@ -92,7 +83,8 @@ class TrueAction_ActiveConfig_Block_System_Config_Form extends Mage_Adminhtml_Bl
 			self::HANDLER_TAG . '/' . $module  . '/' .  $feature
 		);
 		if ($generatorNode) {
-			$model = Mage::getModel($generatorNode->innerXml());
+			$model = new TrueAction_FileTransfer_Model_Config_Ftp();
+			// $model = Mage::getModel($generatorNode->innerXml());
 		}
 		if (!$model) {
 			$model = new TrueAction_ActiveConfig_Model_Config_Abstract();
@@ -105,59 +97,17 @@ class TrueAction_ActiveConfig_Block_System_Config_Form extends Mage_Adminhtml_Bl
 	 * configuration nodes.
 	 * @param Varien_Simplexml_Element
 	 * */
-	private function _processImports($group)
+	public function processGroup($group)
 	{
-		foreach ($group->fields->children() as $nodeName => $fieldNode) {
-        	if ($nodeName === $this->_importNodeName) {
+		Mage::log("group before:\n" . print_r($group, true));
+		$fieldNodes = $group->fields->children();
+		foreach ($fieldNodes as $fieldName => $fieldNode) {
+        	if ($fieldName === $this->_importNodeName) {
         		$this->_readImportConfig($fieldNode);
+	        	$group->fields->extend($this->_fieldsCfg->getNode());
         	}
         }
-		return $this;
+		Mage::log("group after:\n" . print_r($group, true));
+		Mage::log("group after:\n" . print_r($group->getParent(), true));
 	}
-
-
-    /**
-     * gathers the config and sets up a form object used when redering the form.
-     * It searches each section for any import nodes and then replaces the node
-     * with the specified module-specific config nodes.
-     *
-     * @return Mage_Adminhtml_Block_System_Config_Form
-     */
-    public function initForm()
-    {
-        $this->_initObjects();
-
-        $form = new Varien_Data_Form();
-
-        $sections = $this->_configFields->getSection(
-            $this->getSectionCode(),
-            $this->getWebsiteCode(),
-            $this->getStoreCode()
-        );
-        if (empty($sections)) {
-            $sections = array();
-        }
-        foreach ($sections as $section) {
-            /* @var $section Varien_Simplexml_Element */
-            if (!$this->_canShowField($section)) {
-                continue;
-            }
-            foreach ($section->groups as $groups){
-                $groups = (array)$groups;
-                usort($groups, array($this, '_sortForm'));
-
-                foreach ($groups as $group){
-                    /* @var $group Varien_Simplexml_Element */
-                    if (!$this->_canShowField($group)) {
-                        continue;
-                    }
-                    $this->_processImports($group);
-                    $this->_initGroup($form, $group, $section);
-                }
-            }
-        }
-
-        $this->setForm($form);
-        return $this;
-    }
 }
