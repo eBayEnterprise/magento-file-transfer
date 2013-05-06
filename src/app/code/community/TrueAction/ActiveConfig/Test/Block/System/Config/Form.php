@@ -98,6 +98,18 @@ class TrueAction_ActiveConfig_Test_Block_System_Config_Form extends EcomDev_PHPU
 						</testfeature>
 					</testmodule>
 				</activeconfig_import>
+				<activeconfig_import>
+					<filetransfer>
+						<ftp>
+							<label>Remote Path</label>
+							<frontend_type>text</frontend_type>
+							<sort_order>190</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</ftp>
+					</filetransfer>
+				</activeconfig_import>
 				<dummyfield translate="label">
 					<label>text field</label>
 					<frontend_type>text</frontend_type>
@@ -115,12 +127,14 @@ class TrueAction_ActiveConfig_Test_Block_System_Config_Form extends EcomDev_PHPU
 		$model = $this->modelClass->newInstance();
 		$groupCfg = Mage::getModel('adminhtml/config');
 		$groupCfg->loadString($xml);
-		print $groupCfg->getNode();
 		$this->assertInstanceOf('Varien_Simplexml_Element', $groupCfg->getNode());
 		$processImports->invoke($model, $groupCfg->getNode());
 
 		$fieldsCfg = $this->modelClass->getProperty('_fieldsCfg');
 		$fieldsCfg->setAccessible(true);
-		$this->assertTrue($fieldsCfg->getValue($model)->getNode());
+		$this->assertSame(
+			5,
+			count($fieldsCfg->getValue($model)->getNode()->children())
+		);
 	}
 }
