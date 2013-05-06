@@ -13,6 +13,16 @@
 		</TrueAction_ActiveConfig>
 	</modules>
 	<global>
+		<blocks>
+			<activeconfig>
+				<class>TrueAction_ActiveConfig_Block</class>
+			</activeconfig>
+			<adminhtml>
+				<rewrite>
+					<system_config_form>TrueAction_ActiveConfig_Block_System_Config_Form</system_config_form>
+				</rewrite>
+			</adminhtml>
+		</blocks>
 		<models>
 			<activeconfig>
 				<class>TrueAction_ActiveConfig_Model</class>
