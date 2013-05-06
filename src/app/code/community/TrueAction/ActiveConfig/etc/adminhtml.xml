@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * @category    TrueAction
+ * @package     TrueAction_GmsMedia
+ * @copyright   Copyright (c) 2013 True Action Network (http://www.trueaction.com)
+ */
+-->
+<config>
+	<acl>
+		<resources>
+			<admin>
+				<children>
+					<system>
+						<children>
+							<config>
+								<children>
+									<testsection>
+										<title><![CDATA[Advertising &amp; Marketing]]></title>
+									</testsection>
+								</children>
+							</config>
+						</children>
+					</system>
+				</children>
+			</admin>
+		</resources>
+	</acl>
+</config>
