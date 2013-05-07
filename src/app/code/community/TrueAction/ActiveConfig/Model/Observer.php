@@ -1,10 +1,7 @@
 <?php
 class TrueAction_ActiveConfig_Model_Observer
 {
-	private $_importSpecNode = 'fields/activeconfig_import';
-
-
-	const HANDLER_TAG = 'activeconfig_handler';
+	const IMPORT_SPEC_PATH = 'fields/activeconfig_import';
 
 	// format of the event name:
 	// activeconfig_<module_config_section>_<featurename>
@@ -12,19 +9,7 @@ class TrueAction_ActiveConfig_Model_Observer
 
 	// the path to the placeholder nodes relative to a group node
 	// string
-	const IMPORT_NODE = 'activeconfig_import';
-
-	// the import setting nodes to be replaced by the new config.
-	// Varien_Simplexml_Element
-	private $_importNode = null;
-
-	// the fields node that will become the parent of the newly generated
-	// config nodes.
-	// Varien_Simplexml_Element
-	private $_fieldsConfig = null;
-
-	// the event to fire to insert the configuration
-	private $_eventName = '';
+	const IMPORT_SPEC = 'activeconfig_import';
 
 	public function __construct()
 	{
@@ -34,43 +19,40 @@ class TrueAction_ActiveConfig_Model_Observer
 	}
 
 	/**
-	 * expectes config to be of the following structure
-	 *
-	 * <config><sections>...<groups>...<fields>
-     *  <activeconfig_import> <!--signals that an import is necessary -->
-     *    <module>            <!--module whose feature config we want to add-->
-     *      <feature/>        <!--feature whose config we're importing -->
-     *      <feature2>
-     *         ...            <!--config related to actual import-->
-     *      </feature2>
-     *    </module>
-     *    ...
-     *  </activeconfig_import>
-	 *
-	 * @param Varien_Simplexml_Element $importNode
+	 * reads an import specification.
+	 * @see README.md
+	 * @param Varien_Simplexml_Element $specNode
+	 * @param Varien_Simplexml_Element $groupNode
 	 * */
-	private function _readImportConfig($importNode)
+	private function _readImportSpec($specNode, $groupNode)
 	{
-		$this->_importNode = $importNode;
-		foreach ($importNode->children() as $moduleName => $moduleNode) {
-			foreach ($moduleNode->children() as $feature => $featureNode) {
-				$generator = $this->_generateEventName($moduleName, $feature);
-				$config    = $generator->getConfig($featureNode);
-				$this->_fieldsCfg->extend($config);
+		foreach ($specNode->children() as $moduleName => $moduleNode) {
+			foreach ($moduleNode->children() as $featureName => $featureNode) {
+				Mage::dispatchEvent(
+					sprintf(self::EVENT_FORMAT, $module, $feature),
+					$this->_prepareEventData(
+						$moduleName,
+						$featureName,
+						$groupNode
+					)
+				);
 			}
 		}
 		return $this;
 	}
 
 	/**
-	 * creates the name of an the event whose observer will generate the
-	 * configuration nodes necessary for insertion.
+	 * generates an array to be passed to Mage::dispatchEvent
+	 *
 	 * @param string $module
-	 * @return TrueAction_ActiveConfig_Model_Config_Abstract
+	 * @param string $module
+	 * @return Array(mixed)
 	 * */
-	private function _generateEventName($module, $feature)
+	private function _prepareEventData($module, $feature, $groupNode)
 	{
-		return sprintf(self::EVENT_FORMAT, $module, $feature);
+		$injector = Mage::getModel('activeconfig/fieldinjector');
+		$injector->setAttachmentPoint($groupNode);
+		return Array("injector"=>$injector);
 	}
 
 	/**
@@ -78,17 +60,15 @@ class TrueAction_ActiveConfig_Model_Observer
 	 * configuration nodes.
 	 * @param Varien_Simplexml_Element
 	 * */
-	public function addConfigTo($group)
+	private function _processFor($group)
 	{
 		$fieldNodes = $group->fields->children();
 		foreach ($fieldNodes as $fieldName => $fieldNode) {
-        	if ($fieldName === $this->_importNodeName) {
-        		Mage::dispatchEvent($this->_eventName);
-        		$this->_readImportConfig($fieldNode);
+        	if ($fieldName === self::IMPORT_SPEC) {
+        		$this->_readImportSpec($fieldNode, $group);
         	}
         }
 	}
-
 
 	/**
 	 * this function is run only once after all the system.xml files have been
@@ -105,8 +85,8 @@ class TrueAction_ActiveConfig_Model_Observer
 			foreach ($section->groups->children() as $groupName => $group) {
 				// only attempt to process groups that have an import spec.
 				// NOTE: must specifically check for false or else this may break
-				if (false !== $group->descend($this->_importSpecNode)) {
-					$injector->addConfigTo($group);
+				if (false !== $group->descend(self::IMPORT_SPEC_PATH)) {
+					$this->_processFor($group);
 				}
 			}
 		}
