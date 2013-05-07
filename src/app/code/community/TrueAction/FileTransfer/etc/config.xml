@@ -18,16 +18,18 @@
 				<class>TrueAction_FileTransfer_Model</class>
 			</filetransfer>
 		</models>
+		<events>
+			<activeconfig_filetransfer_ftp>
+				<observers>
+					<activeconfig_filetransfer_ftp_observer>
+						<type>singleton</type>
+						<class>TrueAction_FileTransfer_Model_Config_Ftp</class>
+						<method>handleFtpConfigImport</method>
+					</activeconfig_filetransfer_ftp_observer>
+				</observers>
+			</activeconfig_filetransfer_ftp>
+		</events>
 	</global>
-	<activeconfig_handler>
-		<filetransfer>
-			<ftp>TrueAction_FileTransfer_Model_Config_Ftp</ftp>
-			<ftps>filetransfer/config_ftp</ftps>
-			<sftp>filetransfer/config_sftp</sftp>
-			<http>filetransfer/config_ftp</http>
-			<https>filetransfer/config_ftp</https>
-		</filetransfer>
-	</activeconfig_handler>
 	<phpunit>
 		<suite>
 			<modules>
