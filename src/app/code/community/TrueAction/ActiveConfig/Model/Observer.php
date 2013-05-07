@@ -13,7 +13,6 @@ class TrueAction_ActiveConfig_Model_Observer
 
 	public function __construct()
 	{
-		parent::__construct();
 		$this->_fieldsCfg = new Varien_Simplexml_Config();
 		$this->_fieldsCfg->loadString('<fields/>');
 	}
