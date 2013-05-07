@@ -28,7 +28,7 @@ class TrueAction_ActiveConfig_Model_Observer
 		foreach ($specNode->children() as $moduleName => $moduleNode) {
 			foreach ($moduleNode->children() as $featureName => $featureNode) {
 				Mage::dispatchEvent(
-					sprintf(self::EVENT_FORMAT, $module, $feature),
+					sprintf(self::EVENT_FORMAT, $moduleName, $featureName),
 					$this->_prepareEventData(
 						$moduleName,
 						$featureName,
