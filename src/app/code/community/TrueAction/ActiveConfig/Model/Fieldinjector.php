@@ -26,8 +26,8 @@ class TrueAction_ActiveConfig_Model_FieldInjector
 	 * */
 	public function insertConfig($fieldsConfig)
 	{
-		if (!is_null($targetNode)) {
-	    	$this->_groupNode->file->extend($fieldsConfig->getNode());
+		if (!is_null($this->_groupNode)) {
+	    	$this->_groupNode->fields->extend($fieldsConfig->getNode());
 		}
 	}
 
