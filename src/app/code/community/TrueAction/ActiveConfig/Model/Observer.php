@@ -1,7 +1,6 @@
 <?php
 class TrueAction_ActiveConfig_Model_Observer
 {
-	private $_importsXpath = '';
 	private $_importSpecNode = 'fields/activeconfig_import';
 
 
@@ -64,39 +63,32 @@ class TrueAction_ActiveConfig_Model_Observer
 	}
 
 	/**
-	 * returns a concrete injection class who is responsible for inserting
-	 * new nodes into the system config structure.
-	 *
-	 * reads the followig config structure:
-	 *
-	 * <config>
-	 *  <activeconfig_handler>
-	 *   <module>
-	 *    <feature>module/module:method</feature>
-	 *    ...
-	 *   </module>
-	 *   </module>
-	 *  </activeconfig_handler>
-	 * </config>
-	 *
+	 * creates the name of an the event whose observer will generate the
+	 * configuration nodes necessary for insertion.
 	 * @param string $module
 	 * @return TrueAction_ActiveConfig_Model_Config_Abstract
 	 * */
-	private function _getConfigGenerator($module, $feature)
+	private function _generateEventName($module, $feature)
 	{
-		$model = null;
-		$generatorNode = Mage::getConfig()->getNode(
-			self::HANDLER_TAG . '/' . $module  . '/' .  $feature
-		);
-		if ($generatorNode) {
-			$model = new TrueAction_FileTransfer_Model_Config_Ftp();
-			// $model = Mage::getModel($generatorNode->innerXml());
-		}
-		if (!$model) {
-			$model = new TrueAction_ActiveConfig_Model_Config_Abstract();
-		}
-		return $model;
+		return sprintf(self::EVENT_FORMAT, $module, $feature);
 	}
+
+	/**
+	 * searches for placeholder nodes and replaces them with the specified
+	 * configuration nodes.
+	 * @param Varien_Simplexml_Element
+	 * */
+	public function addConfigTo($group)
+	{
+		$fieldNodes = $group->fields->children();
+		foreach ($fieldNodes as $fieldName => $fieldNode) {
+        	if ($fieldName === $this->_importNodeName) {
+        		Mage::dispatchEvent($this->_eventName);
+        		$this->_readImportConfig($fieldNode);
+        	}
+        }
+	}
+
 
 	/**
 	 * this function is run only once after all the system.xml files have been
@@ -111,9 +103,10 @@ class TrueAction_ActiveConfig_Model_Observer
 		$injector = Mage::getModel('activeconfig/fieldinjector');
 		foreach ($sections->children() as $sectionName => $section) {
 			foreach ($section->groups->children() as $groupName => $group) {
-				// must specifically check for false or else this might break
-				if (false !== $group->descend('fields/activeconfig_import')) {
-					$injector->processGroup($group);
+				// only attempt to process groups that have an import spec.
+				// NOTE: must specifically check for false or else this may break
+				if (false !== $group->descend($this->_importSpecNode)) {
+					$injector->addConfigTo($group);
 				}
 			}
 		}
