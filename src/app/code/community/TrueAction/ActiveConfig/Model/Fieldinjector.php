@@ -1,27 +1,42 @@
 <?php
 /**
- * handles inserting the external system config xml nodes.
+ * inserts new nodes into the configuration using a specified
+ * attachement point.
  * */
 class TrueAction_ActiveConfig_Model_FieldInjector
+	implements TrueAction_ActiveConfig_Model_Injector_Interface
 {
-	// the fields node that will become the parent of the newly generated
-	// config nodes.
-	// Varien_Simplexml_Element
-	private $_fieldsConfig = null;
+	// group node the injector is attached to.
+	private $_groupNode = null;
 
-	public function __construct()
+	/**
+	 * create the injector and optionally set a group node as the attachment
+	 * point.
+	 * @param Varien_Simplexml_Element $groupNode
+	 * */
+	public function __construct($groupNode = null)
 	{
-		parent::__construct();
-		$this->_fieldsCfg = new Varien_Simplexml_Config();
-		$this->_fieldsCfg->loadString('<fields/>');
+		$this->_groupNode;
 	}
 
 	/**
-	 * inserts the field configuration nodes into the attached fieldset
+	 * insert the xml nodes that comprise a set of configuration fields
+	 * into the attached group in the magento system config.
 	 * @param Varien_Simplexml_Config $fieldsConfig
 	 * */
 	public function insertConfig($fieldsConfig)
 	{
-    	$this->_fieldsConfig->extend($fieldsConfig->getNode());
+		if (!is_null($targetNode)) {
+	    	$this->_groupNode->file->extend($fieldsConfig->getNode());
+		}
+	}
+
+	/**
+	 * specify the group node to attach to.
+	 * @param Varien_Simplexml_Element
+	 * */
+	public function setAttachmentPoint($groupNode)
+	{
+		$this->_groupNode = $groupNode;
 	}
 }
