@@ -5,7 +5,8 @@ class TrueAction_FileTransfer_Model_Observer
 	{
 		$event = $observer->getEvent();
 		$injector = $event->getInjector();
-		$generator = Mage::getModel('filetransfer/config_ftp');
-		$injector->insertConfig($generator->getConfig(null));
+		$fields = Mage::helper('filetransfer/protocol')
+			->generateFields($event->getConfig());
+		$injector->insertConfig($fields);
 	}
 }
