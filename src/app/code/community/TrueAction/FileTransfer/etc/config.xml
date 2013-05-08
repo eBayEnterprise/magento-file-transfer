@@ -30,6 +30,17 @@
 			</activeconfig_filetransfer_ftp>
 		</events>
 	</global>
+	<default>
+		<filetransfer>
+			<global>
+				<default_protocol>ftp</default_protocol>
+				<sort_order>500</sort_order>
+				<show_in_default>1</show_in_default>
+				<show_in_website>1</show_in_website>
+				<show_in_store>1</show_in_store>
+			</global>
+		</filetransfer>
+	</default>
 	<phpunit>
 		<suite>
 			<modules>

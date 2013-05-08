@@ -3,6 +3,12 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 {
 	$_configErrorClass = Exception;
 
+	const GLOBAL_DEFAULT_PROTOCOL = 'filetransfer/global/default_protocol';
+	const GLOBAL_SORT_ORDER       = 'filetransfer/global/sort_order';
+	const GLOBAL_SHOW_IN_DEFAULT  = 'filetransfer/global/show_in_default';
+	const GLOBAL_SHOW_IN_WEBSITE  = 'filetransfer/global/show_in_website';
+	const GLOBAL_SHOW_IN_STORE    = 'filetransfer/global/show_in_store';
+
 	public function sendFile($localFile, $remoteFile, $configPath, $store=null)
 	{
 		try {
@@ -23,16 +29,67 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 		}
 	}
 
-
+	/**
+	 * returns the model for the configured protocol.
+	 * */
 	public function getProtocolModel($configPath, $store=null)
 	{
 		$protocol = Mage::getStoreConfig(
 			sprintf('%s/filetransfer_protocol', $configPath),
 			$store
 		);
+		if (!$protocol) {
+			$protocol = $this->getDefaultProtocol();
+		}
 		return Mage::getModel(
 			'filetransfer/protocol_'.$protocol,
 			array('store'=>$store, 'config_path'=>$configPath)
 		);
+	}
+
+	/**
+	 * returns the default protocol to use when sending files.
+	 * @param Mage_Core_Model_Store
+	 * @return string
+	 * */
+	public function getDefaultProtocol($store=null)
+	{
+		return Mage::getStoreConfig(self::GLOBAL_DEFAULT_PROTOCOL, $store);
+	}
+	/**
+	 * default initial sort order for dynamically inserted config fields.
+	 * @param Mage_Core_Model_Store
+	 * @return string
+	 * */
+	public function getGlobalSortOrder($store=null)
+	{
+		return Mage::getStoreConfig(self::GLOBAL_SORT_ORDER, $store);
+	}
+	/**
+	 * default show_in_default value for dynamically inserted config fields.
+	 * @param Mage_Core_Model_Store
+	 * @return string
+	 * */
+	public function getGlobalShowInDefault($store=null)
+	{
+		return Mage::getStoreConfig(self::GLOBAL_SHOW_IN_DEFAULT, $store);
+	}
+	/**
+	 * default show_in_website value for dynamically inserted config fields.
+	 * @param Mage_Core_Model_Store
+	 * @return string
+	 * */
+	public function getGlobalShowInWebsite($store=null)
+	{
+		return Mage::getStoreConfig(self::GLOBAL_SHOW_IN_WEBSITE, $store);
+	}
+	/**
+	 * default show_in_store value for dynamically inserted config fields.
+	 * @param Mage_Core_Model_Store
+	 * @return string
+	 * */
+	public function getGlobalShowInStore($store=null)
+	{
+		return Mage::getStoreConfig(self::GLOBAL_SHOW_IN_STORE, $store);
 	}
 }
