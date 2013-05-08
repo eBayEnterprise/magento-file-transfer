@@ -5,7 +5,7 @@ class TrueAction_FileTransfer_Model_Observer
 	{
 		$event = $observer->getEvent();
 		$injector = $event->getInjector();
-		$fields = Mage::helper('filetransfer/protocol')
+		$fields = Mage::getModel('filetransfer/protocol_config')
 			->generateFields($event->getConfig());
 		$injector->insertConfig($fields);
 	}
