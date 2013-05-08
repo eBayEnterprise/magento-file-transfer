@@ -5,7 +5,7 @@ class TrueAction_ActiveConfig_Model_Observer
 
 	// format of the event name:
 	// activeconfig_<module_config_section>_<featurename>
-	const EVENT_FORMAT = 'activeconfig_%s';
+	const EVENT_PREFIX = 'activeconfig_';
 
 	// the path to the placeholder nodes relative to a group node
 	// string
@@ -22,15 +22,17 @@ class TrueAction_ActiveConfig_Model_Observer
 	 * @see README.md
 	 * @param Varien_Simplexml_Element $specNode
 	 * @param Varien_Simplexml_Element $groupNode
+	 * @param string $configPath
 	 * */
-	private function _readImportSpec($specNode, $groupNode)
+	private function _readImportSpec($specNode, $groupNode, $configPath)
 	{
 		foreach ($specNode->children() as $moduleName => $moduleNode) {
 			Mage::dispatchEvent(
-				sprintf(self::EVENT_FORMAT, $moduleName),
+				self::EVENT_PREFIX . $moduleName,
 				$this->_prepareEventData(
-					$moduleName,
-					$groupNode
+					$groupNode,
+					$moduleNode,
+					$configPath
 				)
 			);
 		}
@@ -40,28 +42,34 @@ class TrueAction_ActiveConfig_Model_Observer
 	/**
 	 * generates an array to be passed to Mage::dispatchEvent
 	 *
-	 * @param string $module
-	 * @param string $module
+	 * @param Varien_Simplexml_Element $moduleSpec
+	 * @param Varien_Simplexml_Element $groupNode
+	 * @param string $configPath
 	 * @return Array(mixed)
 	 * */
-	private function _prepareEventData($module, $groupNode)
+	private function _prepareEventData($groupNode, $moduleSpec, $configPath)
 	{
 		$injector = Mage::getModel('activeconfig/fieldinjector');
 		$injector->setAttachmentPoint($groupNode);
-		return Array("injector"=>$injector);
+		return Array(
+			"injector"    => $injector,
+			"module_spec" => $moduleSpec,
+			"config_path" => $configPath,
+		);
 	}
 
 	/**
 	 * searches for placeholder nodes and replaces them with the specified
 	 * configuration nodes.
 	 * @param Varien_Simplexml_Element
+	 * @param string $configPath
 	 * */
-	private function _processFor($group)
+	private function _processFor($group, $configPath)
 	{
 		$fieldNodes = $group->fields->children();
 		foreach ($fieldNodes as $fieldName => $fieldNode) {
         	if ($fieldName === self::IMPORT_SPEC) {
-        		$this->_readImportSpec($fieldNode, $group);
+        		$this->_readImportSpec($fieldNode, $group, $configPath);
         	}
         }
 	}
@@ -82,7 +90,8 @@ class TrueAction_ActiveConfig_Model_Observer
 				// only attempt to process groups that have an import spec.
 				// NOTE: must specifically check for false or else this may break
 				if (false !== $group->descend(self::IMPORT_SPEC_PATH)) {
-					$this->_processFor($group);
+					$configPath = $sectionName.'/'.$groupName;
+					$this->_processFor($group, $configPath);
 				}
 			}
 		}
