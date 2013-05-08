@@ -29,7 +29,8 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTests
 	 * */
 	public function testGenerateConfig() {
 		$model = $this->class->newInstance();
-		$config = $model->generateFields($this->importOptions);
+		$config = $model->setConfigPath('testsection/testgroup')
+			->generateFields($this->importOptions);
 		$this->assertInstanceOf('Varien_Simplexml_Config', $config);
 		$node = $config->getNode();
 		$this->assertInstanceOf('Varien_Simplexml_Element', $node);
@@ -39,10 +40,10 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTests
 			$this->assertInstanceOf('Varien_Simplexml_Element', $node);
 			$names[] = $name;
 		}
-		$this->assertContains('filetransfer_username', $names);
-		$this->assertContains('filetransfer_password', $names);
-		$this->assertContains('filetransfer_host', $names);
-		$this->assertContains('filetransfer_port', $names);
-		$this->assertContains('filetransfer_remote_path', $names);
+		$this->assertContains('filetransfer_ftp_username', $names);
+		$this->assertContains('filetransfer_ftp_password', $names);
+		$this->assertContains('filetransfer_ftp_host', $names);
+		$this->assertContains('filetransfer_ftp_port', $names);
+		$this->assertContains('filetransfer_ftp_remote_path', $names);
 	}
 }

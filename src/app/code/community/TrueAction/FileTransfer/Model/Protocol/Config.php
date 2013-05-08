@@ -4,10 +4,10 @@ TrueAction_FileTransfer_Model_Config_Ftp
 
 concrete configuration generator for the ftp protocol.
  */
-class TrueAction_FileTransfer_Model_Config_Ftp
+class TrueAction_FileTransfer_Model_Protocol_Config
 	extends TrueAction_ActiveConfig_Model_Config_Abstract
 {
-	private $_fieldPrefix = 'filetransfer_ftp';
+	private $_fieldPrefix = 'filetransfer';
 
 	/**
 	 * returns the field prefix for each field
@@ -18,19 +18,33 @@ class TrueAction_FileTransfer_Model_Config_Ftp
 		return $this->_fieldPrefix;
 	}
 
-	public function get
-
-	public function setImportOptions($importOptions)
+	public function generateFields($moduleSpec)
 	{
+		Mage::log("generateFields");
 		$helper = Mage::helper('filetransfer');
-		$this->_globalSortOrder = $importOptions->sort_order ?
-			$importOptions->sort_order : $helper->getGlobalSortOrder();
-		$this->_globalStoreFlag = $importOptions->show_in_store ?
-			$importOptions->show_in_store : $helper->getGlobalShowInStore();
-		$this->_globalWebsiteFlag = $importOptions->show_in_website ?
-			$importOptions->show_in_website : $helper->getGlobalShowInWebsite();
-		$this->_globalDefaultFlag = $importOptions->show_in_default ?
-			$importOptions->show_in_default : $helper->getGlobalShowInDefault();
+
+		$sortOrder = isset($moduleSpec->sort_order) ?
+			(int)$moduleSpec->sort_order : $helper->getGlobalSortOrder();
+		$defaultFlag = isset($moduleSpec->show_in_default) ?
+			(string)$moduleSpec->show_in_default : $helper->getGlobalShowInDefault();
+		$websiteFlag = isset($moduleSpec->show_in_website) ?
+			(string)$moduleSpec->show_in_website : $helper->getGlobalShowInWebsite();
+		$storeFlag = isset($moduleSpec->show_in_store) ?
+			(string)$moduleSpec->show_in_store : $helper->getGlobalShowInStore();
+
+		$protocolModel = $helper->getProtocolModel($this->getConfigPath());
+		$fields = $this->_getBaseFields($protocolModel->getCode());
+
+		// TODO: ADD FEATURE SPECIFIC OPTIONS
+		$increment = 0;
+		foreach ($fields->getNode()->children() as $fieldName => $fieldNode) {
+			$fields->setNode($fieldName.'/sort_order', $sortOrder + $increment++);
+			$fields->setNode($fieldName.'/show_in_default', $defaultFlag);
+			$fields->setNode($fieldName.'/show_in_website', $websiteFlag);
+			$fields->setNode($fieldName.'/show_in_store', $storeFlag);
+		}
+
+		return $fields;
 	}
 
 	/**
@@ -39,58 +53,35 @@ class TrueAction_FileTransfer_Model_Config_Ftp
 	 * @param Varien_Simplexml_Element $importOptions
 	 * @return Varien_Simplexml_Config
 	 * */
-	public function getConfig($importOptions) {
+	public function _getBaseFields($protocol) {
 		$fields = new Varien_Simplexml_Config("
 		<fields>
-			<ftransfer_protocol translate=\"label\">
+			<filetransfer_protocol translate=\"label\">
 				<label>Protocol</label>
-				<frontend_type>text</frontend_type>
-				<sort_order>99</sort_order>
-				<show_in_default>1</show_in_default>
-				<show_in_website>1</show_in_website>
-				<show_in_store>1</show_in_store>
-			</ftransfer_protocol>
-			<{$this->_fieldPrefix}_username translate=\"label\">
+				<frontend_type>select</frontend_type>
+				<source_model>filetransfer/adminhtml_system_config_source_protocols</source_model>
+			</filetransfer_protocol>
+			<filetransfer_{$protocol}_username translate=\"label\">
 				<label>Username</label>
 				<frontend_type>text</frontend_type>
-				<sort_order>100</sort_order>
-				<show_in_default>1</show_in_default>
-				<show_in_website>1</show_in_website>
-				<show_in_store>1</show_in_store>
-			</{$this->_fieldPrefix}_username>
-			<{$this->_fieldPrefix}_password translate=\"label\">
+			</filetransfer_{$protocol}_username>
+			<filetransfer_{$protocol}_password translate=\"label\">
 				<label>Password</label>
 				<frontend_type>obscure</frontend_type>
 				<backend_model>adminhtml/system_config_backend_encrypted</backend_model>
-				<sort_order>101</sort_order>
-				<show_in_default>1</show_in_default>
-				<show_in_website>1</show_in_website>
-				<show_in_store>1</show_in_store>
-			</{$this->_fieldPrefix}_password>
-			<{$this->_fieldPrefix}_host translate=\"label\">
+			</filetransfer_{$protocol}_password>
+			<filetransfer_{$protocol}_host translate=\"label\">
 				<label>Remote Host</label>
 				<frontend_type>text</frontend_type>
-				<sort_order>102</sort_order>
-				<show_in_default>1</show_in_default>
-				<show_in_website>1</show_in_website>
-				<show_in_store>1</show_in_store>
-			</{$this->_fieldPrefix}_host>
-			<{$this->_fieldPrefix}_port translate=\"label\">
+			</filetransfer_{$protocol}_host>
+			<filetransfer_{$protocol}_port translate=\"label\">
 				<label>Remote Port</label>
 				<frontend_type>text</frontend_type>
-				<sort_order>103</sort_order>
-				<show_in_default>1</show_in_default>
-				<show_in_website>1</show_in_website>
-				<show_in_store>1</show_in_store>
-			</{$this->_fieldPrefix}_port>
-			<{$this->_fieldPrefix}_remote_path translate=\"label\">
+			</filetransfer_{$protocol}_port>
+			<filetransfer_{$protocol}_remote_path translate=\"label\">
 				<label>Remote Path</label>
 				<frontend_type>text</frontend_type>
-				<sort_order>104</sort_order>
-				<show_in_default>1</show_in_default>
-				<show_in_website>1</show_in_website>
-				<show_in_store>1</show_in_store>
-			</{$this->_fieldPrefix}_remote_path>
+			</filetransfer_{$protocol}_remote_path>
 		</fields>
 		");
 		return $fields;
