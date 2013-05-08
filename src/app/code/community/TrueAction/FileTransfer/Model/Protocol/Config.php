@@ -18,6 +18,21 @@ class TrueAction_FileTransfer_Model_Config_Ftp
 		return $this->_fieldPrefix;
 	}
 
+	public function get
+
+	public function setImportOptions($importOptions)
+	{
+		$helper = Mage::helper('filetransfer');
+		$this->_globalSortOrder = $importOptions->sort_order ?
+			$importOptions->sort_order : $helper->getGlobalSortOrder();
+		$this->_globalStoreFlag = $importOptions->show_in_store ?
+			$importOptions->show_in_store : $helper->getGlobalShowInStore();
+		$this->_globalWebsiteFlag = $importOptions->show_in_website ?
+			$importOptions->show_in_website : $helper->getGlobalShowInWebsite();
+		$this->_globalDefaultFlag = $importOptions->show_in_default ?
+			$importOptions->show_in_default : $helper->getGlobalShowInDefault();
+	}
+
 	/**
 	 * generates the xml nodes that comprise a set of configuration fields
 	 * in the magento system config.
