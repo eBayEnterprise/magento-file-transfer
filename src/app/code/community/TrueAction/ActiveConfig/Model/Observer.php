@@ -5,7 +5,7 @@ class TrueAction_ActiveConfig_Model_Observer
 
 	// format of the event name:
 	// activeconfig_<module_config_section>_<featurename>
-	const EVENT_FORMAT = 'activeconfig_%s_%s';
+	const EVENT_FORMAT = 'activeconfig_%s';
 
 	// the path to the placeholder nodes relative to a group node
 	// string
@@ -26,16 +26,13 @@ class TrueAction_ActiveConfig_Model_Observer
 	private function _readImportSpec($specNode, $groupNode)
 	{
 		foreach ($specNode->children() as $moduleName => $moduleNode) {
-			foreach ($moduleNode->children() as $featureName => $featureNode) {
-				Mage::dispatchEvent(
-					sprintf(self::EVENT_FORMAT, $moduleName, $featureName),
-					$this->_prepareEventData(
-						$moduleName,
-						$featureName,
-						$groupNode
-					)
-				);
-			}
+			Mage::dispatchEvent(
+				sprintf(self::EVENT_FORMAT, $moduleName),
+				$this->_prepareEventData(
+					$moduleName,
+					$groupNode
+				)
+			);
 		}
 		return $this;
 	}
@@ -47,7 +44,7 @@ class TrueAction_ActiveConfig_Model_Observer
 	 * @param string $module
 	 * @return Array(mixed)
 	 * */
-	private function _prepareEventData($module, $feature, $groupNode)
+	private function _prepareEventData($module, $groupNode)
 	{
 		$injector = Mage::getModel('activeconfig/fieldinjector');
 		$injector->setAttachmentPoint($groupNode);

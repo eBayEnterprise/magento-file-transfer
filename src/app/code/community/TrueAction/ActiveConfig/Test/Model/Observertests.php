@@ -68,6 +68,6 @@ class TrueAction_ActiveConfig_Test_Model_ObserverTests extends EcomDev_PHPUnit_T
 	{
 		$model = Mage::getSingleton('activeconfig/observer');
 		$model->processConfigImports($this->observer);
-		$this->assertEventDispatched('activeconfig_testmodule_testfeature');
+		$this->assertEventDispatched('activeconfig_testmodule');
 	}
 }
