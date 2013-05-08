@@ -30,7 +30,8 @@ class TrueAction_FileTransfer_Model_Config_Ftp
 			<fields>
 			<ftransfer_protocol translate=\"label\">
 				<label>Protocol</label>
-				<frontend_type>text</frontend_type>
+				<frontend_type>select</frontend_type>
+				<source_model>filetransfer/adminhtml_system_config_source_protocols</source_model>
 				<sort_order>99</sort_order>
 				<show_in_default>1</show_in_default>
 				<show_in_website>1</show_in_website>
