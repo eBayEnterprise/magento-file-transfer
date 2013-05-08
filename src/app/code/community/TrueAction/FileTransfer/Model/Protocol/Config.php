@@ -40,9 +40,8 @@ class TrueAction_FileTransfer_Model_Config_Ftp
 	 * @return Varien_Simplexml_Config
 	 * */
 	public function getConfig($importOptions) {
-		$fields = new Varien_Simplexml_Config();
-		$fields->loadString("
-			<fields>
+		$fields = new Varien_Simplexml_Config("
+		<fields>
 			<ftransfer_protocol translate=\"label\">
 				<label>Protocol</label>
 				<frontend_type>text</frontend_type>
@@ -92,7 +91,7 @@ class TrueAction_FileTransfer_Model_Config_Ftp
 				<show_in_website>1</show_in_website>
 				<show_in_store>1</show_in_store>
 			</{$this->_fieldPrefix}_remote_path>
-			</fields>
+		</fields>
 		");
 		return $fields;
 	}
