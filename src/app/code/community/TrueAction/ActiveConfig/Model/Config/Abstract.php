@@ -27,7 +27,7 @@ class TrueAction_ActiveConfig_Model_Config_Abstract
 			Mage::getStoreConfig(
 				$this->getConfigPath().$fieldName,
 				$this->getStore()
-			);
+			)
 		);
 	}
 
