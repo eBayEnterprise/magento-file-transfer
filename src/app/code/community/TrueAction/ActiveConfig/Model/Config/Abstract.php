@@ -18,4 +18,24 @@ class TrueAction_ActiveConfig_Model_Config_Abstract
 		$fields->loadString('<fields></fields>');
 		return $fields;
 	}
+
+
+	protected function _loadFieldAs($fieldName, $alias)
+	{
+		$this->setData(
+			$alias,
+			Mage::getStoreConfig(
+				$this->getConfigPath().$fieldName,
+				$this->getStore()
+			);
+		);
+	}
+
+	protected function _loadFieldAsMember($fieldName, $memberName)
+	{
+		$this->$memberName = Mage::getStoreConfig(
+			$this->getConfigPath().$fieldName,
+			$this->getStore()
+		);
+	}
 }
