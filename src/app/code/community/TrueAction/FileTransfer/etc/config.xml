@@ -18,6 +18,11 @@
 				<class>TrueAction_FileTransfer_Model</class>
 			</filetransfer>
 		</models>
+		<helpers>
+			<filetransfer>
+				<class>TrueAction_FileTransfer_Helper</class>
+			</filetransfer>
+		</helpers>
 		<events>
 			<activeconfig_filetransfer_ftp>
 				<observers>
