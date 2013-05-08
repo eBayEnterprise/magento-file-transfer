@@ -29,7 +29,7 @@ class TrueAction_ActiveConfig_Model_Observer
 			Mage::dispatchEvent(
 				sprintf(self::EVENT_FORMAT, $moduleName),
 				$this->_prepareEventData(
-					$moduleName,
+					$moduleNode,
 					$groupNode
 				)
 			);
@@ -40,15 +40,15 @@ class TrueAction_ActiveConfig_Model_Observer
 	/**
 	 * generates an array to be passed to Mage::dispatchEvent
 	 *
-	 * @param string $module
-	 * @param string $module
+	 * @param string $moduleConfig
+	 * @param string $groupNode
 	 * @return Array(mixed)
 	 * */
-	private function _prepareEventData($module, $groupNode)
+	private function _prepareEventData($moduleConfig, $groupNode)
 	{
 		$injector = Mage::getModel('activeconfig/fieldinjector');
 		$injector->setAttachmentPoint($groupNode);
-		return Array("injector"=>$injector);
+		return Array("injector"=>$injector, "config"=>$moduleConfig);
 	}
 
 	/**

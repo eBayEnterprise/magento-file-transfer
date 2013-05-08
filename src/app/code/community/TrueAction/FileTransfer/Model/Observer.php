@@ -1,7 +1,7 @@
 <?php
 class TrueAction_FileTransfer_Model_Observer
 {
-	public function handleFtpConfigImport($observer)
+	public function handleConfigImport($observer)
 	{
 		$event = $observer->getEvent();
 		$injector = $event->getInjector();
