@@ -1,7 +1,7 @@
 <?php
 class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 {
-	$_configErrorClass = Exception;
+	protected $_configErrorClass = 'Exception';
 
 	const GLOBAL_DEFAULT_PROTOCOL = 'filetransfer/global/default_protocol';
 	const GLOBAL_SORT_ORDER       = 'filetransfer/global/sort_order';
