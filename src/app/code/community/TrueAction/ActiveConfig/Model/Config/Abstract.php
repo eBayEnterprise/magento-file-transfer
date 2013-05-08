@@ -5,20 +5,18 @@ TrueAction_ActiveConfig_Model_Config_Abstract
 simple base class to serve as both an example as well as default
 behavior.
  */
-class TrueAction_ActiveConfig_Model_Config_Abstract
+abstract class TrueAction_ActiveConfig_Model_Config_Abstract
 	extends Mage_Core_Model_Abstract
 	implements TrueAction_ActiveConfig_Model_Config_Interface
 {
+	// Varien_Simplexml_Element
+	protected $_importConfig = null;
+
 	/**
 	 * generates the xml nodes that comprise a set of configuration fields
 	 * in the magento system config
 	 * */
-	public function getConfig($importOptions) {
-		$fields = new Varien_Simplexml_Config();
-		$fields->loadString('<fields></fields>');
-		return $fields;
-	}
-
+	abstract public function generateFields($importOptions);
 
 	protected function _loadFieldAs($fieldName, $alias)
 	{
