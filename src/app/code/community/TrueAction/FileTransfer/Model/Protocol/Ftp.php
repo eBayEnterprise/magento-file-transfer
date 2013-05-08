@@ -6,8 +6,6 @@ concrete configuration generator for the ftp protocol.
  */
 class TrueAction_FileTransfer_Model_Protocol_Ftp extends Mage_Core_Model_Abstract
 {
-	protected $_store = null;
-	protected $_configPath = '';
 	protected $_conn;
 	protected $_auth;
 	protected $_pasv;
@@ -16,26 +14,29 @@ class TrueAction_FileTransfer_Model_Protocol_Ftp extends Mage_Core_Model_Abstrac
 	protected $_username;
 	protected $_password;
 
-	protected function _construct($initData)
+	public function _construct()
 	{
-		parent::_construct($initData);
-		// store the data as members and unset them
-		$this->_store      = $this->getStore();
-		$this->_configPath = $this->getConfigPath();
-		$this->unsStore();
-		$this->unsConfigPath();
-		// load the fields
-		$this->_loadFieldAsMember('ftransfer_ftp_user', '_username');
-		$this->_loadFieldAsMember('ftransfer_ftp_password', '_password')
-		$this->_loadFieldAsMember('ftransfer_ftp_host', '_host');
-		$this->_loadFieldAsMember('ftransfer_ftp_port', '_port');
-		$this->_loadFieldAsMember('ftransfer_ftp_remote_path', 'remote_path');
+		$this->setName('File Transfer Protocol');
+		$this->setCode('ftp');
 	}
 
 	public function sendFile($localFile, $remoteFile)
 	{
-		$this->connect();
-		$
+		$remotePath = Mage::helper('filetransfer')->normalPaths(
+			$this->getRemotePath($storeView),
+			basename($localFile)
+		);
+		// connect to ftp server
+		$isSuccess = $this->connect();
+		// login to ftp connection
+		$isSuccess = $isSuccess && $this->login();
+		// check to see if ftp connect is in passive mode
+		$isSuccess = $isSuccess && $this->isPassive();
+		// Transfer file
+		$isSuccess = $isSuccess && $this->transfer($remotePath, $localPath);
+		// close ftp connection
+		$this->close();
+		return $isSuccess;
 	}
 
 	public function setHost($host='')

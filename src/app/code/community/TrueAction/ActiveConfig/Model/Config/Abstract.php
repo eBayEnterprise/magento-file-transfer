@@ -18,6 +18,12 @@ abstract class TrueAction_ActiveConfig_Model_Config_Abstract
 	 * */
 	abstract public function generateFields($importOptions);
 
+	/**
+	 * magic setter/getters
+	 * */
+	// public function setConfigPath
+	// public function getConfigPath
+
 	protected function _loadFieldAs($fieldName, $alias)
 	{
 		$this->setData(
