@@ -26,7 +26,7 @@ class TrueAction_FileTransfer_Model_Protocol_Ftp extends Mage_Core_Model_Abstrac
 		$this->getConfig()->loadMappedFields($this->_fieldMap);
 	}
 
-	public function sendFile($localFile, $remoteFile)
+	public function sendFile($remoteFile, $localFile)
 	{
 		$remotePath = Mage::helper('filetransfer')->normalPaths(
 			$this->getRemotePath($storeView),
