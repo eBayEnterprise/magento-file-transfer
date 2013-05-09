@@ -8,14 +8,18 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 	extends TrueAction_ActiveConfig_Model_Config_Abstract
 {
 	private $_fieldPrefix = 'filetransfer';
+	private $_fieldMap    = array();
 
 	/**
 	 * returns the field prefix for each field
 	 * @return string
 	 * */
-	public function getFieldPrefix()
+	public function loadMappedFields($map)
 	{
-		return $this->_fieldPrefix;
+		$this->_fieldMap = $map;
+		foreach ($map as $configField => $magicField) {
+			$this->_loadFieldAsMagic($configField, $magicField);
+		}
 	}
 
 	public function generateFields($moduleSpec)
