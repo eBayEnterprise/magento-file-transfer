@@ -29,7 +29,7 @@ class TrueAction_FileTransfer_Model_Protocol_Ftp extends TrueAction_FileTransfer
 	public function sendFile($remoteFile, $localFile)
 	{
 		$remotePath = $this->normalPaths(
-			$this->getConfig()->getRemotePath($storeView),
+			$this->getConfig()->getRemotePath(),
 			basename($localFile)
 		);
 		// connect to ftp server
@@ -47,7 +47,24 @@ class TrueAction_FileTransfer_Model_Protocol_Ftp extends TrueAction_FileTransfer
 
 	public function getFile($remoteFile, $localFile)
 	{
-
+		$remotePath = $this->normalPaths(
+			$this->getConfig()->getRemotePath(),
+			$remoteFile
+		);
+		$localPath = $this->normalPaths(
+			$localPath
+		);
+		// connect to ftp server
+		$isSuccess = $this->connect();
+		// login to ftp connection
+		$isSuccess = $isSuccess && $this->login();
+		// check to see if ftp connect is in passive mode
+		$isSuccess = $isSuccess && $this->isPassive();
+		// Transfer file
+		$isSuccess = $isSuccess && $this->transfer($remotePath, $localPath);
+		// close ftp connection
+		$this->close();
+		return $isSuccess;
 	}
 
 	public function setHost($host='')
@@ -151,6 +168,31 @@ class TrueAction_FileTransfer_Model_Protocol_Ftp extends TrueAction_FileTransfer
 			}
 		}else{
 			Mage::log("Uploaded '$localFile' to 'ftp://$this->_host'.");
+		}
+
+		return $success;
+	}
+
+	/**
+	 * Transfer files from current local server to destination remote server.
+	 *
+	 * @param String remoteFile
+	 * @param String localFile
+	 */
+	public function retrieve($remoteFile, $localFile)
+	{
+		$success = true;
+		Mage::log("Connected to ftp://$this->_username@$this->_host");
+		$up = ftp_get($this->_conn, $localFile, $remoteFile, FTP_BINARY);
+		if (!$up) {
+			try{
+				Mage::throwException("Failed to download 'ftp://$this->_host/$remoteFile' to '$localFile'.");
+			} catch (Exception $e) {
+				$success = false;
+				Mage::logException($e);
+			}
+		}else{
+			Mage::log("Downloaded 'ftp://$this->_host/$remoteFile' to '$localFile'.");
 		}
 
 		return $success;
