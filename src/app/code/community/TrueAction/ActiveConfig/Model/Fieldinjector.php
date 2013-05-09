@@ -16,7 +16,7 @@ class TrueAction_ActiveConfig_Model_FieldInjector
 	 * */
 	public function __construct($groupNode = null)
 	{
-		$this->_groupNode;
+		$this->_groupNode = $groupNode;
 	}
 
 	/**
