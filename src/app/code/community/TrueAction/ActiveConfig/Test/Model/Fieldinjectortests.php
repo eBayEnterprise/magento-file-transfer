@@ -16,7 +16,7 @@ class TrueAction_ActiveConfig_Test_Model_FieldInjectorTests extends EcomDev_PHPU
 
 	public function setUp()
 	{
-		$this->baseConfig = new Varien_Simplexml_Config('
+		$this->cfg = new Varien_Simplexml_Config('
 		<testgroup translate="label">
 			<label>TestGroup</label>
 			<frontend_type>text</frontend_type>
@@ -40,39 +40,38 @@ class TrueAction_ActiveConfig_Test_Model_FieldInjectorTests extends EcomDev_PHPU
 			</fields>
 		</testgroup>
 		');
-		$this->fieldToInsert = new Varien_Simplexml_Config('
-		<dummyfield translate="label">
-			<label>text field</label>
-			<frontend_type>text</frontend_type>
-			<sort_order>190</sort_order>
-			<show_in_default>1</show_in_default>
-			<show_in_website>1</show_in_website>
-			<show_in_store>1</show_in_store>
-		</dummyfield>
+		$this->field = new Varien_Simplexml_Config('
+		<fields>
+			<dummyfield translate="label">
+				<label>text field</label>
+				<frontend_type>text</frontend_type>
+				<sort_order>190</sort_order>
+				<show_in_default>1</show_in_default>
+				<show_in_website>1</show_in_website>
+				<show_in_store>1</show_in_store>
+			</dummyfield>
+		</fields>
 		');
 	}
 
-	/**
-	 * this test isn't important at all and was only an experiment.
-	 * */
 	public function testInstantiation()
 	{
 		$injector = self::$cls->newInstance(
-			$this->baseConfig->getNode()
+			$this->cfg->getNode()
 		);
 		$this->assertSame(
-			$this->baseConfig->getNode(),
-			self::$grpNode->getValue($injector)
-		);
-		$injector = Mage::getModel('activeconfig/fieldinjector');
-		$injector->setAttachmentPoint($this->baseConfig->getNode());
-		$this->assertSame(
-			$this->baseConfig->getNode(),
+			$this->cfg->getNode(),
 			self::$grpNode->getValue($injector)
 		);
 	}
 
 	public function testInsertConfig()
 	{
+		$injector = self::$cls->newInstance();
+		$injector->setAttachmentPoint($this->cfg->getNode());
+		$injector->insertConfig($this->field);
+		$this->assertTrue(isset(
+			$this->cfg->getNode()->descend('fields/dummyfield')->sort_order
+		));
 	}
 }
