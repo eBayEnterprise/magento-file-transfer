@@ -9,15 +9,21 @@ class TrueAction_FileTransfer_Model_Protocol_Ftp extends Mage_Core_Model_Abstrac
 	protected $_conn;
 	protected $_auth;
 	protected $_pasv;
-	protected $_host;
-	protected $_port;
-	protected $_username;
-	protected $_password;
+	protected $_fieldMap = array(
+		'filetransfer_ftp_username'    => 'username',
+		'filetransfer_ftp_password'    => 'password',
+		'filetransfer_ftp_host'        => 'host',
+		'filetransfer_ftp_port'        => 'port',
+		'filetransfer_ftp_remote_path' => 'remote_path',
+	);
+
 
 	public function _construct()
 	{
 		$this->setName('File Transfer Protocol');
 		$this->setCode('ftp');
+		// create magic getter/setters for each field
+		$this->getConfig()->loadMappedFields($this->_fieldMap);
 	}
 
 	public function sendFile($localFile, $remoteFile)
@@ -39,24 +45,29 @@ class TrueAction_FileTransfer_Model_Protocol_Ftp extends Mage_Core_Model_Abstrac
 		return $isSuccess;
 	}
 
+	public function getFile($remoteFile, $localFile)
+	{
+
+	}
+
 	public function setHost($host='')
 	{
-		$this->_host = $host;
+		$this->getConfig()->setHost($host);
 	}
 
 	public function setPort($port='21')
 	{
-		$this->_port = $port;
+		$this->getConfig()->setPort($port);
 	}
 
 	public function setUsername($username='')
 	{
-		$this->_username = $username;
+		$this->getConfig()->setUsername($username);
 	}
 
 	public function setPassword($password='')
 	{
-		$this->_password = $password;
+		$this->getConfig()->setPassword($password);
 	}
 
 	/**
@@ -67,8 +78,9 @@ class TrueAction_FileTransfer_Model_Protocol_Ftp extends Mage_Core_Model_Abstrac
 	 */
 	public function connect()
 	{
+		$config = $this->getConfig();
 		$success = true;
-		if (!$this->_conn = ftp_connect($this->_host, $this->_port)){
+		if (!$this->_conn = ftp_connect($config->getHost(), $config->getPort)){
 			try{
 				Mage::throwException("Failed to connect to 'ftp://$this->_host'.");
 			} catch (Exception $e) {
@@ -88,7 +100,8 @@ class TrueAction_FileTransfer_Model_Protocol_Ftp extends Mage_Core_Model_Abstrac
 	public function login()
 	{
 		$success = true;
-		if (!$this->_auth = ftp_login($this->_conn, $this->_username, $this->_password)){
+		$config = $this->getConfig();
+		if (!$this->_auth = ftp_login($this->_conn, $config->getUsername, $config->getPassword)){
 			try{
 				Mage::throwException("Failed to authenticate to 'ftp://$this->_host@$this->_host'.");
 			} catch (Exception $e) {
