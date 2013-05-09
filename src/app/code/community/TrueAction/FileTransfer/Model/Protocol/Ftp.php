@@ -4,7 +4,7 @@ TrueAction_FileTransfer_Model_Config_Ftp
 
 concrete configuration generator for the ftp protocol.
  */
-class TrueAction_FileTransfer_Model_Protocol_Ftp extends Mage_Core_Model_Abstract
+class TrueAction_FileTransfer_Model_Protocol_Ftp extends TrueAction_FileTransfer_Model_Protocol_Abstract
 {
 	protected $_conn;
 	protected $_auth;
