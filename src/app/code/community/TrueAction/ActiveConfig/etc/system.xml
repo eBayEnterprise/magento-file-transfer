@@ -37,14 +37,13 @@
 								</testfeature>
 							</testmodule>
 							<filetransfer>
-								<ftp>
-									<!-- start sort order. each successive field generated increments by 1 -->
-									<sort_order>190</sort_order>
-									<!-- copied to each field added -->
-									<show_in_default>1</show_in_default>
-									<show_in_website>1</show_in_website>
-									<show_in_store>1</show_in_store>
-								</ftp>
+								<!-- start sort order. each successive field generated increments by 1 -->
+								<sort_order>500</sort_order>
+								<!-- copied to each field added -->
+								<show_in_default>1</show_in_default>
+								<show_in_website>1</show_in_website>
+								<show_in_store>1</show_in_store>
+								<ftp></ftp>
 							</filetransfer>
 						</activeconfig_import>
 						<dummyfield translate="label">
