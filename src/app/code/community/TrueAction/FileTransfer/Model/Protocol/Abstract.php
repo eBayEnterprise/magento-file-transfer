@@ -11,7 +11,7 @@ abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core
 	 * @param string $remoteFile
 	 * @param string $localFile
 	 * */
-	public function sendFile($remoteFile, $localFile);
+	abstract public function sendFile($remoteFile, $localFile);
 
 	/**
 	 * @param string $remoteFile
@@ -23,7 +23,7 @@ abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core
 	 * @param string $remoteFile
 	 * @param string $localFile
 	 * */
-	public function getFile($remoteFile, $localFile);
+	abstract public function getFile($remoteFile, $localFile);
 
 	/**
 	 * @param string $remoteFile
