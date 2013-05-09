@@ -18,27 +18,30 @@ abstract class TrueAction_ActiveConfig_Model_Config_Abstract
 	 * */
 	abstract public function generateFields($importOptions);
 
-	/**
-	 * magic setter/getters
-	 * */
 	// public function setConfigPath
 	// public function getConfigPath
 
-	protected function _loadFieldAs($fieldName, $alias)
+	/**
+	 * loads data to be accessed by magic setter/getters
+	 * */
+	protected function _loadFieldAsMagic($configName, $magicName)
 	{
 		$this->setData(
-			$alias,
+			$magicName,
 			Mage::getStoreConfig(
-				$this->getConfigPath().$fieldName,
+				$this->getConfigPath().'/'.$configName,
 				$this->getStore()
 			)
 		);
 	}
 
-	protected function _loadFieldAsMember($fieldName, $memberName)
+	/**
+	 * loads data to be accessed as members of this class
+	 * */
+	protected function _loadFieldAsMember($configName, $memberName)
 	{
 		$this->$memberName = Mage::getStoreConfig(
-			$this->getConfigPath().$fieldName,
+			$this->getConfigPath().$configName,
 			$this->getStore()
 		);
 	}
