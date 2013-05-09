@@ -28,8 +28,8 @@ class TrueAction_FileTransfer_Model_Protocol_Ftp extends TrueAction_FileTransfer
 
 	public function sendFile($remoteFile, $localFile)
 	{
-		$remotePath = Mage::helper('filetransfer')->normalPaths(
-			$this->getRemotePath($storeView),
+		$remotePath = $this->normalPaths(
+			$this->getConfig()->getRemotePath($storeView),
 			basename($localFile)
 		);
 		// connect to ftp server
