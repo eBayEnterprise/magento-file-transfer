@@ -24,15 +24,15 @@
 			</filetransfer>
 		</helpers>
 		<events>
-			<activeconfig_filetransfer_ftp>
+			<activeconfig_filetransfer>
 				<observers>
 					<activeconfig_filetransfer_ftp_observer>
 						<type>singleton</type>
 						<class>TrueAction_FileTransfer_Model_Observer</class>
-						<method>handleFtpConfigImport</method>
+						<method>handleConfigImport</method>
 					</activeconfig_filetransfer_ftp_observer>
 				</observers>
-			</activeconfig_filetransfer_ftp>
+			</activeconfig_filetransfer>
 		</events>
 	</global>
 	<default>
