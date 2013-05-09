@@ -12,7 +12,7 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 	public function sendFile($localFile, $remoteFile, $configPath, $store=null)
 	{
 		try {
-			$protocol = $this->getProtocolModel($fileTransferConfig);
+			$protocol = $this->getProtocolModel($configPath, $store);
 			$protocol->sendFile($localFile, $remoteFile);
 		} catch (Exception $e) {
 			Mage::log("filetransfer send error:". $e->getMessage());
@@ -41,10 +41,20 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 		if (!$protocol) {
 			$protocol = $this->getDefaultProtocol();
 		}
-		return Mage::getModel(
-			'filetransfer/protocol_'.$protocol,
+		$config = Mage::getModel(
+			'filetransfer/protocol_config',
 			array('store'=>$store, 'config_path'=>$configPath)
 		);
+		try {
+			return Mage::getModel(
+				'filetransfer/protocol_'.$protocol,
+				array('config' => $config)
+			);
+		} catch (Exception $e) {
+			Mage::throwException(
+				"Unable to get the protocol model where protocol='$protocol'."
+			);
+		}
 	}
 
 	/**
