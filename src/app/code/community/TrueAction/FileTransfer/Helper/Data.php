@@ -47,7 +47,7 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 		);
 		try {
 			return Mage::getModel(
-				'filetransfer/protocol_'.$protocol,
+				'filetransfer/protocol_types_'.$protocol,
 				array('config' => $config)
 			);
 		} catch (Exception $e) {
