@@ -26,11 +26,11 @@
 		<events>
 			<activeconfig_filetransfer>
 				<observers>
-					<activeconfig_filetransfer_ftp_observer>
+					<activeconfig_filetransfer_observer>
 						<type>singleton</type>
 						<class>TrueAction_FileTransfer_Model_Observer</class>
 						<method>handleConfigImport</method>
-					</activeconfig_filetransfer_ftp_observer>
+					</activeconfig_filetransfer_observer>
 				</observers>
 			</activeconfig_filetransfer>
 		</events>
