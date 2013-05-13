@@ -68,23 +68,28 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 			<filetransfer_{$protocol}_username translate=\"label\">
 				<label>Username</label>
 				<frontend_type>text</frontend_type>
+				<depends><filetransfer_protocol>{$protocol}</filetransfer_protocol></depends>
 			</filetransfer_{$protocol}_username>
 			<filetransfer_{$protocol}_password translate=\"label\">
 				<label>Password</label>
 				<frontend_type>obscure</frontend_type>
 				<backend_model>adminhtml/system_config_backend_encrypted</backend_model>
+				<depends><filetransfer_protocol>{$protocol}</filetransfer_protocol></depends>
 			</filetransfer_{$protocol}_password>
 			<filetransfer_{$protocol}_host translate=\"label\">
 				<label>Remote Host</label>
 				<frontend_type>text</frontend_type>
+				<depends><filetransfer_protocol>{$protocol}</filetransfer_protocol></depends>
 			</filetransfer_{$protocol}_host>
 			<filetransfer_{$protocol}_port translate=\"label\">
 				<label>Remote Port</label>
 				<frontend_type>text</frontend_type>
+				<depends><filetransfer_protocol>{$protocol}</filetransfer_protocol></depends>
 			</filetransfer_{$protocol}_port>
 			<filetransfer_{$protocol}_remote_path translate=\"label\">
 				<label>Remote Path</label>
 				<frontend_type>text</frontend_type>
+				<depends><filetransfer_protocol>{$protocol}</filetransfer_protocol></depends>
 			</filetransfer_{$protocol}_remote_path>
 		</fields>
 		");
