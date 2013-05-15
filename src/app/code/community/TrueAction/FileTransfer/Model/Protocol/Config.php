@@ -21,15 +21,12 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 			Mage::helper('filetransfer')->getProtocolCodes()
 		);
 		if ($isProtocolValid === false) {
-			Mage::log(
+			Mage::throwException(
 				sprintf(
 					'FileTransfer Config Error: Invalid Protocol Code "%s"',
 					$this->getProtocolCode()
-				),
-				Zend_Log::ERR
+				)
 			);
-			// use ftp as the default
-			$this->setProtocolCode('ftp');
 		}
 		// not having the config path set is a non-recoverable error since there
 		// is currently no way to figure it out.
