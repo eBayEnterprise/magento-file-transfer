@@ -54,6 +54,8 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 		$localPath = $this->normalPaths(
 			$localFile
 		);
+		Mage::log("Attempting to get $remotePath");
+
 		// connect to ftp server
 		$isSuccess = $this->connect();
 		// login to ftp connection
@@ -61,7 +63,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 		// check to see if ftp connect is in passive mode
 		$isSuccess = $isSuccess && $this->isPassive();
 		// Transfer file
-		$isSuccess = $isSuccess && $this->transfer($remotePath, $localPath);
+		$isSuccess = $isSuccess && $this->retrieve($remotePath, $localPath);
 		// close ftp connection
 		$this->close();
 		return $isSuccess;
@@ -99,7 +101,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 		$success = true;
 		if (!$this->_conn = ftp_connect($config->getHost(), $config->getPort)){
 			try{
-				Mage::throwException("Failed to connect to 'ftp://$this->_host'.");
+				Mage::throwException("Failed to connect to 'ftp://".$this->getConfig()->getHost()."'.");
 			} catch (Exception $e) {
 				$success = false;
 				Mage::logException($e);
@@ -118,9 +120,9 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 	{
 		$success = true;
 		$config = $this->getConfig();
-		if (!$this->_auth = ftp_login($this->_conn, $config->getUsername, $config->getPassword)){
+		if (!$this->_auth = ftp_login($this->_conn, $config->getUsername(), $config->getPassword())){
 			try{
-				Mage::throwException("Failed to authenticate to 'ftp://$this->_host@$this->_host'.");
+				Mage::throwException("Failed to authenticate to 'ftp://".$this->getConfig()->getHost()."@".$this->getConfig()->getHost()."'.");
 			} catch (Exception $e) {
 				$success = false;
 				Mage::logException($e);
@@ -140,7 +142,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 		$success = true;
 		if (!$this->_pasv = ftp_pasv($this->_conn, true)){
 			try{
-				Mage::throwException("Failed to switch to passive mode on 'ftp://$this->_host'.");
+				Mage::throwException("Failed to switch to passive mode on 'ftp://".$this->getConfig()->getHost()."'.");
 			} catch (Exception $e) {
 				$success = false;
 				Mage::logException($e);
@@ -158,16 +160,16 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 	public function transfer($remoteFile, $localFile)
 	{
 		$success = true;
-		Mage::log("Connected to ftp://$this->_username@$this->_host");
+		Mage::log("Connected to ftp://".$this->getConfig()->getUsername()."@".$this->getConfig()->getHost()."");
 		if (!$up = ftp_put($this->_conn, $remoteFile, $localFile, FTP_BINARY)) {
 			try{
-				Mage::throwException("Failed to upload '$localFile' to 'ftp://$this->_host'.");
+				Mage::throwException("Failed to upload '$localFile' to 'ftp://".$this->getConfig()->getHost()."'.");
 			} catch (Exception $e) {
 				$success = false;
 				Mage::logException($e);
 			}
 		}else{
-			Mage::log("Uploaded '$localFile' to 'ftp://$this->_host'.");
+			Mage::log("Uploaded '$localFile' to 'ftp://".$this->getConfig()->getHost()."'.");
 		}
 
 		return $success;
@@ -182,17 +184,17 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 	public function retrieve($remoteFile, $localFile)
 	{
 		$success = true;
-		Mage::log("Connected to ftp://$this->_username@$this->_host");
+		Mage::log("Connected to ftp://".$this->getConfig()->getUsername()."@".$this->getConfig()->getHost()."");
 		$up = ftp_get($this->_conn, $localFile, $remoteFile, FTP_BINARY);
 		if (!$up) {
 			try{
-				Mage::throwException("Failed to download 'ftp://$this->_host/$remoteFile' to '$localFile'.");
+				Mage::throwException("Failed to download 'ftp://".$this->getConfig()->getHost()."/$remoteFile' to '$localFile'.");
 			} catch (Exception $e) {
 				$success = false;
 				Mage::logException($e);
 			}
 		}else{
-			Mage::log("Downloaded 'ftp://$this->_host/$remoteFile' to '$localFile'.");
+			Mage::log("Downloaded 'ftp://".$this->getConfig()->getHost()."/$remoteFile' to '$localFile'.");
 		}
 
 		return $success;
