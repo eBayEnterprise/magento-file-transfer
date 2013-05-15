@@ -45,7 +45,11 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 		}
 		$config = Mage::getModel(
 			'filetransfer/protocol_config',
-			array('store'=>$store, 'config_path'=>$configPath)
+			array(
+				'store'         => $store,
+				'config_path'   => $configPath,
+				'protocol_code' => $protocol
+			)
 		);
 		try {
 			return Mage::getModel(
