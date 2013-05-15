@@ -32,12 +32,14 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 	/**
 	 * returns the model for the configured protocol.
 	 * */
-	public function getProtocolModel($configPath, $store=null)
+	public function getProtocolModel($configPath, $protocol=null, $store=null)
 	{
-		$protocol = Mage::getStoreConfig(
-			sprintf('%s/filetransfer_protocol', $configPath),
-			$store
-		);
+		if (is_null($protocol)) {
+			$protocol = Mage::getStoreConfig(
+				sprintf('%s/filetransfer_protocol', $configPath),
+				$store
+			);
+		}
 		if (!$protocol) {
 			$protocol = $this->getDefaultProtocol();
 		}
