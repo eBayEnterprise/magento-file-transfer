@@ -7,6 +7,11 @@ tests for the ftp config generator.
 class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTests
 	extends EcomDev_PHPUnit_Test_Case
 {
+	private static $config = array(
+		'protocol_code' => 'ftp',
+		'config_path' => 'testsecion/testgroup'
+	);
+
 	public function setUp()
 	{
 		$this->class = new ReflectionClass(
@@ -28,7 +33,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTests
 	 * @test
 	 * */
 	public function testGenerateConfig() {
-		$model = $this->class->newInstance();
+		$model = $this->class->newInstance(self::$config);
 		$config = $model->setConfigPath('testsection/testgroup')
 			->generateFields($this->importOptions);
 		$this->assertInstanceOf('Varien_Simplexml_Config', $config);
