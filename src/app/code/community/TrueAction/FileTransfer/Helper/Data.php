@@ -9,24 +9,26 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 	const GLOBAL_SHOW_IN_WEBSITE  = 'filetransfer/global/show_in_website';
 	const GLOBAL_SHOW_IN_STORE    = 'filetransfer/global/show_in_store';
 
-	public function sendFile($localFile, $remoteFile, $configPath, $store=null)
+	public function sendFile($remoteFile, $localFile, $configPath, $store=null)
 	{
 		try {
 			$protocol = $this->getProtocolModel($configPath, $store);
-			$protocol->sendFile($localFile, $remoteFile);
+			return $protocol->sendFile($localFile, $remoteFile);
 		} catch (Exception $e) {
 			Mage::log("filetransfer send error:". $e->getMessage());
 		}
+		return false;
 	}
 
 	public function getFile($remoteFile, $localFile, $configPath, $store=null)
 	{
 		try {
 			$protocol = $this->getProtocolModel($configPath, $store);
-			$protocol->getFile($localFile, $remoteFile);
+			return $protocol->getFile($remoteFile, $localFile);
 		} catch (Exception $e) {
 			Mage::log("filetransfer get error:". $e->getMessage());
 		}
+		return false;
 	}
 
 	/**
