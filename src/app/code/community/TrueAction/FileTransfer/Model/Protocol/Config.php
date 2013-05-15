@@ -36,8 +36,7 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 		$storeFlag = isset($moduleSpec->show_in_store) ?
 			(string)$moduleSpec->show_in_store : $helper->getGlobalShowInStore();
 
-		$protocolModel = $helper->getProtocolModel($this->getConfigPath());
-		$fields = $this->_getBaseFields($protocolModel->getCode());
+		$fields = $this->_getBaseFields();
 
 		// TODO: ADD FEATURE SPECIFIC OPTIONS
 		$increment = 0;
@@ -56,8 +55,9 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 	 * @param Varien_Simplexml_Element $importOptions
 	 * @return Varien_Simplexml_Config
 	 * */
-	public function _getBaseFields($protocol) {
-		$fields = new Varien_Simplexml_Config("
+	public function _getBaseFields() {
+		$protocol = $this->getProtocolCode();
+		$fields   = new Varien_Simplexml_Config("
 		<fields>
 			<filetransfer_protocol translate=\"label\">
 				<label>Protocol</label>
