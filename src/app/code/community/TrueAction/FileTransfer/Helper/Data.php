@@ -60,6 +60,15 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 	}
 
 	/**
+	 * scans the Protocol/Types directory for php files and uses their
+	 * lowercased basename to get a list of protocol codes.
+	 * */
+	public function getProtocolCodes()
+	{
+		return TrueAction_FileTransfer_Model_Protocol_Abstract::getCodes();
+	}
+
+	/**
 	 * returns the default protocol to use when sending files.
 	 * @param Mage_Core_Model_Store
 	 * @return string

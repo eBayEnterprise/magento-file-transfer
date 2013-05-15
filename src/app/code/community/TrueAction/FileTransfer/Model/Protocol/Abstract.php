@@ -1,6 +1,9 @@
 <?php
 abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core_Model_Abstract
 {
+	// cache of available protocols.
+	private static $_protocolCodes = array();
+
 	/**
 	 * Magic getter that returns the protocol's config
 	 * @return TrueAction_ActiveConfig_Model_Config_Abstract
@@ -44,5 +47,26 @@ abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core
 		// and duplicate slashes.
 		return ((substr($paths, 0, 1) === DS) ? DS : '') .
 			implode(DS, array_filter(explode(DS, $paths)));
+	}
+
+	/**
+	 * scans the Protocol/Types directory for php files and uses their
+	 * lowercased basename to get a list of protocol codes.
+	 * */
+	public static function getCodes()
+	{
+		// if we've already discovered all of the protocols return the cached
+		// list.
+		if (!empty(self::$_protocolCodes)) {
+			return self::$_protocolCodes;
+		}
+		$path = self::normalPaths(dirname(__FILE__), 'Types');
+		$items = scandir($path);
+		foreach ($items as $entry) {
+			if (substr($entry, -4) === '.php') {
+				$_protocolCodes[] = substr($entry, 0, -4);
+			}
+		}
+		return self::$_protocolsCodes;
 	}
 }
