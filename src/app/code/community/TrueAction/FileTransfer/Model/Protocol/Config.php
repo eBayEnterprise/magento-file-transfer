@@ -47,7 +47,6 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 			$fields->setNode($fieldName.'/show_in_website', $websiteFlag);
 			$fields->setNode($fieldName.'/show_in_store', $storeFlag);
 		}
-
 		return $fields;
 	}
 
