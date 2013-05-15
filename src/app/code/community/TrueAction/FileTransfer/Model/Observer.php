@@ -7,7 +7,6 @@ class TrueAction_FileTransfer_Model_Observer
 		$injector = $event->getInjector();
 		$helper = mage::helper('filetransfer');
 		foreach ($helper->getProtocolCodes() as $protocol) {
-			print ('protocol: $protocol');
 			$config = $helper->getProtocolModel(
 				$event->getConfigPath(),
 				$protocol

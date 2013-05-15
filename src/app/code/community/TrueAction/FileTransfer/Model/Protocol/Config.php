@@ -51,7 +51,6 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 
 	public function generateFields($moduleSpec)
 	{
-		Mage::log("generateFields");
 		$helper = Mage::helper('filetransfer');
 
 		$sortOrder = isset($moduleSpec->sort_order) ?
