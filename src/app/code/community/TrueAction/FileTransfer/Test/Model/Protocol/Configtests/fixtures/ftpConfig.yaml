@@ -1,0 +1,7 @@
+config:
+  default/testsection/testgroup/filetransfer_protocol: ftp
+  default/testsection/testgroup/filetransfer_ftp_username: somename
+  default/testsection/testgroup/filetransfer_ftp_password: somepass
+  default/testsection/testgroup/filetransfer_ftp_host: some.host
+  default/testsection/testgroup/filetransfer_ftp_port: 21
+  default/testsection/testgroup/filetransfer_ftp_remote_path: /

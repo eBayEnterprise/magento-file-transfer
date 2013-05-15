@@ -9,7 +9,15 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTests
 {
 	private static $config = array(
 		'protocol_code' => 'ftp',
-		'config_path' => 'testsecion/testgroup'
+		'config_path' => 'testsection/testgroup'
+	);
+
+	private static $fieldMap = array(
+		'filetransfer_ftp_username'    => 'username',
+		'filetransfer_ftp_password'    => 'password',
+		'filetransfer_ftp_host'        => 'host',
+		'filetransfer_ftp_port'        => 'port',
+		'filetransfer_ftp_remote_path' => 'remote_path',
 	);
 
 	public function setUp()
@@ -17,6 +25,8 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTests
 		$this->class = new ReflectionClass(
 			'TrueAction_FileTransfer_Model_Protocol_Config'
 		);
+		$this->loadMappedFields = $this->class->getMethod('loadMappedFields');
+		$this->loadMappedFields->setAccessible(true);
 		$this->importOptions = new Varien_Simplexml_Config(
 		'<filetransfer>
 			<sort_order>190</sort_order>
@@ -50,5 +60,22 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTests
 		$this->assertContains('filetransfer_ftp_host', $names);
 		$this->assertContains('filetransfer_ftp_port', $names);
 		$this->assertContains('filetransfer_ftp_remote_path', $names);
+	}
+
+	/**
+	 * @test
+	 * @loadFixture ftpConfig
+	 * @doNotIndexAll
+	 * */
+	public function testConfigValues() {
+		$cfg = $this->class->newInstance(self::$config);
+		$this->assertSame('testsection/testgroup', $cfg->getConfigPath());
+		$this->assertSame('ftp', $cfg->getProtocolCode());
+		$this->loadMappedFields->invoke($cfg, self::$fieldMap);
+		$this->assertSame('somename', $cfg->getUsername());
+		$this->assertSame('somepass', $cfg->getPassword());
+		$this->assertSame('some.host', $cfg->getHost());
+		$this->assertSame('21', $cfg->getPort());
+		$this->assertSame('/', $cfg->getRemotePath());
 	}
 }
