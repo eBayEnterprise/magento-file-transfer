@@ -44,6 +44,7 @@
 								<show_in_website>1</show_in_website>
 								<show_in_store>1</show_in_store>
 								<ftp></ftp>
+								<sftp></sftp>
 							</filetransfer>
 						</activeconfig_import>
 						<dummyfield translate="label">
