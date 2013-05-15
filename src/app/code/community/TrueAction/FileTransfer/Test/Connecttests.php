@@ -3,12 +3,12 @@ class TrueAction_FileTransfer_Test_ConnectTests extends EcomDev_PHPUnit_Test_Cas
 {
 	/**
 	 * @test
-	 * @loadFixture getfile.yaml
+	 * @loadFixture getfile
 	 * */
 	public function testConnectivity() {
 		$result = Mage::helper('filetransfer')->getFile(
-			'disclaimer.txt',
-			'/tmp',
+			'ubuntu-archive-keyring.gpg',
+			'/tmp/foo.txt',
 			'testsection/testgroup'
 		);
 		$this->assertTrue($result);
