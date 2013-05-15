@@ -28,5 +28,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_AbstractTests
 		$this->assertContains('sftp', $ls);
 		$this->assertNotContains('.', $ls);
 		$this->assertNotContains('..', $ls);
+		$ls2 = $this->getCodes->invoke(null);
+		$this->assertSame($ls, $ls2);
 	}
 }

@@ -63,10 +63,11 @@ abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core
 		$path = self::normalPaths(dirname(__FILE__), 'Types');
 		$items = scandir($path);
 		foreach ($items as $entry) {
+			$entry = strtolower($entry);
 			if (substr($entry, -4) === '.php') {
-				$_protocolCodes[] = substr($entry, 0, -4);
+				self::$_protocolCodes[] = substr($entry, 0, -4);
 			}
 		}
-		return self::$_protocolsCodes;
+		return self::$_protocolCodes;
 	}
 }
