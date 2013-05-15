@@ -5,11 +5,15 @@ class TrueAction_FileTransfer_Model_Observer
 	{
 		$event = $observer->getEvent();
 		$injector = $event->getInjector();
-		$config = Mage::helper('filetransfer')
-			->getProtocolModel($event->getConfigPath())
-			->getConfig();
-		$fields = $config->generateFields($event->getModuleSpec());
-		Mage::log(print_r($fields, true));
-		$injector->insertConfig($fields);
+		$helper = mage::helper('filetransfer');
+		foreach ($helper->getProtocolCodes() as $protocol) {
+			print ('protocol: $protocol');
+			$config = $helper->getProtocolModel(
+				$event->getConfigPath(),
+				$protocol
+			)->getConfig();
+			$fields = $config->generateFields($event->getModuleSpec());
+			$injector->insertConfig($fields);
+		}
 	}
 }
