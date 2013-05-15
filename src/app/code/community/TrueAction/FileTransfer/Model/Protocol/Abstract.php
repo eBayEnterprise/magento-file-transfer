@@ -37,7 +37,7 @@ abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core
 	 * @param ? Some number of strings
 	 * @return The joined path (string)
 	 */
-	public function normalPaths()
+	public static function normalPaths()
 	{
 		$paths = implode(DS, func_get_args());
 		// Retain a single leading slash; otherwise remove all leading, trailing
