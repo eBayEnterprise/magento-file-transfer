@@ -1,0 +1,7 @@
+config:
+  testsection/testgroup/filetransfer_protocol: ftp
+  testsection/testgroup/filetransfer_ftp_username:
+  testsection/testgroup/filetransfer_ftp_password:
+  testsection/testgroup/filetransfer_ftp_host: ftp.dell.com
+  testsection/testgroup/filetransfer_ftp_port: 21
+  testsection/testgroup/filetransfer_ftp_remote_path: /
