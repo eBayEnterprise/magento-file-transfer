@@ -1,6 +1,22 @@
-Summary
+FileTransfer Summary
 -------
-The ActiveConfig module activates after Magento has loaded all of the system.xml files. It looks through the loaded config for any sections that have an import specification. It then fires an event for the module whose config is to be imported to handle.
+The FileTransfer (FT) module allows sending and receiving files using a variety of protocols. FT is meant to be a tool for other modules. These modules add an import specification in their system.xml files which triggers the automatic insertion of the fields required for FT to function. Afterwards the FT helper can be used to perform file transfers.
+
+FileTransfer Helper
+------
+public bool sendFile($localFile, $remoteFile, $configPath, $store=null)
+
+public bool getFile($localFile, $remoteFile, $configPath, $store=null)
+
+public bool sendStream($stream, $remoteFile, $configPath, $store=null)
+
+public mixed getStream($stream, $remoteFile, $configPath, $store=null)
+
+ActiveConfig Summary
+-------
+The ActiveConfig module is a platform that allows other modules to
+dynamically inject configuration fields into the system configuration
+of a third module. The ActiveConfig module activates after Magento has loaded all of the system.xml files. It looks through the loaded config for any sections that have an import specification. It then fires an event for the module whose config is to be imported to handle.
 
 Config Path
 ------------
