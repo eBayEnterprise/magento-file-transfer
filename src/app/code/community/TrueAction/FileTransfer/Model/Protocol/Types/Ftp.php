@@ -26,7 +26,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 		$this->getConfig()->loadMappedFields($this->_fieldMap);
 	}
 
-	public function sendFile($remoteFile, $localFile)
+	public function sendFile($localFile, $remoteFile)
 	{
 		$remotePath = $this->normalPaths(
 			$this->getConfig()->getRemotePath(),
@@ -46,7 +46,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 		return $isSuccess;
 	}
 
-	public function getFile($remoteFile, $localFile)
+	public function getFile($localFile, $remoteFile)
 	{
 		$remotePath = $this->normalPaths(
 			$this->getConfig()->getRemotePath(),
