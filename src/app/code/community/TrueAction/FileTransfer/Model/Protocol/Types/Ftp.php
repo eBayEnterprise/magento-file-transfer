@@ -107,27 +107,9 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 		return $output;
 	}
 
-	public function setHost($host='')
-	{
-		$this->getConfig()->setHost($host);
-		return $this;
-	}
-
 	public function setPort($port='21')
 	{
 		$this->getConfig()->setPort($port);
-		return $this;
-	}
-
-	public function setUsername($username='')
-	{
-		$this->getConfig()->setUsername($username);
-		return $this;
-	}
-
-	public function setPassword($password='')
-	{
-		$this->getConfig()->setPassword($password);
 		return $this;
 	}
 

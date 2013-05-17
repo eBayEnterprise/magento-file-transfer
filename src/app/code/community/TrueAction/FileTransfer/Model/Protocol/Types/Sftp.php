@@ -104,27 +104,9 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		return $output;
 	}
 
-	public function setHost($host='')
-	{
-		$this->getConfig()->setHost($host);
-		return $this;
-	}
-
 	public function setPort($port='22')
 	{
 		$this->getConfig()->setPort($port);
-		return $this;
-	}
-
-	public function setUsername($username='')
-	{
-		$this->getConfig()->setUsername($username);
-		return $this;
-	}
-
-	public function setPassword($password='')
-	{
-		$this->getConfig()->setPassword($password);
 		return $this;
 	}
 

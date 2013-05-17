@@ -70,4 +70,28 @@ abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core
 		}
 		return self::$_protocolCodes;
 	}
+
+	public function setHost($host='')
+	{
+		$this->getConfig()->setHost($host);
+		return $this;
+	}
+
+	public function setPort($port=null)
+	{
+		$this->getConfig()->setPort($port);
+		return $this;
+	}
+
+	public function setUsername($username='')
+	{
+		$this->getConfig()->setUsername($username);
+		return $this;
+	}
+
+	public function setPassword($password='')
+	{
+		$this->getConfig()->setPassword($password);
+		return $this;
+	}
 }
