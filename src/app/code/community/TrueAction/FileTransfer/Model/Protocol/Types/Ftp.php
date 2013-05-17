@@ -80,7 +80,6 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 			$this->getConfig()->getRemotePath(),
 			$remoteFile
 		);
-		$localPath = $localFile;
 		// connect to ftp server
 		$isSuccess = $this->connect();
 		// login to ftp connection
@@ -88,8 +87,8 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 		// check to see if ftp connect is in passive mode
 		$isSuccess = $isSuccess && $this->isPassive();
 		// Transfer file
-		$stream = fopen('data://text/plan,'.$string, 'r+');
-		$isSuccess = $isSuccess && $this->transferStream($stream, $remoteFile);
+		$stream = fopen('data:text/plan,'.$string, 'r+');
+		$isSuccess = $isSuccess && $this->transfer($stream, $remoteFile);
 		// close ftp connection
 		$this->close();
 		fclose($stream);
@@ -109,8 +108,8 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 		// check to see if ftp connect is in passive mode
 		$isSuccess = $isSuccess && $this->isPassive();
 		// Transfer file
-		$stream = fopen('data://text/plan,', 'r+');
-		$isSuccess = $isSuccess && $this->retrieveStream($stream, $remoteFile);
+		$stream = fopen('data:text/plan,', 'r+');
+		$isSuccess = $isSuccess && $this->retrieve($stream, $remoteFile);
 		// close ftp connection
 		$this->close();
 		fclose($stream);
