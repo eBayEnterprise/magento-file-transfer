@@ -1,0 +1,7 @@
+config:
+  default/testsection/testgroup/filetransfer_protocol: ftp
+  default/testsection/testgroup/filetransfer_ftp_username: trutest
+  default/testsection/testgroup/filetransfer_ftp_password: R0aIFyW2
+  default/testsection/testgroup/filetransfer_ftp_host: ftp.fetchback.com
+  default/testsection/testgroup/filetransfer_ftp_port: 21
+  default/testsection/testgroup/filetransfer_ftp_remote_path:
