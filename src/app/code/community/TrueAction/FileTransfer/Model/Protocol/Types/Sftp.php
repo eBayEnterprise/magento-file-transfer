@@ -8,7 +8,6 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 {
 	protected $_conn;
 	protected $_auth;
-	protected $_pasv;
 	protected $_sftp;
 
 	public function _construct()
