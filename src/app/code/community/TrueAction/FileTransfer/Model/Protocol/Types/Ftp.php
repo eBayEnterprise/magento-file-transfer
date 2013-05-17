@@ -238,7 +238,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 	{
 		$success = true;
 		Mage::log("Connected to ftp://".$this->getConfig()->getUsername()."@".$this->getConfig()->getHost()."");
-		$up = ftp_fget($this->_conn, $localFile, $stream, FTP_BINARY);
+		$up = ftp_fget($this->_conn, $stream, $remoteFile, FTP_BINARY);
 		if (!$up) {
 			try{
 				Mage::throwException("Failed to download 'ftp://".$this->getConfig()->getHost()."/$remoteFile' to '$localFile'.");
