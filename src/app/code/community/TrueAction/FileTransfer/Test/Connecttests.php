@@ -1,41 +1,35 @@
 <?php
 class TrueAction_FileTransfer_Test_ConnectTests extends EcomDev_PHPUnit_Test_Case
 {
-	/**
-	 * @test
-	 * @loadFixture getfile
-	 * */
-	public function testGetFile() {
-		$result = Mage::helper('filetransfer')->getFile(
-			'ubuntu-archive-keyring.gpg',
-			'/tmp/foo.txt',
-			'testsection/testgroup'
-		);
-		$this->assertTrue($result);
+	public function setUp()
+	{
+		@unlink('/tmp/foo.txt');
 	}
 
 	/**
 	 * @test
 	 * @loadFixture sendfile
 	 * */
-	public function testSendFile() {
-		$result = Mage::helper('filetransfer')->sendFile(
-			'ubuntu-archive-keyring.gpg',
+	public function runTest() {
+		$model = Mage::helper('filetransfer')->getProtocolModel(
+			'testsection/testgroup',
+			'sftp'
+		);
+		$result = $model->sendString(',,,,,', '3471_ftransfer_test.csv');
+		$this->assertTrue($result);
+
+		$result = $model->getString('3471_ftransfer_test.csv');
+		$this->assertSame(',,,,,', $result);
+
+		$result = $model->getFile(
 			'/tmp/foo.txt',
-			'testsection/testgroup'
+			'3471_ftransfer_test.csv'
 		);
 		$this->assertTrue($result);
-	}
 
-	/**
-	 * @test
-	 * @loadFixture sendfile
-	 * */
-	public function testSendString() {
-		$result = Mage::helper('filetransfer')->sendString(
-			',,,,,',
-			'3471_ftransfer_test.csv',
-			'testsection/testgroup'
+		$result = $model->sendFile(
+			'/tmp/foo.txt',
+			'3471_ftransfer_test2.csv'
 		);
 		$this->assertTrue($result);
 	}
