@@ -5,7 +5,7 @@ class TrueAction_FileTransfer_Model_Adminhtml_System_Config_Source_Protocols
 	{
 		return array(
 			array("value"=>"ftp",  "label"=>Mage::helper('filetransfer')->__("FTP")),
-			array("value"=>"sftp", "label"=>Mage::helper('filetransfer')->__("SFTP")),
+			array("value"=>"sftp", "label"=>Mage::helper('filetransfer')->__("FTPS")),
 		);
 	}
 
@@ -13,7 +13,7 @@ class TrueAction_FileTransfer_Model_Adminhtml_System_Config_Source_Protocols
 	{
 		return array(
 			"ftp"  => Mage::helper('filetransfer')->__("FTP"),
-			"sftp" => Mage::helper('filetransfer')->__("SFTP"),
+			"ftps" => Mage::helper('filetransfer')->__("FTPS"),
 		);
 	}
 }
