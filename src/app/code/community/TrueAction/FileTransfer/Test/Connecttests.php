@@ -26,4 +26,17 @@ class TrueAction_FileTransfer_Test_ConnectTests extends EcomDev_PHPUnit_Test_Cas
 		);
 		$this->assertTrue($result);
 	}
+
+	/**
+	 * @test
+	 * @loadFixture sendfile
+	 * */
+	public function testSendString() {
+		$result = Mage::helper('filetransfer')->sendString(
+			',,,,,',
+			'3471_ftransfer_test.csv',
+			'testsection/testgroup'
+		);
+		$this->assertTrue($result);
+	}
 }
