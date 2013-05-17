@@ -112,8 +112,9 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 		$isSuccess = $isSuccess && $this->retrieve($stream, $remoteFile);
 		// close ftp connection
 		$this->close();
+		$output = stream_get_contents($stream, -1, 0);
 		fclose($stream);
-		return stream_get_contents($stream);
+		return $output;
 	}
 
 	public function setHost($host='')
