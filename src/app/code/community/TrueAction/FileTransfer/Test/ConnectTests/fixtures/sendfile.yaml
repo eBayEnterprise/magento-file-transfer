@@ -1,7 +1,14 @@
 config:
   default/testsection/testgroup/filetransfer_protocol: ftp
+  # ftp stuff
   default/testsection/testgroup/filetransfer_ftp_username: trutest
   default/testsection/testgroup/filetransfer_ftp_password: R0aIFyW2
   default/testsection/testgroup/filetransfer_ftp_host: ftp.fetchback.com
   default/testsection/testgroup/filetransfer_ftp_port: 21
   default/testsection/testgroup/filetransfer_ftp_remote_path:
+  # sftp stuff
+  default/testsection/testgroup/filetransfer_sftp_username: test
+  default/testsection/testgroup/filetransfer_sftp_password: welcome1
+  default/testsection/testgroup/filetransfer_sftp_host: localhost
+  default/testsection/testgroup/filetransfer_sftp_port: 22
+  default/testsection/testgroup/filetransfer_sftp_remote_path: "/tmp"
