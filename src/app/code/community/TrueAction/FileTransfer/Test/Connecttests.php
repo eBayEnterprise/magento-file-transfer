@@ -1,4 +1,9 @@
 <?php
+/**
+ * these tests aren't unit tests (by definition) as they need external stuff
+ * setup. as such these tests should not run by default and have to be run
+ * manually.
+ * */
 class TrueAction_FileTransfer_Test_ConnectTests extends EcomDev_PHPUnit_Test_Case
 {
 	public function setUp()
