@@ -153,16 +153,16 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 	}
 
 	/**
-	 * Transfer files from current local server to destination remote server.
+	 * Transfer data from current local server to destination remote server.
 	 *
+	 * @param resource $stream
 	 * @param String remoteFile
-	 * @param String localFile
 	 */
-	public function transfer($remoteFile, $localFile)
+	public function transfer($stream, $remoteFile)
 	{
 		$success = true;
 		Mage::log("Connected to ftp://".$this->getConfig()->getUsername()."@".$this->getConfig()->getHost()."");
-		if (!$up = ftp_put($this->_conn, $remoteFile, $localFile, FTP_BINARY)) {
+		if (!$up = ftp_fput($this->_conn, $remoteFile, $stream, FTP_BINARY)) {
 			try{
 				Mage::throwException("Failed to upload '$localFile' to 'ftp://".$this->getConfig()->getHost()."'.");
 			} catch (Exception $e) {
@@ -177,16 +177,16 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 	}
 
 	/**
-	 * Transfer files from current local server to destination remote server.
+	 * Transfer data from destination remote server to current local server.
 	 *
+	 * @param resource $stream
 	 * @param String remoteFile
-	 * @param String localFile
 	 */
-	public function retrieve($remoteFile, $localFile)
+	public function retrieve($stream, $remoteFile)
 	{
 		$success = true;
 		Mage::log("Connected to ftp://".$this->getConfig()->getUsername()."@".$this->getConfig()->getHost()."");
-		$up = ftp_get($this->_conn, $localFile, $remoteFile, FTP_BINARY);
+		$up = ftp_fget($this->_conn, $localFile, $stream, FTP_BINARY);
 		if (!$up) {
 			try{
 				Mage::throwException("Failed to download 'ftp://".$this->getConfig()->getHost()."/$remoteFile' to '$localFile'.");
