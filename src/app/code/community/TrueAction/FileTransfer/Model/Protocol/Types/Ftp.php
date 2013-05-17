@@ -151,7 +151,8 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 	{
 		$config = $this->getConfig();
 		$success = true;
-		if (!$this->_conn = ftp_connect($config->getHost(), $config->getPort)){
+		$this->_conn = ftp_connect($config->getHost(), $config->getPort());
+		if (!$this->_conn){
 			try{
 				Mage::throwException("Failed to connect to 'ftp://".$this->getConfig()->getHost()."'.");
 			} catch (Exception $e) {
