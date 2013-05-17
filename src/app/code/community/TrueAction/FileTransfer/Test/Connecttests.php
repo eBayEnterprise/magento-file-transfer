@@ -9,6 +9,8 @@ class TrueAction_FileTransfer_Test_ConnectTests extends EcomDev_PHPUnit_Test_Cas
 	public function setUp()
 	{
 		@unlink('/tmp/foo.txt');
+		@unlink('/tmp/3471_ftransfer_test.csv');
+		@unlink('/tmp/3471_ftransfer_test2.csv');
 	}
 
 	/**
