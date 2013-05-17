@@ -70,6 +70,49 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 		return $isSuccess;
 	}
 
+	public function sendString($string, $remoteFile)
+	{
+		$remotePath = $this->normalPaths(
+			$this->getConfig()->getRemotePath(),
+			basename($localFile)
+		);
+		$localPath = $localFile;
+		// connect to ftp server
+		$isSuccess = $this->connect();
+		// login to ftp connection
+		$isSuccess = $isSuccess && $this->login();
+		// check to see if ftp connect is in passive mode
+		$isSuccess = $isSuccess && $this->isPassive();
+		// Transfer file
+		$stream = fopen('data://text/plan,'.$string, 'r+');
+		$isSuccess = $isSuccess && $this->transferStream($stream, $remoteFile);
+		// close ftp connection
+		$this->close();
+		fclose($stream);
+		return $isSuccess;
+	}
+
+	public function getString($remoteFile)
+	{
+		$remotePath = $this->normalPaths(
+			$this->getConfig()->getRemotePath(),
+			$remoteFile
+		);
+		// connect to ftp server
+		$isSuccess = $this->connect();
+		// login to ftp connection
+		$isSuccess = $isSuccess && $this->login();
+		// check to see if ftp connect is in passive mode
+		$isSuccess = $isSuccess && $this->isPassive();
+		// Transfer file
+		$stream = fopen('data://text/plan,', 'r+');
+		$isSuccess = $isSuccess && $this->retrieveStream($stream, $remoteFile);
+		// close ftp connection
+		$this->close();
+		fclose($stream);
+		return stream_get_contents($stream);
+	}
+
 	public function setHost($host='')
 	{
 		$this->getConfig()->setHost($host);
@@ -155,6 +198,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 		}
 		return $success;
 	}
+
 
 	/**
 	 * Transfer data from current local server to destination remote server.
