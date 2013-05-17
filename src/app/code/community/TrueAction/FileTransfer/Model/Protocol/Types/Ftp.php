@@ -217,13 +217,13 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 		Mage::log("Connected to ftp://".$this->getConfig()->getUsername()."@".$this->getConfig()->getHost()."");
 		if (!$up = ftp_fput($this->_conn, $remoteFile, $stream, FTP_BINARY)) {
 			try{
-				Mage::throwException("Failed to upload '$localFile' to 'ftp://".$this->getConfig()->getHost()."'.");
+				Mage::throwException("Failed to upload data to 'ftp://".$this->getConfig()->getHost()."'.");
 			} catch (Exception $e) {
 				$success = false;
 				Mage::logException($e);
 			}
 		}else{
-			Mage::log("Uploaded '$localFile' to 'ftp://".$this->getConfig()->getHost()."'.");
+			Mage::log("Uploaded data to 'ftp://".$this->getConfig()->getHost()."'.");
 		}
 
 		return $success;
@@ -242,13 +242,13 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 		$up = ftp_fget($this->_conn, $stream, $remoteFile, FTP_BINARY);
 		if (!$up) {
 			try{
-				Mage::throwException("Failed to download 'ftp://".$this->getConfig()->getHost()."/$remoteFile' to '$localFile'.");
+				Mage::throwException("Failed to download 'ftp://".$this->getConfig()->getHost()."/$remoteFile'.");
 			} catch (Exception $e) {
 				$success = false;
 				Mage::logException($e);
 			}
 		}else{
-			Mage::log("Downloaded 'ftp://".$this->getConfig()->getHost()."/$remoteFile' to '$localFile'.");
+			Mage::log("Downloaded 'ftp://".$this->getConfig()->getHost()."/$remoteFile'.");
 		}
 
 		return $success;
