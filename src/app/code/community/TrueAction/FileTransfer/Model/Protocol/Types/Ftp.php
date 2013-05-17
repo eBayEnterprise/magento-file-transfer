@@ -40,9 +40,11 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 		// check to see if ftp connect is in passive mode
 		$isSuccess = $isSuccess && $this->isPassive();
 		// Transfer file
-		$isSuccess = $isSuccess && $this->transfer($remotePath, $localPath);
+		$stream = fopen($localFile, 'r');
+		$isSuccess = $isSuccess && $this->transfer($stream, $remotePath);
 		// close ftp connection
 		$this->close();
+		fclose($stream);
 		return $isSuccess;
 	}
 
@@ -64,9 +66,10 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 		// check to see if ftp connect is in passive mode
 		$isSuccess = $isSuccess && $this->isPassive();
 		// Transfer file
-		$isSuccess = $isSuccess && $this->retrieve($remotePath, $localPath);
+		$isSuccess = $isSuccess && $this->retrieve($stream, $remotePath);
 		// close ftp connection
 		$this->close();
+		fclose($stream);
 		return $isSuccess;
 	}
 
