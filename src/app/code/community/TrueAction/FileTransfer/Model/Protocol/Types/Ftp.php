@@ -30,7 +30,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 	{
 		$remotePath = $this->normalPaths(
 			$this->getConfig()->getRemotePath(),
-			basename($localFile)
+			$remoteFile
 		);
 		$localPath = $localFile;
 		// connect to ftp server
@@ -77,7 +77,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 	{
 		$remotePath = $this->normalPaths(
 			$this->getConfig()->getRemotePath(),
-			basename($localFile)
+			$remoteFile
 		);
 		$localPath = $localFile;
 		// connect to ftp server
