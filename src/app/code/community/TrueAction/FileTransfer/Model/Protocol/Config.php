@@ -8,7 +8,13 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 	extends TrueAction_ActiveConfig_Model_Config_Abstract
 {
 	private $_fieldPrefix = 'filetransfer';
-	private $_fieldMap    = array();
+	private $_fieldMap    = array(
+		'filetransfer_%s_username'    => 'username',
+		'filetransfer_%s_password'    => 'password',
+		'filetransfer_%s_host'        => 'host',
+		'filetransfer_%s_port'        => 'port',
+		'filetransfer_%s_remote_path' => 'remote_path',
+	);
 
 	/**
 	 * does some validation of the config. reasonable defaults are used where
@@ -35,6 +41,8 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 				'FileTransfer Config Error: config path not set'
 			);
 		}
+		// create magic getter/setters for each field
+		$this->loadMappedFields($this->_fieldMap);
 	}
 
 	/**
@@ -45,7 +53,10 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 	{
 		$this->_fieldMap = $map;
 		foreach ($map as $configField => $magicField) {
-			$this->_loadFieldAsMagic($configField, $magicField);
+			$this->_loadFieldAsMagic(
+				sprintf($configField, $this->getProtocolCode()),
+				$magicField
+			);
 		}
 	}
 

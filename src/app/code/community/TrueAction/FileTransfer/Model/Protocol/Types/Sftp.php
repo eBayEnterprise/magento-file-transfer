@@ -10,21 +10,11 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 	protected $_auth;
 	protected $_pasv;
 	protected $_sftp;
-	protected $_fieldMap = array(
-		'filetransfer_sftp_username'    => 'username',
-		'filetransfer_sftp_password'    => 'password',
-		'filetransfer_sftp_host'        => 'host',
-		'filetransfer_sftp_port'        => 'port',
-		'filetransfer_sftp_remote_path' => 'remote_path',
-	);
-
 
 	public function _construct()
 	{
 		$this->setName('SSH File Transfer Protocol');
 		$this->setCode('sftp');
-		// create magic getter/setters for each field
-		$this->getConfig()->loadMappedFields($this->_fieldMap);
 	}
 
 	public function sendFile($localFile, $remoteFile)

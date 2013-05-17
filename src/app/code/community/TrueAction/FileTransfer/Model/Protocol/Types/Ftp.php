@@ -9,21 +9,11 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 	protected $_conn;
 	protected $_auth;
 	protected $_pasv;
-	protected $_fieldMap = array(
-		'filetransfer_ftp_username'    => 'username',
-		'filetransfer_ftp_password'    => 'password',
-		'filetransfer_ftp_host'        => 'host',
-		'filetransfer_ftp_port'        => 'port',
-		'filetransfer_ftp_remote_path' => 'remote_path',
-	);
-
 
 	public function _construct()
 	{
 		$this->setName('File Transfer Protocol');
 		$this->setCode('ftp');
-		// create magic getter/setters for each field
-		$this->getConfig()->loadMappedFields($this->_fieldMap);
 	}
 
 	public function sendFile($localFile, $remoteFile)
