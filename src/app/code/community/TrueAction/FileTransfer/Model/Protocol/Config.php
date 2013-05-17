@@ -17,23 +17,10 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 	);
 
 	/**
-	 * does some validation of the config. reasonable defaults are used where
-	 * possible.
+	 * loads the dynamic config and does some validation checks.
 	 * */
 	protected function _construct()
 	{
-		$isProtocolValid = array_search(
-			$this->getProtocolCode(),
-			Mage::helper('filetransfer')->getProtocolCodes()
-		);
-		if ($isProtocolValid === false) {
-			Mage::throwException(
-				sprintf(
-					'FileTransfer Config Error: Invalid Protocol Code "%s"',
-					$this->getProtocolCode()
-				)
-			);
-		}
 		// not having the config path set is a non-recoverable error since there
 		// is currently no way to figure it out.
 		if (!$this->getConfigPath()) {
@@ -41,8 +28,30 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 				'FileTransfer Config Error: config path not set'
 			);
 		}
+		// if the protocol code was set by the initializer, don't bother
+		// reading it from the config.
+		if (!$this->getProtocolCode()){
+			$this->_loadFieldAsMagic('filetransfer_protocol', 'protocol_code');
+		}
 		// create magic getter/setters for each field
 		$this->loadMappedFields($this->_fieldMap);
+
+		$isProtocolValid = array_search(
+			$this->getProtocolCode(),
+			Mage::helper('filetransfer')->getProtocolCodes()
+		);
+		if ($isProtocolValid === false) {
+			try {
+				Mage::throwException(
+					sprintf(
+						'FileTransfer Config Error: Invalid Protocol Code "%s"',
+						$this->getProtocolCode()
+					)
+				);
+			} catch (Exception $e) {
+				Mage::logException($e);
+			}
+		}
 	}
 
 	/**
