@@ -36,15 +36,6 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 	 * */
 	public function getProtocolModel($configPath, $protocol=null, $store=null)
 	{
-		if (is_null($protocol)) {
-			$protocol = Mage::getStoreConfig(
-				sprintf('%s/filetransfer_protocol', $configPath),
-				$store
-			);
-		}
-		if (!$protocol) {
-			$protocol = $this->getDefaultProtocol();
-		}
 		$config = Mage::getModel(
 			'filetransfer/protocol_config',
 			array(
@@ -53,6 +44,11 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 				'protocol_code' => $protocol
 			)
 		);
+		if (!$config->getProtocolCode()) {
+			$config->getProtocolCode(
+				$this->getDefaultProtocol()
+			);
+		}
 		try {
 			return Mage::getModel(
 				'filetransfer/protocol_types_'.$protocol,
