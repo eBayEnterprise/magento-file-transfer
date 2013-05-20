@@ -6,21 +6,10 @@ concrete configuration generator for the ftp protocol.
  */
 class TrueAction_FileTransfer_Model_Protocol_Types_Ftps extends TrueAction_FileTransfer_Model_Protocol_Types_Ftp
 {
-	protected $_fieldMap = array(
-		'filetransfer_ftps_username'    => 'username',
-		'filetransfer_ftps_password'    => 'password',
-		'filetransfer_ftps_host'        => 'host',
-		'filetransfer_ftps_port'        => 'port',
-		'filetransfer_ftps_remote_path' => 'remote_path',
-	);
-
-
 	public function _construct()
 	{
 		$this->setName('File Transfer Protocol (SSL)');
 		$this->setCode('ftps');
-		// create magic getter/setters for each field
-		$this->getConfig()->loadMappedFields($this->_fieldMap);
 	}
 
 	/**
