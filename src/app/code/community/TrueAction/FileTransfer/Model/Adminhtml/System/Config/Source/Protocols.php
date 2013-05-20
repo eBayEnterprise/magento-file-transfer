@@ -3,19 +3,28 @@ class TrueAction_FileTransfer_Model_Adminhtml_System_Config_Source_Protocols
 {
 	public function toOptionArray()
 	{
-		return array(
-			array("value"=>"ftp",  "label"=>Mage::helper('filetransfer')->__("FTP")),
-			array("value"=>"ftps", "label"=>Mage::helper('filetransfer')->__("FTPS")),
-			array("value"=>"sftp", "label"=>Mage::helper('filetransfer')->__("SFTP")),
-		);
+		$helper = Mage::helper('filetransfer');
+		$list = array();
+		$protocolCodes = TrueAction_FileTransfer_Model_Protocol_Abstract::getCodes();
+		foreach ($protocolCodes as $code) {
+			$model = Mage::getModel('filetransfer/protocol_types_'.$code);
+			$list[] = array(
+				'value' => $code,
+				'label' => $helper->__($model->getName())
+			);
+		}
+		return $list;
 	}
 
 	public function toArray()
 	{
-		return array(
-			"ftp"  => Mage::helper('filetransfer')->__("FTP"),
-			"ftps" => Mage::helper('filetransfer')->__("FTPS"),
-			"sftp"  => Mage::helper('filetransfer')->__("SFTP"),
-		);
+		$helper = Mage::helper('filetransfer');
+		$list = array();
+		$protocolCodes = TrueAction_FileTransfer_Model_Protocol_Abstract::getCodes();
+		foreach ($protocolCodes as $code) {
+			$model = Mage::getModel('filetransfer/protocol_types_'.$code);
+			$list[] = array($code => $helper->__($model->getName()));
+		}
+		return $list;
 	}
 }
