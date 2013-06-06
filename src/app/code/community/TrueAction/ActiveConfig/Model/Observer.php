@@ -5,11 +5,11 @@ class TrueAction_ActiveConfig_Model_Observer
 
 	// format of the event name:
 	// activeconfig_<module_config_section>_<featurename>
-	const EVENT_PREFIX = 'activeconfig_';
+	const EVENT_PREFIX     = 'activeconfig_';
 
 	// the path to the placeholder nodes relative to a group node
 	// string
-	const IMPORT_SPEC = 'activeconfig_import';
+	const IMPORT_SPEC      = 'activeconfig_import';
 
 	public function __construct()
 	{
@@ -23,9 +23,12 @@ class TrueAction_ActiveConfig_Model_Observer
 	 * @param Varien_Simplexml_Element $specNode
 	 * @param Varien_Simplexml_Element $groupNode
 	 * @param string $configPath
-	 * */
-	private function _readImportSpec($specNode, $groupNode, $configPath)
-	{
+	 */
+	private function _readImportSpec(
+		Varien_Simplexml_Element $specNode,
+		Varien_Simplexml_Element $groupNode,
+		$configPath
+	) {
 		foreach ($specNode->children() as $moduleName => $moduleNode) {
 			Mage::dispatchEvent(
 				self::EVENT_PREFIX . $moduleName,
@@ -46,9 +49,12 @@ class TrueAction_ActiveConfig_Model_Observer
 	 * @param Varien_Simplexml_Element $groupNode
 	 * @param string $configPath
 	 * @return Array(mixed)
-	 * */
-	private function _prepareEventData($groupNode, $moduleSpec, $configPath)
-	{
+	 */
+	private function _prepareEventData(
+		Varien_Simplexml_Element $groupNode,
+		Varien_Simplexml_Element $moduleSpec,
+		$configPath
+	) {
 		$injector = Mage::getModel('activeconfig/fieldinjector');
 		$injector->setAttachmentPoint($groupNode);
 		return Array(
@@ -63,8 +69,8 @@ class TrueAction_ActiveConfig_Model_Observer
 	 * configuration nodes.
 	 * @param Varien_Simplexml_Element
 	 * @param string $configPath
-	 * */
-	private function _processFor($group, $configPath)
+	 */
+	private function _processFor(Varien_Simplexml_Element $group, $configPath)
 	{
 		$fieldNodes = $group->fields->children();
 		foreach ($fieldNodes as $fieldName => $fieldNode) {
@@ -79,7 +85,7 @@ class TrueAction_ActiveConfig_Model_Observer
 	 * loaded. it scans each group for the presence of an import specification.
 	 * it then uses an injector model to get and insert the proper configuration
 	 * as defined in the import specifications.
-	 * */
+	 */
 	public function processConfigImports($observer)
 	{
 		$config = $observer->getEvent()->getConfig();
