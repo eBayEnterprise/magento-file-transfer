@@ -3,8 +3,6 @@
         <TrueAction_ActiveConfig>
             <active>true</active>
             <codePool>community</codePool>
-            <depends>
-            </depends>
         </TrueAction_ActiveConfig>
     </modules>
 </config>
