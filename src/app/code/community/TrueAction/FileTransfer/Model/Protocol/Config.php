@@ -54,9 +54,28 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 	}
 
 	/**
-	 * returns the field prefix for each field
+	 * get the unencrypted password
 	 * @return string
-	 * */
+	 */
+	public function getPassword()
+	{
+		return Mage::helper('core')->decrypt($this->getData('password'));
+	}
+
+	/**
+	 * set and encrypt the password
+	 */
+	public function setPassword()
+	{
+		$this->getConfig()->setPassword(
+			Mage::helper('core')->encrypt($this->getData('password'))
+		);
+		return $this;
+	}
+
+	/**
+	 * loads the config data.
+	 */
 	public function loadMappedFields($map)
 	{
 		$this->_fieldMap = $map;
