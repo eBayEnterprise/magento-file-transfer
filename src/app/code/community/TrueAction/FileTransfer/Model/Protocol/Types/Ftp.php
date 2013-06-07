@@ -12,8 +12,8 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 
 	public function _construct()
 	{
+		parent::_construct();
 		$this->setName('File Transfer Protocol');
-		$this->setCode('ftp');
 	}
 
 	public function sendFile($localFile, $remoteFile)

@@ -8,8 +8,8 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftps extends TrueAction_FileT
 {
 	public function _construct()
 	{
+		parent::_construct();
 		$this->setName('File Transfer Protocol (SSL)');
-		$this->setCode('ftps');
 	}
 
 	/**

@@ -13,7 +13,6 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 	public function _construct()
 	{
 		$this->setName('SSH File Transfer Protocol');
-		$this->setCode('sftp');
 	}
 
 	public function sendFile($localFile, $remoteFile)
