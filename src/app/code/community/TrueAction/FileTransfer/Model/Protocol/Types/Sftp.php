@@ -12,6 +12,10 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 
 	public function _construct()
 	{
+		$config = new TrueAction_FileTransfer_Model_Protocol_Types_Sftp_Config(
+			$this->getConfig()
+		);
+		$this->setConfig($config);
 		$this->setName('SSH File Transfer Protocol');
 	}
 
