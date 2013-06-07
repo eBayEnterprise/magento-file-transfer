@@ -102,6 +102,48 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		return $output;
 	}
 
+	/**
+	 * get the decrypted private key as a data URI
+	 */
+	public function getPrivateKey()
+	{
+		return $this->getDataUriFromString(
+			Mage::helper('core')->decrypt($this->getData('private_key'))
+		);
+	}
+
+	/**
+	 * get the decrypted public key as a data URI
+	 */
+	public function getPublicKey()
+	{
+		return $this->getDataUriFromString(
+			Mage::helper('core')->decrypt($this->getData('public_key'))
+		);
+	}
+
+	/**
+	 * set the decrypted private key as a data URI
+	 */
+	public function setPrivateKey($key)
+	{
+		$this->getConfig()->setPrivateKey(
+			Mage::helper('core')->encrypt($this->getData('private_key'))
+		);
+		return $this;
+	}
+
+	/**
+	 * set the decrypted public key as a data URI
+	 */
+	public function setPublicKey()
+	{
+		$this->getConfig()->setPrivateKey(
+			Mage::helper('core')->encrypt($this->getData('public_key'))
+		);
+		return $this;
+	}
+
 	public function setPort($port='22')
 	{
 		$this->getConfig()->setPort($port);
