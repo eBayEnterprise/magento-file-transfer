@@ -1,6 +1,18 @@
 <?php
 abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core_Model_Abstract
 {
+	/**
+	 * setup a generic config object to be used when reading/generating config
+	 * fields.
+	 */
+	protected function _construct()
+	{
+		$this->setConfig(
+			new TrueAction_FileTransfer_Model_Protocol_Config($this->getConfig())
+		);
+		$this->setCode($this->getConfig()->getProtocolCode());
+	}
+
 	// cache of available protocols.
 	private static $_protocolCodes = array();
 
@@ -69,6 +81,16 @@ abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core
 			}
 		}
 		return self::$_protocolCodes;
+	}
+
+	/**
+	 * create a data uri using the specified string as the data.
+	 * @param  string $data
+	 * @return string
+	 */
+	protected function _getDataUriFromString($data = '')
+	{
+		return 'data:text/plain,' . $data;
 	}
 
 	public function setHost($host='')
