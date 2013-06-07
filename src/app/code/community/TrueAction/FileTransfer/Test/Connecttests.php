@@ -3,7 +3,17 @@
  * these tests aren't unit tests (by definition) as they need external stuff
  * setup. as such these tests should not run by default and have to be run
  * manually.
- * */
+ *
+ * NOTE:
+ * for these tests to work you must have a server listening on the localhost for
+ * each protocol tested. a user must be setup as follows:
+ *
+ * username: test
+ * password: welcome1
+ *
+ * NOTE:
+ * the sftp test uses the keys included in fixtures/opensshkeys.
+ */
 class TrueAction_FileTransfer_Test_ConnectTests extends EcomDev_PHPUnit_Test_Case
 {
 	public function setUp()
@@ -16,8 +26,31 @@ class TrueAction_FileTransfer_Test_ConnectTests extends EcomDev_PHPUnit_Test_Cas
 	/**
 	 * @test
 	 * @loadFixture sendfile
-	 * */
-	public function runTest() {
+	 * @dataProvider dataProvider
+	 */
+	public function testConnectivity($protocol) {
+		$model = Mage::helper('filetransfer')->getProtocolModel(
+			'testsection/testgroup',
+			$protocol
+		);
+		$result = $model->sendString(',,,,,', '3471_ftransfer_test.csv');
+		$this->assertTrue($result);
+
+		$result = $model->getString('3471_ftransfer_test.csv');
+		$this->assertSame(',,,,,', $result);
+
+		$result = $model->getFile(
+			'/tmp/foo.txt',
+			'3471_ftransfer_test.csv'
+		);
+		$this->assertTrue($result);
+
+		$result = $model->sendFile(
+			'/tmp/foo.txt',
+			'3471_ftransfer_test2.csv'
+		);
+		$this->assertTrue($result);
+	}
 		$model = Mage::helper('filetransfer')->getProtocolModel(
 			'testsection/testgroup',
 			'sftp'
