@@ -211,10 +211,11 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 	{
 		$success = true;
 		$config = $this->getConfig();
-		if (!$this->_auth = ssh2_auth_password($this->_conn, $config->getUsername(), $config->getPassword())){
+		$this->_authenticate();
+		if (!$this->_auth){
 			try{
 				Mage::throwException(
-					"Failed to authenticate to 'sftp://".$this->getConfig()->getHost()."@".$this->getConfig()->getHost()."'."
+					"Failed to authenticate to 'sftp://".$config->getHost()."@".$config->getHost()."'."
 				);
 			} catch (Exception $e) {
 				$success = false;
@@ -222,6 +223,22 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 			}
 		}
 		return $success;
+	}
+
+	/**
+	 * authenticate with either an ssh key or a password
+	 */
+	protected function _authenticate()
+	{
+		$config   = $this->getConfig();
+		$private_key = $config->getPrivateKey();
+		$public_key  = $config->getPublicKey();
+		if ($private_key && $public_key) {
+			$this->_auth = ssh2_auth_pubkey_file($this->_conn, $config->getUsername(), $private_key, $public_key);
+		}
+		if (!($this->_auth && $private_key && $public_key)) {
+			$this->_auth = ssh2_auth_password($this->_conn, $config->getUsername(), $config->getPassword());
+		}
 	}
 
 	/**
