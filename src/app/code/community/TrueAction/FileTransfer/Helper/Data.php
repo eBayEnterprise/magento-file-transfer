@@ -32,26 +32,52 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 	}
 
 	/**
+	 * get data needed to instantiate and configure the appropriate protocol
+	 * model.
+	 * @param  string                $configPath
+	 * @param  string                $protocol
+	 * @param  Mage_Core_Model_Store $store
+	 * @return array
+	 */
+	public function getInitData($configPath, $protocol = null, $store = null)
+	{
+		// not having the config path set is a non-recoverable error since there
+		// is currently no way to figure which set of data to get otherwise.
+		if (!$configPath) {
+			Mage::throwException(
+				'FileTransfer Config Error: config path not set'
+			);
+		}
+		// if the protocol code was not specified, try reading it from the mage config.
+		if (!$protocol){
+			$protocol = Mage::getStoreConfig(
+				$configPath . '/filetransfer_protocol',
+				$store
+			);
+		}
+		if (!$protocol) {
+			$protocol = Mage::helper('filetransfer')->getDefaultProtocol();
+		}
+		return array(
+			'store'         => $store,
+			'config_path'   => $configPath,
+			'protocol_code' => $protocol
+		);
+	}
+
+	/**
 	 * returns the model for the configured protocol.
 	 * */
 	public function getProtocolModel($configPath, $protocol=null, $store=null)
 	{
-		$config = Mage::getModel(
-			'filetransfer/protocol_config',
-			array(
-				'store'         => $store,
-				'config_path'   => $configPath,
-				'protocol_code' => $protocol
-			)
+		$config = $this->getInitData(
+			$configPath,
+			$protocol,
+			$store
 		);
-		if (!$config->getProtocolCode()) {
-			$config->getProtocolCode(
-				$this->getDefaultProtocol()
-			);
-		}
 		try {
 			return Mage::getModel(
-				'filetransfer/protocol_types_'.$protocol,
+				'filetransfer/protocol_types_' . $config['protocol_code'],
 				array('config' => $config)
 			);
 		} catch (Exception $e) {

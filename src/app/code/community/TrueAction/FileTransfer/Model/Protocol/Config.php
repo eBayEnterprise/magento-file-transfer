@@ -20,18 +20,6 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 	 * */
 	protected function _construct()
 	{
-		// not having the config path set is a non-recoverable error since there
-		// is currently no way to figure it out.
-		if (!$this->getConfigPath()) {
-			Mage::throwException(
-				'FileTransfer Config Error: config path not set'
-			);
-		}
-		// if the protocol code was set by the initializer, don't bother
-		// reading it from the config.
-		if (!$this->getProtocolCode()){
-			$this->_loadFieldAsMagic('filetransfer_protocol', 'protocol_code');
-		}
 		// create magic getter/setters for each field
 		$this->loadMappedFields($this->_fieldMap);
 
