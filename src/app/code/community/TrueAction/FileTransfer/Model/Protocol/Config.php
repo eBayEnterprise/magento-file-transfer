@@ -7,8 +7,7 @@ concrete configuration generator for the ftp protocol.
 class TrueAction_FileTransfer_Model_Protocol_Config
 	extends TrueAction_ActiveConfig_Model_Config_Abstract
 {
-	private $_fieldPrefix = 'filetransfer';
-	private $_fieldMap    = array(
+	protected $_fieldMap  = array(
 		'filetransfer_%s_username'    => 'username',
 		'filetransfer_%s_password'    => 'password',
 		'filetransfer_%s_host'        => 'host',
