@@ -7,7 +7,6 @@ behavior.
  */
 abstract class TrueAction_ActiveConfig_Model_Config_Abstract
 	extends Mage_Core_Model_Abstract
-	implements TrueAction_ActiveConfig_Model_Config_Interface
 {
 	// Varien_Simplexml_Element
 	protected $_importConfig = null;
