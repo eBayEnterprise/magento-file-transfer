@@ -14,7 +14,7 @@
  * NOTE:
  * the sftp test uses the keys included in fixtures/opensshkeys.
  */
-class TrueAction_FileTransfer_Test_ConnectTests extends EcomDev_PHPUnit_Test_Case
+class TrueAction_FileTransfer_Test_ConnectTest extends EcomDev_PHPUnit_Test_Case
 {
 	public function setUp()
 	{
@@ -48,6 +48,34 @@ class TrueAction_FileTransfer_Test_ConnectTests extends EcomDev_PHPUnit_Test_Cas
 		$result = $model->sendFile(
 			'/tmp/foo.txt',
 			'3471_ftransfer_test2.csv'
+		);
+		$this->assertTrue($result);
+	}
+
+	/**
+	 * @test
+	 * @loadFixture connectSettings.yaml
+	 */
+	public function testHelperConnectivity() {
+		$helper = Mage::helper('filetransfer');
+		$configPath = 'testsection/testgroup';
+		$result = $helper->sendString(',,,,,', '3471_ftransfer_test.csv', $configPath);
+		$this->assertTrue($result);
+
+		$result = $helper->getString('3471_ftransfer_test.csv', $configPath);
+		$this->assertSame(',,,,,', $result);
+
+		$result = $helper->getFile(
+			'/tmp/foo.txt',
+			'3471_ftransfer_test.csv',
+			$configPath
+		);
+		$this->assertTrue($result);
+
+		$result = $helper->sendFile(
+			'/tmp/foo.txt',
+			'3471_ftransfer_test2.csv',
+			$configPath
 		);
 		$this->assertTrue($result);
 	}

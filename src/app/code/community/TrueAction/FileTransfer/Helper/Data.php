@@ -31,6 +31,28 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 		return false;
 	}
 
+	public function sendString($dataString, $remoteFile, $configPath, $store=null)
+	{
+		try {
+			$protocol = $this->getProtocolModel($configPath, $store);
+			return $protocol->sendString($dataString, $remoteFile);
+		} catch (Exception $e) {
+			Mage::log("filetransfer send error:". $e->getMessage());
+		}
+		return false;
+	}
+
+	public function getString($remoteFile, $configPath, $store=null)
+	{
+		try {
+			$protocol = $this->getProtocolModel($configPath, $store);
+			return $protocol->getString($remoteFile);
+		} catch (Exception $e) {
+			Mage::log("filetransfer get error:". $e->getMessage());
+		}
+		return false;
+	}
+
 	/**
 	 * get data needed to instantiate and configure the appropriate protocol
 	 * model.
