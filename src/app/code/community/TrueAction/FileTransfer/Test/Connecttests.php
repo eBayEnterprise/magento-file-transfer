@@ -85,3 +85,4 @@ class TrueAction_FileTransfer_Test_ConnectTests extends EcomDev_PHPUnit_Test_Cas
 		);
 		$this->assertTrue($result);
 	}
+}
