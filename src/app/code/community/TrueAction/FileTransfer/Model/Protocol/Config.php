@@ -55,7 +55,7 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 	 */
 	public function setPassword()
 	{
-		$this->getConfig()->setPassword(
+		$this->setData(
 			Mage::helper('core')->encrypt($this->getData('password'))
 		);
 		return $this;
@@ -67,9 +67,10 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 	public function loadMappedFields($map)
 	{
 		$this->_fieldMap = $map;
+		$protocolCode = $this->getProtocolCode();
 		foreach ($map as $configField => $magicField) {
 			$this->_loadFieldAsMagic(
-				sprintf($configField, $this->getProtocolCode()),
+				sprintf($configField, $protocolCode),
 				$magicField
 			);
 		}
