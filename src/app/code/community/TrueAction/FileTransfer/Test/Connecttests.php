@@ -57,10 +57,16 @@ class TrueAction_FileTransfer_Test_ConnectTests extends EcomDev_PHPUnit_Test_Cas
 	 * @loadFixture testSftpKey
 	 */
 	public function testSftpKey() {
+		$dir = dirname(__FILE__) . '/ConnectTests/fixtures';
 		$model = Mage::helper('filetransfer')->getProtocolModel(
 			'testsection/testgroup',
 			'sftp'
 		);
+		$config = $model->getConfig();
+		$pub = $dir . $config->getPublicKey();
+		$prv = $dir . $config->getPrivateKey();
+		$config->setPublicKey($pub)
+			->setPrivateKey($prv);
 		$result = $model->sendString(',,,,,', '3471_ftransfer_test.csv');
 		$this->assertTrue($result);
 
