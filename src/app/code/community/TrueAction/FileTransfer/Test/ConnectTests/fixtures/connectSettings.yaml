@@ -16,6 +16,7 @@ config:
   default/testsection/testgroup/filetransfer_ftps_remote_path: "/tmp"
   # sftp stuff
   default/testsection/testgroup/filetransfer_sftp_username: test
+  default/testsection/testgroup/filetransfer_sftp_auth_type: password
   default/testsection/testgroup/filetransfer_sftp_password: "0:2:3fbb7c95e7c84df0:ZA2CwPF1DexZjAOEXMLcxA=="
   default/testsection/testgroup/filetransfer_sftp_ssh_prv_key: ""
   default/testsection/testgroup/filetransfer_sftp_ssh_pub_key: ""
