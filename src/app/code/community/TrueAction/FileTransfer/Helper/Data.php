@@ -9,6 +9,14 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 	const GLOBAL_SHOW_IN_WEBSITE  = 'filetransfer/global/show_in_website';
 	const GLOBAL_SHOW_IN_STORE    = 'filetransfer/global/show_in_store';
 
+	/**
+	 * transmit a file to a remote host
+	 * @param  string $localFile
+	 * @param  string $remoteFile
+	 * @param  string $configPath see README.md
+	 * @param  mixed  $store
+	 * @return boolean
+	 */
 	public function sendFile($localFile, $remoteFile, $configPath, $store=null)
 	{
 		try {
@@ -20,6 +28,14 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 		return false;
 	}
 
+	/**
+	 * retieve a file from a remote host
+	 * @param  string $localFile
+	 * @param  string $remoteFile
+	 * @param  string $configPath see README.md
+	 * @param  mixed  $store
+	 * @return boolean
+	 */
 	public function getFile($localFile, $remoteFile, $configPath, $store=null)
 	{
 		try {
@@ -31,6 +47,14 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 		return false;
 	}
 
+	/**
+	 * transmit a string and save it to a file on a remote host
+	 * @param  string $localFile
+	 * @param  string $remoteFile
+	 * @param  string $configPath see README.md
+	 * @param  mixed  $store
+	 * @return boolean
+	 */
 	public function sendString($dataString, $remoteFile, $configPath, $store=null)
 	{
 		try {
@@ -42,6 +66,15 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 		return false;
 	}
 
+	/**
+	 * retieve a file from a remote host as a string.
+	 * returns false on failure.
+	 * @param  string $localFile
+	 * @param  string $remoteFile
+	 * @param  string $configPath see README.md
+	 * @param  mixed  $store
+	 * @return string|boolean
+	 */
 	public function getString($remoteFile, $configPath, $store=null)
 	{
 		try {
