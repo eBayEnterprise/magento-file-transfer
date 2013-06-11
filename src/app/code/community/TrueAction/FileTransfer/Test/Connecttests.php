@@ -25,7 +25,7 @@ class TrueAction_FileTransfer_Test_ConnectTests extends EcomDev_PHPUnit_Test_Cas
 
 	/**
 	 * @test
-	 * @loadFixture sendfile
+	 * @loadFixture connectSettings.yaml
 	 * @dataProvider dataProvider
 	 */
 	public function testConnectivity($protocol) {
