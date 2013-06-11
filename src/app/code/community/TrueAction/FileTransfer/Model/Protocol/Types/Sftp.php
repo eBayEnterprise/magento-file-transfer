@@ -188,13 +188,12 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 	 */
 	protected function _authenticate()
 	{
-		$config   = $this->getConfig();
-		$private_key = $config->getPrivateKey();
-		$public_key  = $config->getPublicKey();
-		if ($private_key && $public_key) {
-			$this->_auth = ssh2_auth_pubkey_file($this->_conn, $config->getUsername(), $private_key, $public_key);
-		}
-		if (!($this->_auth && $private_key && $public_key)) {
+		$config      = $this->getConfig();
+		if ($config->getAuthType() === 'pub_key') {
+			$private_key = $config->getPrivateKey();
+			$public_key  = $config->getPublicKey();
+			$this->_auth = ssh2_auth_pubkey_file($this->_conn, $config->getUsername(), $public_key, $private_key);
+		} else {
 			$this->_auth = ssh2_auth_password($this->_conn, $config->getUsername(), $config->getPassword());
 		}
 	}
