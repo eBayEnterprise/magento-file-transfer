@@ -73,7 +73,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTests
 		$this->assertSame('ftp', $cfg->getProtocolCode());
 		$this->loadMappedFields->invoke($cfg, self::$fieldMap);
 		$this->assertSame('somename', $cfg->getUsername());
-		$this->assertSame('somepass', $cfg->getPassword());
+		$this->assertSame('welcome1', $cfg->getPassword());
 		$this->assertSame('some.host', $cfg->getHost());
 		$this->assertSame('21', $cfg->getPort());
 		$this->assertSame('/', $cfg->getRemotePath());
