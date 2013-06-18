@@ -1,0 +1,71 @@
+#!/bin/bash
+
+# SCRIPTNAME should always be the filename of the script.
+declare -r SCRIPTNAME=validateXml
+
+##
+# Gather arguments and execute script
+main() {
+	local -a xmlFiles
+	gatherXml "$@"
+	lint "${xmlFiles[@]}"
+}
+##
+# Pretty-print normal output.
+pp() {
+	tput setaf 4; printf "$@"; tput sgr0
+}
+##
+# Pretty-print warning/error output.
+er() {
+	tput setaf 1; printf "$@"; tput sgr0
+}
+
+##
+# Print the help for this script.
+printHelp() {
+	cat <<- 'EOF'
+		usage: validateXml [dirs]
+	EOF
+	echo
+}
+
+##
+# Gather XML files in the given directories.
+gatherXml() {
+	shopt -s globstar nullglob
+	pp 'Gathering files\n'
+	while [[ $1 ]]; do
+		if [[ -d $1 ]]; then
+			# If the argument is a directory, recursively seek out XML files within it.
+			xmlFiles+=( "$1/"**/*.xml{,.sample,.template} )
+		elif [[ -f $1 ]]; then
+			# If the argument is a file, assume it is XML.
+			xmlFiles+=( "$1" )
+		else
+			er 'Argument "%s" is not a xml file or directory I can lint.\n' "$1"
+			echo
+			printHelp
+			exit 1
+		fi
+		shift
+	done
+	shopt -u globstar nullglob
+}
+
+##
+# Lint all xml files
+lint() {
+	local st=0
+	mkdir -p build
+	pp 'Linting %d XML files\n' "${#xmlFiles[@]}"
+	if xmllint --noout "${xmlFiles[@]}"; then
+		:
+	else
+		st=$?
+		er 'xmlhint exited with a status code of %d.\n' "$st"
+	fi
+	return "$st"
+}
+
+. tests/utils

@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# SCRIPTNAME should always be the filename of the script.
+declare -r SCRIPTNAME=validatePhp
+
+##
+# Gather arguments and execute script
+main() {
+	local -a phpFiles
+	gatherPhp "$@"
+	lint "${phpFiles[@]}"
+}
+##
+# Pretty-print normal output.
+pp() {
+	tput setaf 4; printf "$@"; tput sgr0
+}
+##
+# Pretty-print warning/error output.
+er() {
+	tput setaf 1; printf "$@"; tput sgr0
+}
+
+##
+# Print the help for this script.
+printHelp() {
+	cat <<- 'EOF'
+		usage: validatePhp [dirs]
+	EOF
+	echo
+}
+
+##
+# Gather PHP files in the given directories.
+gatherPhp() {
+	shopt -s globstar nullglob
+	pp 'Gathering files\n'
+	while [[ $1 ]]; do
+		if [[ -d $1 ]]; then
+			# If the argument is a directory, recursively seek out PHP files within it.
+			phpFiles+=( "$1/"**/*.php{,.sample,.template} "$1/"**/*.phtml{,.sample,.template} )
+		elif [[ -f $1 ]]; then
+			# If the argument is a file, assume it is PHP.
+			phpFiles+=( "$1" )
+		else
+			er 'Argument "%s" is not a php file or directory I can lint.\n' "$1"
+			echo
+			printHelp
+			exit 1
+		fi
+		shift
+	done
+	shopt -u globstar nullglob
+}
+
+##
+# Lint all php files
+lint() {
+	local phpFile
+	local st=0
+	mkdir -p build
+	pp 'Linting %d PHP files\n' "${#phpFiles[@]}"
+	for phpFile in "${phpFiles[@]}"; do
+		if ! php -l "$phpFile"; then
+			st=$?
+			er 'php -l exited with a status code of %d.\n' "$st"
+		fi
+	done
+	return "$st"
+}
+
+. tests/utils

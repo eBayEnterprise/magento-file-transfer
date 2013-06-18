@@ -1,0 +1,64 @@
+#!/bin/bash -e
+
+##
+# Set up ecomdev testing for EB2C
+#
+
+# Set up the Magento 'webroot' in the 'build' directory.
+mkdir -p build
+cd build
+
+##
+# Drop any existing tables without needing to drop the database.
+dropAllTables() {
+	local IFS=$'\n'
+	tables=( $(mysql --skip-column-names jenkins_mage_filetransfer -e 'show tables;') )
+	IFS=';'
+	mysql jenkins_mage_filetransfer <<< "SET FOREIGN_KEY_CHECKS = 0;${tables[*]/#/DROP TABLE IF EXISTS };SET FOREIGN_KEY_CHECKS = 1;"
+}
+dropAllTables
+
+# Fetch the Magento ee and sample data.
+scp mage.tandev.net:/home/shared/ee/enterprise-1.13.0.0.tar-2013-04-09-02-46-53.gz mage.tandev.net:/home/shared/sample_data/magento_enterprise_sample_data_for_1.12.0.0-2012-04-23-11-43-17.zip .
+rm -rf magento
+tar -xzpf enterprise-1.13.0.0.tar-2013-04-09-02-46-53.gz
+cd magento
+unzip -oq ../magento_enterprise_sample_data_for_1.12.0.0-2012-04-23-11-43-17.zip
+mysql jenkins_mage_filetransfer < magento_enterprise_sample_data_for_1.12.0.0.sql
+rm magento_enterprise_sample_data_for_1.12.0.0.sql
+
+# Run the Magento installer.
+php -f install.php -- \
+	--admin_frontname 'admin' \
+	--admin_email 'foo@bar.com' \
+	--admin_firstname 'First' \
+	--admin_lastname 'Last' \
+	--admin_password 'testing123' \
+	--admin_username 'admin' \
+	--db_host 'd0fec10c7d06268d105f4c76a25300903dce828d.rackspaceclouddb.com' \
+	--db_name 'jenkins_mage_filetransfer' \
+	--db_pass "$(sed -n 's/password=//p' "$HOME/.my.cnf")" \
+	--db_user 'jenkins' \
+	--default_currency 'USD' \
+	--license_agreement_accepted 'yes' \
+	--locale 'en_US' \
+	--secure_base_url 'https://example.com' \
+	--session_save 'files' \
+	--timezone 'America/New_York' \
+	--url 'http://example.com' \
+	--use_rewrites 'yes' \
+	--use_secure 'yes' \
+	--use_secure_admin 'yes' \
+	--skip_url_validation 'yes'
+
+# Initialize the extensions via modman
+modman init
+modman link --copy "$(cd -P ../.. && pwd)" # PHPUnit does not respect symlinks.
+modman clone --copy https://github.com/kojiromike/EcomDev_PHPUnit.git
+
+# Set up the phpunit configurations
+cp ../../tests/local.xml.phpunit app/etc # Magento configuration
+cp ../../tests/phpunit.xml.dist . # PHPUnit configuration
+
+# Run phpunit
+phpunit
