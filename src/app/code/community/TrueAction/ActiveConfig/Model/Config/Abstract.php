@@ -1,47 +1,42 @@
 <?php
-/*
-TrueAction_ActiveConfig_Model_Config_Abstract
-
-simple base class to serve as both an example as well as default
-behavior.
+/**
+ * TrueAction_ActiveConfig_Model_Config_Abstract
+ *
+ * @method setConfigPath
+ * @method getConfigPath
+ * @todo Complete this docblock – what should these method signatures be?
  */
-abstract class TrueAction_ActiveConfig_Model_Config_Abstract
-	extends Mage_Core_Model_Abstract
+abstract class TrueAction_ActiveConfig_Model_Config_Abstract extends Mage_Core_Model_Abstract
 {
-	// Varien_Simplexml_Element
+	/**
+	 * @var Varien_Simplexml_Element
+	 */
 	protected $_importConfig = null;
 
 	/**
-	 * generates the xml nodes that comprise a set of configuration fields
-	 * in the magento system config
-	 * */
+	 * Generate the xml nodes that comprise a set of
+	 * configuration fields in the magento system config.
+	 * @param $importOptions
+	 * @return
+	 * @todo Complete this docblock.
+	 **/
 	abstract public function generateFields($importOptions);
 
-	// public function setConfigPath
-	// public function getConfigPath
-
 	/**
-	 * loads data to be accessed by magic setter/getters
-	 * */
+	 * Load data to be accessed by magic setter/getters.
+	 * @param $configName
+	 * @param $magicName
+	 * @return
+	 * @todo Complete this docblock.
+	 **/
 	protected function _loadFieldAsMagic($configName, $magicName)
 	{
 		$this->setData(
 			$magicName,
 			Mage::getStoreConfig(
-				$this->getConfigPath().'/'.$configName,
+				$this->getConfigPath() . '/' . $configName,
 				$this->getStore()
 			)
-		);
-	}
-
-	/**
-	 * loads data to be accessed as members of this class
-	 * */
-	protected function _loadFieldAsMember($configName, $memberName)
-	{
-		$this->$memberName = Mage::getStoreConfig(
-			$this->getConfigPath().$configName,
-			$this->getStore()
 		);
 	}
 }
