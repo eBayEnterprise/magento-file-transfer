@@ -1,5 +1,5 @@
 <?php
-class TrueAction_ActiveConfig_Test_Model_FieldInjectorTests extends EcomDev_PHPUnit_Test_Case
+class TrueAction_ActiveConfig_Test_Model_FieldInjectorTest extends EcomDev_PHPUnit_Test_Case
 {
 	protected static $cls;
 	protected static $grpNode;
@@ -11,7 +11,6 @@ class TrueAction_ActiveConfig_Test_Model_FieldInjectorTests extends EcomDev_PHPU
 		);
 		self::$grpNode = self::$cls->getProperty('_groupNode');
 		self::$grpNode->setAccessible(true);
-
 	}
 
 	public function setUp()

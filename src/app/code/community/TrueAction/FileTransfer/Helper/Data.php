@@ -10,7 +10,7 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 	const GLOBAL_SHOW_IN_STORE    = 'filetransfer/global/show_in_store';
 
 	/**
-	 * transmit a file to a remote host
+	 * Transmit a file to a remote host.
 	 * @param  string $localFile
 	 * @param  string $remoteFile
 	 * @param  string $configPath see README.md

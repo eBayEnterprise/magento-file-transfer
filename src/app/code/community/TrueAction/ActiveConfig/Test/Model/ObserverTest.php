@@ -1,5 +1,5 @@
 <?php
-class TrueAction_ActiveConfig_Test_Model_ObserverTests extends EcomDev_PHPUnit_Test_Case
+class TrueAction_ActiveConfig_Test_Model_ObserverTest extends EcomDev_PHPUnit_Test_Case
 {
 	private $observer = null;
 	public function setUp()

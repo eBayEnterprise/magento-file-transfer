@@ -1,5 +1,5 @@
 <?php
-class TrueAction_ActiveConfig_Test_Helper_DataTests extends EcomDev_PHPUnit_Test_Case_Config
+class TrueAction_ActiveConfig_Test_Helper_DataTest extends EcomDev_PHPUnit_Test_Case_Config
 {
 	/**
 	 * @loadFixture config.yaml
@@ -38,4 +38,5 @@ class TrueAction_ActiveConfig_Test_Helper_DataTests extends EcomDev_PHPUnit_Test
 			get_class($model)
 		);
 	}
+
 }

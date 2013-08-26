@@ -4,8 +4,7 @@ TrueAction_FileTransfer_Test_Model_Config_Ftp
 
 tests for the ftp config generator.
  */
-class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTests
-	extends EcomDev_PHPUnit_Test_Case
+class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev_PHPUnit_Test_Case
 {
 	private static $config = array(
 		'protocol_code' => 'ftp',
