@@ -29,7 +29,7 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 	}
 
 	/**
-	 * retieve a file from a remote host
+	 * Retrieve a file from a remote host.
 	 * @param  string $localFile
 	 * @param  string $remoteFile
 	 * @param  string $configPath see README.md
@@ -48,7 +48,7 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 	}
 
 	/**
-	 * transmit a string and save it to a file on a remote host
+	 * Transmit a string and save it to a file on a remote host.
 	 * @param  string $localFile
 	 * @param  string $remoteFile
 	 * @param  string $configPath see README.md
@@ -67,7 +67,7 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 	}
 
 	/**
-	 * retieve a file from a remote host as a string.
+	 * Retrieve a file from a remote host as a string.
 	 * returns false on failure.
 	 * @param  string $localFile
 	 * @param  string $remoteFile
@@ -87,8 +87,8 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 	}
 
 	/**
-	 * get data needed to instantiate and configure the appropriate protocol
-	 * model.
+	 * Return the data needed to instantiate and
+	 * configure the appropriate protocol model.
 	 * @param  string                $configPath
 	 * @param  string                $protocol
 	 * @param  Mage_Core_Model_Store $store
@@ -121,8 +121,8 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 	}
 
 	/**
-	 * returns the model for the configured protocol.
-	 * */
+	 * Return the model for the configured protocol.
+	 */
 	public function getProtocolModel($configPath, $protocol=null, $store=null)
 	{
 		$config = $this->getInitData(
@@ -143,55 +143,59 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 	}
 
 	/**
-	 * scans the Protocol/Types directory for php files and uses their
-	 * lowercased basename to get a list of protocol codes.
-	 * */
+	 * Scan the Protocol/Types directory for php files and use
+	 * their lowercased basename to get a list of protocol codes.
+	 */
 	public function getProtocolCodes()
 	{
 		return TrueAction_FileTransfer_Model_Protocol_Abstract::getCodes();
 	}
 
 	/**
-	 * returns the default protocol to use when sending files.
+	 * Return the default protocol to use when sending files.
 	 * @param Mage_Core_Model_Store
 	 * @return string
-	 * */
+	 */
 	public function getDefaultProtocol($store=null)
 	{
 		return Mage::getStoreConfig(self::GLOBAL_DEFAULT_PROTOCOL, $store);
 	}
 	/**
-	 * default initial sort order for dynamically inserted config fields.
+	 * Return the default initial sort order
+	 * for dynamically inserted config fields.
 	 * @param Mage_Core_Model_Store
 	 * @return string
-	 * */
+	 */
 	public function getGlobalSortOrder($store=null)
 	{
 		return Mage::getStoreConfig(self::GLOBAL_SORT_ORDER, $store);
 	}
 	/**
-	 * default show_in_default value for dynamically inserted config fields.
+	 * Return the default show_in_default value
+	 * for dynamically inserted config fields.
 	 * @param Mage_Core_Model_Store
 	 * @return string
-	 * */
+	 */
 	public function getGlobalShowInDefault($store=null)
 	{
 		return Mage::getStoreConfig(self::GLOBAL_SHOW_IN_DEFAULT, $store);
 	}
 	/**
-	 * default show_in_website value for dynamically inserted config fields.
+	 * Return the default show_in_website value
+	 * for dynamically inserted config fields.
 	 * @param Mage_Core_Model_Store
 	 * @return string
-	 * */
+	 */
 	public function getGlobalShowInWebsite($store=null)
 	{
 		return Mage::getStoreConfig(self::GLOBAL_SHOW_IN_WEBSITE, $store);
 	}
 	/**
-	 * default show_in_store value for dynamically inserted config fields.
+	 * Return the default show_in_store value
+	 * for dynamically inserted config fields.
 	 * @param Mage_Core_Model_Store
 	 * @return string
-	 * */
+	 */
 	public function getGlobalShowInStore($store=null)
 	{
 		return Mage::getStoreConfig(self::GLOBAL_SHOW_IN_STORE, $store);
