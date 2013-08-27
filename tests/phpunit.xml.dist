@@ -18,6 +18,12 @@
 	<testsuite name="Magento Test Suite">
 		<file>app/code/community/EcomDev/PHPUnit/Test/Suite.php</file>
 	</testsuite>
+	<groups>
+		<include>
+			<group>TrueAction_ActiveConfig</group>
+			<group>TrueAction_FileTransfer</group>
+		</include>
+	</groups>
 	<filter>
 		<blacklist>
 			<!-- Exclude all lib classes from code coverage. -->
