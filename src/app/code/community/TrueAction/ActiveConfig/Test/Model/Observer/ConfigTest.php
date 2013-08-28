@@ -6,7 +6,7 @@ class TrueAction_ActiveConfig_Test_Model_Observer_ConfigTest extends EcomDev_PHP
 		$this->assertEventObserverDefined(
 			'global',
 			'adminhtml_init_system_config',
-			'activeconfig/observer',
+			'TrueAction_ActiveConfig_Model_Observer',
 			'processConfigImports',
 			'config_imports_observer'
 		);
