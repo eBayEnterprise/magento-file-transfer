@@ -28,7 +28,8 @@ class TrueAction_FileTransfer_Test_ConnectTest extends EcomDev_PHPUnit_Test_Case
 	 * @loadFixture connectSettings.yaml
 	 * @dataProvider dataProvider
 	 */
-	public function testConnectivity($protocol) {
+	public function testConnectivity($protocol)
+	{
 		$model = Mage::helper('filetransfer')->getProtocolModel(
 			'testsection/testgroup',
 			$protocol
@@ -56,7 +57,8 @@ class TrueAction_FileTransfer_Test_ConnectTest extends EcomDev_PHPUnit_Test_Case
 	 * @test
 	 * @loadFixture connectSettings.yaml
 	 */
-	public function testHelperConnectivity() {
+	public function testHelperConnectivity()
+	{
 		$helper = Mage::helper('filetransfer');
 		$configPath = 'testsection/testgroup';
 		$result = $helper->sendString(',,,,,', '3471_ftransfer_test.csv', $configPath);
@@ -84,7 +86,8 @@ class TrueAction_FileTransfer_Test_ConnectTest extends EcomDev_PHPUnit_Test_Case
 	 * @test
 	 * @loadFixture testSftpKey
 	 */
-	public function testSftpKey() {
+	public function testSftpKey()
+	{
 		$dir = dirname(__FILE__) . '/ConnectTests/fixtures';
 		$model = Mage::helper('filetransfer')->getProtocolModel(
 			'testsection/testgroup',

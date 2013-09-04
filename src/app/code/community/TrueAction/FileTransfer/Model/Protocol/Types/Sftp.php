@@ -126,7 +126,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		if (!$this->_conn) {
 			try{
 				Mage::throwException(
-					"Failed to connect to 'sftp://".$this->getConfig()->getHost()."'."
+					"Failed to connect to 'sftp://" . $this->getConfig()->getHost() . "'."
 				);
 			} catch (Exception $e) {
 				$success = false;
@@ -149,7 +149,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		if (!$this->_sftp = ssh2_sftp($this->_conn)) {
 			try{
 				Mage::throwException(
-					"Failed to start SFTP subsystem on 'sftp://".$this->getConfig()->getHost()."'."
+					"Failed to start SFTP subsystem on 'sftp://" . $this->getConfig()->getHost() . "'."
 				);
 			} catch (Exception $e) {
 				$success = false;
@@ -173,7 +173,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		if (!$this->_auth){
 			try{
 				Mage::throwException(
-					"Failed to authenticate to 'sftp://".$config->getHost()."@".$config->getHost()."'."
+					"Failed to authenticate to 'sftp://" . $config->getHost() . '@' . $config->getHost() . "'."
 				);
 			} catch (Exception $e) {
 				$success = false;
@@ -188,11 +188,9 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 	 */
 	protected function _authenticate()
 	{
-		$config      = $this->getConfig();
+		$config = $this->getConfig();
 		if ($config->getAuthType() === 'pub_key') {
-			$private_key = $config->getPrivateKey();
-			$public_key  = $config->getPublicKey();
-			$this->_auth = ssh2_auth_pubkey_file($this->_conn, $config->getUsername(), $public_key, $private_key);
+			$this->_auth = ssh2_auth_pubkey_file($this->_conn, $config->getUsername(), $config->getPublicKey(), $config->getPrivateKey());
 		} else {
 			$this->_auth = ssh2_auth_password($this->_conn, $config->getUsername(), $config->getPassword());
 		}
@@ -208,11 +206,11 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 	{
 		$success = true;
 		Mage::log("$remoteFile");
-		Mage::log("Connected to sftp://".$this->getConfig()->getUsername()."@".$this->getConfig()->getHost()."");
+		Mage::log('Connected to sftp://' . $this->getConfig()->getUsername() . '@' . $this->getConfig()->getHost());
 		$remoteStream = fopen("ssh2.sftp://{$this->_sftp}{$remoteFile}", 'w');
 		if (!$remoteStream) {
 			try{
-				Mage::throwException("Failed to open $remoteFile on 'sftp://".$this->getConfig()->getHost()."'.");
+				Mage::throwException("Failed to open $remoteFile on 'sftp://" . $this->getConfig()->getHost() . "'.");
 			} catch (Exception $e) {
 				$success = false;
 				Mage::logException($e);
@@ -221,7 +219,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 			if (false === fwrite($remoteStream, stream_get_contents($stream))) {
 				$success = false;
 			}
-			Mage::log("Uploaded data to 'sftp://".$this->getConfig()->getHost()."'.");
+			Mage::log("Uploaded data to 'sftp://" . $this->getConfig()->getHost() . "'.");
 		}
 		fclose($remoteStream);
 		return $success;
@@ -236,11 +234,11 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 	public function retrieve($stream, $remoteFile)
 	{
 		$success = true;
-		Mage::log("Connected to sftp://".$this->getConfig()->getUsername()."@".$this->getConfig()->getHost()."");
+		Mage::log('Connected to sftp://' . $this->getConfig()->getUsername() . '@' . $this->getConfig()->getHost());
 		$remoteStream = fopen("ssh2.sftp://{$this->_sftp}{$remoteFile}", 'r');
 		if (!$remoteStream) {
 			try{
-				Mage::throwException("Failed to open $remoteFile on 'sftp://".$this->getConfig()->getHost()."'.");
+				Mage::throwException("Failed to open $remoteFile on 'sftp://" . $this->getConfig()->getHost() . "'.");
 			} catch (Exception $e) {
 				$success = false;
 				Mage::logException($e);
@@ -249,7 +247,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 			if (false === fwrite($stream, stream_get_contents($remoteStream))) {
 				$success = false;
 			}
-			Mage::log("Downloaded data from 'sftp://".$this->getConfig()->getHost()."'.");
+			Mage::log("Downloaded data from 'sftp://" . $this->getConfig()->getHost() . "'.");
 		}
 		fclose($remoteStream);
 		return $success;

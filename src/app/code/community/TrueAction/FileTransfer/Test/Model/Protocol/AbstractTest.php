@@ -16,7 +16,6 @@ class TrueAction_FileTransfer_Test_Model_Protocol_AbstractTest extends EcomDev_P
 		);
 	}
 
-
 	/**
 	 * @test
 	 * */
@@ -27,7 +26,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_AbstractTest extends EcomDev_P
 		$this->assertContains('sftp', $ls);
 		$this->assertNotContains('.', $ls);
 		$this->assertNotContains('..', $ls);
-		$ls2 = $this->getCodes->invoke(null);
-		$this->assertSame($ls, $ls2);
+		$lsTwo = $this->getCodes->invoke(null);
+		$this->assertSame($ls, $lsTwo);
 	}
 }

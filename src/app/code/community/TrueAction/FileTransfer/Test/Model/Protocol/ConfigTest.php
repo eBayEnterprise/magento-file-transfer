@@ -6,12 +6,12 @@ tests for the ftp config generator.
  */
 class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev_PHPUnit_Test_Case
 {
-	private static $config = array(
+	private static $_config = array(
 		'protocol_code' => 'ftp',
 		'config_path' => 'testsection/testgroup'
 	);
 
-	private static $fieldMap = array(
+	private static $_fieldMap = array(
 		'filetransfer_ftp_username'    => 'username',
 		'filetransfer_ftp_password'    => 'password',
 		'filetransfer_ftp_host'        => 'host',
@@ -27,22 +27,23 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev_PHP
 		$this->loadMappedFields = $this->class->getMethod('loadMappedFields');
 		$this->loadMappedFields->setAccessible(true);
 		$this->importOptions = new Varien_Simplexml_Config(
-		'<filetransfer>
-			<sort_order>190</sort_order>
-			<show_in_default>1</show_in_default>
-			<show_in_website>1</show_in_website>
-			<show_in_store>1</show_in_store>
-			<ftp></ftp>
-			<sftp></sftp>
-		</filetransfer>'
+			'<filetransfer>
+				<sort_order>190</sort_order>
+				<show_in_default>1</show_in_default>
+				<show_in_website>1</show_in_website>
+				<show_in_store>1</show_in_store>
+				<ftp></ftp>
+				<sftp></sftp>
+			</filetransfer>'
 		);
 	}
 
 	/**
 	 * @test
 	 * */
-	public function testGenerateConfig() {
-		$model = $this->class->newInstance(self::$config);
+	public function testGenerateConfig()
+	{
+		$model = $this->class->newInstance(self::$_config);
 		$config = $model->setConfigPath('testsection/testgroup')
 			->generateFields($this->importOptions);
 		$this->assertInstanceOf('Varien_Simplexml_Config', $config);
@@ -66,11 +67,12 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev_PHP
 	 * @loadFixture ftpConfig
 	 * @doNotIndexAll
 	 * */
-	public function testConfigValues() {
-		$cfg = $this->class->newInstance(self::$config);
+	public function testConfigValues()
+	{
+		$cfg = $this->class->newInstance(self::$_config);
 		$this->assertSame('testsection/testgroup', $cfg->getConfigPath());
 		$this->assertSame('ftp', $cfg->getProtocolCode());
-		$this->loadMappedFields->invoke($cfg, self::$fieldMap);
+		$this->loadMappedFields->invoke($cfg, self::$_fieldMap);
 		$this->assertSame('somename', $cfg->getUsername());
 		$this->assertSame('welcome1', $cfg->getPassword());
 		$this->assertSame('some.host', $cfg->getHost());

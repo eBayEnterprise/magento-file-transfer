@@ -23,7 +23,7 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 			$protocol = $this->getProtocolModel($configPath, $store);
 			return $protocol->sendFile($localFile, $remoteFile);
 		} catch (Exception $e) {
-			Mage::log("filetransfer send error:". $e->getMessage());
+			Mage::log('filetransfer send error:' . $e->getMessage());
 		}
 		return false;
 	}
@@ -42,7 +42,7 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 			$protocol = $this->getProtocolModel($configPath, $store);
 			return $protocol->getFile($localFile, $remoteFile);
 		} catch (Exception $e) {
-			Mage::log("filetransfer get error:". $e->getMessage());
+			Mage::log('filetransfer get error:' . $e->getMessage());
 		}
 		return false;
 	}
@@ -61,7 +61,7 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 			$protocol = $this->getProtocolModel($configPath, $store);
 			return $protocol->sendString($dataString, $remoteFile);
 		} catch (Exception $e) {
-			Mage::log("filetransfer send error:". $e->getMessage());
+			Mage::log('filetransfer send error:' . $e->getMessage());
 		}
 		return false;
 	}
@@ -81,7 +81,7 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 			$protocol = $this->getProtocolModel($configPath, $store);
 			return $protocol->getString($remoteFile);
 		} catch (Exception $e) {
-			Mage::log("filetransfer get error:". $e->getMessage());
+			Mage::log('filetransfer get error:' . $e->getMessage());
 		}
 		return false;
 	}
@@ -94,7 +94,7 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 	 * @param  Mage_Core_Model_Store $store
 	 * @return array
 	 */
-	public function getInitData($configPath, $protocol = null, $store = null)
+	public function getInitData($configPath, $protocol=null, $store=null)
 	{
 		// not having the config path set is a non-recoverable error since there
 		// is currently no way to figure which set of data to get otherwise.

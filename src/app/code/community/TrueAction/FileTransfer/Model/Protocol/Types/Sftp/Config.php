@@ -23,7 +23,8 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp_Config
 	 * @param Varien_Simplexml_Element $importOptions
 	 * @return Varien_Simplexml_Config
 	 * */
-	public function _getBaseFields() {
+	public function getBaseFields()
+	{
 		$protocol = $this->getProtocolCode();
 		$fields   = new Varien_Simplexml_Config("
 		<fields>

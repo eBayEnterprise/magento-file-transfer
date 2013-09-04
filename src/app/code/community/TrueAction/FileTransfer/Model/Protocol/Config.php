@@ -7,7 +7,7 @@ concrete configuration generator for the ftp protocol.
 class TrueAction_FileTransfer_Model_Protocol_Config
 	extends TrueAction_ActiveConfig_Model_Config_Abstract
 {
-	protected $_fieldMap  = array(
+	protected $_fieldMap = array(
 		'filetransfer_%s_username'    => 'username',
 		'filetransfer_%s_password'    => 'password',
 		'filetransfer_%s_host'        => 'host',
@@ -76,28 +76,38 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 		}
 	}
 
+	/**
+	 * Returns generated fields
+ 	 *
+	 * @todo: Add feature specific options
+	 */
 	public function generateFields($moduleSpec)
 	{
 		$helper = Mage::helper('filetransfer');
 
-		$sortOrder = isset($moduleSpec->sort_order) ?
-			(int)$moduleSpec->sort_order : $helper->getGlobalSortOrder();
-		$defaultFlag = isset($moduleSpec->show_in_default) ?
-			(string)$moduleSpec->show_in_default : $helper->getGlobalShowInDefault();
-		$websiteFlag = isset($moduleSpec->show_in_website) ?
-			(string)$moduleSpec->show_in_website : $helper->getGlobalShowInWebsite();
-		$storeFlag = isset($moduleSpec->show_in_store) ?
-			(string)$moduleSpec->show_in_store : $helper->getGlobalShowInStore();
+		// This is a rather ham-handed way of avoiding complaints about invalid Camel Case variable names:
+		$sortOrder     = 'sort_order';
+		$showInDefault = 'show_in_default';
+		$showInWebsite = 'show_in_website';
+		$showInStore   = 'show_in_store';
 
-		$fields = $this->_getBaseFields();
+		$sortOrder = isset($moduleSpec->$sortOrder) ?
+			(int) $moduleSpec->$sortOrder : $helper->getGlobalSortOrder();
+		$defaultFlag = isset($moduleSpec->$showInDefault) ?
+			(string) $moduleSpec->$showInDefault : $helper->getGlobalShowInDefault();
+		$websiteFlag = isset($moduleSpec->$showInWebsite) ?
+			(string) $moduleSpec->$showInWebSite : $helper->getGlobalShowInWebsite();
+		$storeFlag = isset($moduleSpec->$showInStore) ?
+			(string) $moduleSpec->$showInStore : $helper->getGlobalShowInStore();
 
-		// TODO: ADD FEATURE SPECIFIC OPTIONS
+		$fields = $this->getBaseFields();
+
 		$increment = 0;
 		foreach ($fields->getNode()->children() as $fieldName => $fieldNode) {
-			$fields->setNode($fieldName.'/sort_order', $sortOrder + $increment++);
-			$fields->setNode($fieldName.'/show_in_default', $defaultFlag);
-			$fields->setNode($fieldName.'/show_in_website', $websiteFlag);
-			$fields->setNode($fieldName.'/show_in_store', $storeFlag);
+			$fields->setNode($fieldName . '/sort_order', $sortOrder + $increment++);
+			$fields->setNode($fieldName . '/show_in_default', $defaultFlag);
+			$fields->setNode($fieldName . '/show_in_website', $websiteFlag);
+			$fields->setNode($fieldName . '/show_in_store', $storeFlag);
 		}
 		return $fields;
 	}
@@ -108,7 +118,8 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 	 * @param Varien_Simplexml_Element $importOptions
 	 * @return Varien_Simplexml_Config
 	 * */
-	public function _getBaseFields() {
+	public function getBaseFields()
+	{
 		$protocol = $this->getProtocolCode();
 		$fields   = new Varien_Simplexml_Config("
 		<fields>

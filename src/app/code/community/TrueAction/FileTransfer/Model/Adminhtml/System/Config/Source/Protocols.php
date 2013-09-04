@@ -7,7 +7,7 @@ class TrueAction_FileTransfer_Model_Adminhtml_System_Config_Source_Protocols
 		$list = array();
 		$protocolCodes = TrueAction_FileTransfer_Model_Protocol_Abstract::getCodes();
 		foreach ($protocolCodes as $code) {
-			$model = Mage::getModel('filetransfer/protocol_types_'.$code);
+			$model = Mage::getModel('filetransfer/protocol_types_' . $code);
 			$list[] = array(
 				'value' => $code,
 				'label' => $helper->__($model->getName())
@@ -22,7 +22,7 @@ class TrueAction_FileTransfer_Model_Adminhtml_System_Config_Source_Protocols
 		$list = array();
 		$protocolCodes = TrueAction_FileTransfer_Model_Protocol_Abstract::getCodes();
 		foreach ($protocolCodes as $code) {
-			$model = Mage::getModel('filetransfer/protocol_types_'.$code);
+			$model = Mage::getModel('filetransfer/protocol_types_' . $code);
 			$list[] = array($code => $helper->__($model->getName()));
 		}
 		return $list;

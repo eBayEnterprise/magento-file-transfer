@@ -1,4 +1,12 @@
 <?php
+/**
+ *
+ *
+ * @method TrueAction_ActiveConfig_Model_Config_Abstract getConfig()
+ * @method string getString(string $remoteFile, string $data)
+ *
+ *
+ */
 abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core_Model_Abstract
 {
 	/**
@@ -17,12 +25,6 @@ abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core
 	private static $_protocolCodes = array();
 
 	/**
-	 * Magic getter that returns the protocol's config
-	 * @return TrueAction_ActiveConfig_Model_Config_Abstract
-	 * */
-	// public function getConfig();
-
-	/**
 	 * @param string $remoteFile
 	 * @param string $localFile
 	 * */
@@ -30,22 +32,9 @@ abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core
 
 	/**
 	 * @param string $remoteFile
-	 * @param string $data
-	 * */
-	// public function sendString($remoteFile, $data);
-
-	/**
-	 * @param string $remoteFile
 	 * @param string $localFile
 	 * */
 	abstract public function getFile($remoteFile, $localFile);
-
-	/**
-	 * @param string $remoteFile
-	 * @param string $data
-	 * */
-	// public function getString($remoteFile, $data);
-
 
 	/**
 	 * Join the directories in a canonical, platform-agnostic way.
@@ -88,7 +77,7 @@ abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core
 	 * @param  string $data
 	 * @return string
 	 */
-	protected function _getDataUriFromString($data = '')
+	protected function _getDataUriFromString($data='')
 	{
 		return 'data:text/plain,' . $data;
 	}
