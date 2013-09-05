@@ -20,9 +20,6 @@ class TrueAction_FileTransfer_Test_ConnectTest extends TrueAction_FileTransfer_T
 	const FILE1_NAME        = 'munsters.txt';
 	const FILE1_CONTENTS    = 'The Munsters is an American television sitcom depicting the home life of a family of benign monsters.';
 	const FILE2_NAME        = 'addams.txt';
-	const FILE2_CONTENTS    = 'The Addams Family is an American television series based on the characters in Charles Addams';
-	const FILE3_NAME        = 'gilligan.txt';
-	const FILE3_CONTENTS	= 'Gilligan\'s Island is an American sitcom created and produced by Sherwood Schwartz.';
 
 	const CHUNK_SIZE = 1024;
 
@@ -36,29 +33,28 @@ class TrueAction_FileTransfer_Test_ConnectTest extends TrueAction_FileTransfer_T
 				self::TESTBASE_DIR_NAME =>
 				array (
 					self::FILE1_NAME   => self::FILE1_CONTENTS,
-					self::FILE2_NAME   => self::FILE2_CONTENTS,
-					self::FILE3_NAME   => '',
+					self::FILE2_NAME   => '',
 				)
 			)
 		);
+		$this->_vRemoteFile = $this->_vfs->url(self::TESTBASE_DIR_NAME . '/' . self::FILE1_NAME);
+		$this->_vLocalFile  = $this->_vfs->url(self::TESTBASE_DIR_NAME . '/' . self::FILE2_NAME);
 	}
 
 	/**
+	 * Test sftp calls, mocking the sftp adapter
+	 * 
 	 * @test
-	 * @loadFixture connectSettings.yaml
 	 */
 	public function testSftpConnectivity()
 	{
-		$fakeRemoteFile = $this->_vfs->url(self::TESTBASE_DIR_NAME . '/' . self::FILE1_NAME);
-		$fakeLocalFile  = $this->_vfs->url(self::TESTBASE_DIR_NAME . '/' . self::FILE2_NAME);
-
-		// This is the key to testing here - we simulate the low-level Adapter, and we can cover all the calls
+		// Simulate the low-level Adapter, and we can cover all the calls
 		$this->replaceModel(
 			'filetransfer/adapter_sftp',
 			array (
 				'fclose'             => true,
 				'fread'              => self::FILE1_CONTENTS,
-				'fopen'              => fopen($this->_vfs->url(self::TESTBASE_DIR_NAME . '/' . self::FILE1_NAME), 'wb+'),
+				'fopen'              => fopen($this->_vRemoteFile, 'wb+'),
 				'fwrite'             => 100,
 				'streamGetContents'  => self::FILE1_CONTENTS,
 				'ssh2Connect'        => true,
@@ -68,13 +64,15 @@ class TrueAction_FileTransfer_Test_ConnectTest extends TrueAction_FileTransfer_T
 			)
 		);
 
-		$model = Mage::helper('filetransfer')->getProtocolModel('testsection/testgroup', 'sftp');
+		$model = Mage::helper('filetransfer')->getProtocolModel(
+			'testsection/testgroup',
+			'sftp'
+		);
 
-		$this->assertTrue($model->setPort(87)->sendString(self::FILE1_CONTENTS, $fakeRemoteFile));	// Setting the port just to cover it and see that it chains
-		$this->assertSame(self::FILE1_CONTENTS, $model->getString($fakeRemoteFile));
-		$this->assertTrue($model->getFile($fakeLocalFile, $fakeRemoteFile));
-		$this->assertTrue($model->sendFile($fakeLocalFile, $fakeRemoteFile));
-		$this->assertInstanceOf('Varien_Simplexml_Config', $model->getConfig()->getBaseFields());
+		$this->assertTrue($model->sendString(self::FILE1_CONTENTS, $this->_vRemoteFile));
+		$this->assertSame(self::FILE1_CONTENTS, $model->getString($this->_vRemoteFile));
+		$this->assertTrue($model->getFile($this->_vLocalFile, $this->_vRemoteFile));
+		$this->assertTrue($model->sendFile($this->_vLocalFile, $this->_vRemoteFile));
 	}
 
 	/**
@@ -84,10 +82,6 @@ class TrueAction_FileTransfer_Test_ConnectTest extends TrueAction_FileTransfer_T
 	 */
 	public function XtestConnectivity($protocol)
 	{
-		$model = Mage::helper('filetransfer')->getProtocolModel(
-			'testsection/testgroup',
-			$protocol
-		);
 		$result = $model->sendString(',,,,,', '3471_ftransfer_test.csv');
 		$this->assertTrue($result);
 
