@@ -1,5 +1,5 @@
 <?php
-class TrueAction_FileTransfer_Test_Model_Adapter_Sftp extends EcomDev_PHPUnit_Test_Case
+class TrueAction_FileTransfer_Test_Model_Adapter_SftpTest extends EcomDev_PHPUnit_Test_Case
 {
 	const TESTBASE_DIR_NAME = 'testBase';
 	const FILE1_NAME        = 'munsters.txt';
