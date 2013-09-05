@@ -3,7 +3,7 @@
  * inserts new nodes into the configuration using a specified
  * attachement point.
  * */
-class TrueAction_ActiveConfig_Model_FieldInjector
+class TrueAction_ActiveConfig_Model_Injector
 	implements TrueAction_ActiveConfig_Model_Injector_Interface
 {
 	// group node the injector is attached to.
@@ -14,7 +14,7 @@ class TrueAction_ActiveConfig_Model_FieldInjector
 	 * point.
 	 * @param Varien_Simplexml_Element $groupNode
 	 * */
-	public function __construct($groupNode = null)
+	public function __construct($groupNode=null)
 	{
 		$this->_groupNode = $groupNode;
 	}
@@ -27,7 +27,7 @@ class TrueAction_ActiveConfig_Model_FieldInjector
 	public function insertConfig($fieldsConfig)
 	{
 		if (!is_null($this->_groupNode)) {
-	    	$this->_groupNode->fields->extend($fieldsConfig->getNode());
+			$this->_groupNode->fields->extend($fieldsConfig->getNode());
 		}
 	}
 

@@ -1,13 +1,13 @@
 <?php
-class TrueAction_ActiveConfig_Test_Model_FieldInjectorTest extends EcomDev_PHPUnit_Test_Case
+class TrueAction_ActiveConfig_Test_Model_InjectorTest extends EcomDev_PHPUnit_Test_Case
 {
-	protected static $cls;
-	protected static $grpNode;
+	public static $cls;
+	public static $grpNode;
 
 	public static function setUpBeforeClass()
 	{
 		self::$cls = new ReflectionClass(
-			'TrueAction_ActiveConfig_Model_FieldInjector'
+			'TrueAction_ActiveConfig_Model_Injector'
 		);
 		self::$grpNode = self::$cls->getProperty('_groupNode');
 		self::$grpNode->setAccessible(true);
