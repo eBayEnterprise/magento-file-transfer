@@ -1,5 +1,6 @@
 <?php
 /**
+ * Unit Tests for Protocol/ Type/ Sftp
  *
  */
 class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAction_FileTransfer_Test_Abstract
@@ -8,8 +9,6 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 	const FILE1_NAME        = 'munsters.txt';
 	const FILE1_CONTENTS    = 'The Munsters is an American television sitcom depicting the home life of a family of benign monsters.';
 	const FILE2_NAME        = 'addams.txt';
-
-	const CHUNK_SIZE = 1024;
 
 	private $_vfs;
 

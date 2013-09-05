@@ -9,6 +9,9 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftps extends TrueAction_FileT
 	public function _construct()
 	{
 		parent::_construct();
+		if( !$this->hasAdapter() ) {
+			$this->setAdapter(Mage::getModel('filetransfer/adapter_ftps'));
+		}
 		$this->setName('File Transfer Protocol (SSL)');
 	}
 
@@ -22,7 +25,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftps extends TrueAction_FileT
 	{
 		$config = $this->getConfig();
 		$success = true;
-		$this->_conn = ftp_ssl_connect($config->getHost(), $config->getPort());
+		$this->_conn = $this->getAdapter()->ftpSslConnect($config->getHost(), $config->getPort());
 		if (!$this->_conn){
 			try{
 				Mage::throwException("Failed to connect to 'ftps://$this->_host'.");
@@ -32,5 +35,4 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftps extends TrueAction_FileT
 			}
 		}
 		return $success;
-	}
-}
+	} }

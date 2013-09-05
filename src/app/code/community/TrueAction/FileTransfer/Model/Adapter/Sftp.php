@@ -3,8 +3,8 @@
  * Adapter for Sftp
  *
  * Basically just wraps php functions; HOWEVER in order to comply with coding standards, we camelCase
- *	stream_get_contents and the ssh2_xxx functions, and then apply _underscore to them to make the 
- * 	correct call. This is how we can conform to sniff rules and make this as simple as possible.
+ * stream_get_contents and the ssh2_xxx functions, and then apply _underscore to them to make the 
+ * correct call. This is how we can conform to sniff rules and make this as simple as possible.
  */
 class TrueAction_FileTransfer_Model_Adapter_Sftp extends Varien_Object
 {

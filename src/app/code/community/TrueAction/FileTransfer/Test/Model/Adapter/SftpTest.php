@@ -27,7 +27,7 @@ class TrueAction_FileTransfer_Test_Model_Adapter_SftpTest extends EcomDev_PHPUni
 				)
 			)
 		);
-		$this->_adapter = new TrueAction_FileTransfer_Model_Adapter_Sftp();
+		$this->_adapter = Mage::getModel('filetransfer/adapter_sftp');
 	}
 
 	/**
