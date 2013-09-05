@@ -5,11 +5,11 @@ class TrueAction_ActiveConfig_Model_Observer
 
 	// format of the event name:
 	// activeconfig_<module_config_section>_<featurename>
-	const EVENT_PREFIX     = 'activeconfig_';
+	const EVENT_PREFIX = 'activeconfig_';
 
 	// the path to the placeholder nodes relative to a group node
 	// string
-	const IMPORT_SPEC      = 'activeconfig_import';
+	const IMPORT_SPEC = 'activeconfig_import';
 
 	public function __construct()
 	{
@@ -28,7 +28,8 @@ class TrueAction_ActiveConfig_Model_Observer
 		Varien_Simplexml_Element $specNode,
 		Varien_Simplexml_Element $groupNode,
 		$configPath
-	) {
+	)
+	{
 		foreach ($specNode->children() as $moduleName => $moduleNode) {
 			Mage::dispatchEvent(
 				self::EVENT_PREFIX . $moduleName,
@@ -54,13 +55,14 @@ class TrueAction_ActiveConfig_Model_Observer
 		Varien_Simplexml_Element $groupNode,
 		Varien_Simplexml_Element $moduleSpec,
 		$configPath
-	) {
-		$injector = Mage::getModel('activeconfig/fieldinjector');
+	)
+	{
+		$injector = Mage::getModel('activeconfig/injector');
 		$injector->setAttachmentPoint($groupNode);
 		return Array(
-			"injector"    => $injector,
-			"module_spec" => $moduleSpec,
-			"config_path" => $configPath,
+			'injector'    => $injector,
+			'module_spec' => $moduleSpec,
+			'config_path' => $configPath,
 		);
 	}
 
@@ -74,10 +76,10 @@ class TrueAction_ActiveConfig_Model_Observer
 	{
 		$fieldNodes = $group->fields->children();
 		foreach ($fieldNodes as $fieldName => $fieldNode) {
-        	if ($fieldName === self::IMPORT_SPEC) {
-        		$this->_readImportSpec($fieldNode, $group, $configPath);
-        	}
-        }
+			if ($fieldName === self::IMPORT_SPEC) {
+				$this->_readImportSpec($fieldNode, $group, $configPath);
+			}
+		}
 	}
 
 	/**
@@ -90,13 +92,13 @@ class TrueAction_ActiveConfig_Model_Observer
 	{
 		$config = $observer->getEvent()->getConfig();
 		$sections = $config->getNode('sections');
-		$injector = Mage::getModel('activeconfig/fieldinjector');
+		$injector = Mage::getModel('activeconfig/injector');
 		foreach ($sections->children() as $sectionName => $section) {
 			foreach ($section->groups->children() as $groupName => $group) {
 				// only attempt to process groups that have an import spec.
 				// NOTE: must specifically check for false or else this may break
 				if (false !== $group->descend(self::IMPORT_SPEC_PATH)) {
-					$configPath = $sectionName.'/'.$groupName;
+					$configPath = $sectionName . '/' . $groupName;
 					$this->_processFor($group, $configPath);
 				}
 			}
