@@ -1,17 +1,16 @@
 <?php
 /*
-TrueAction_FileTransfer_Model_Protocol_Types_ftps
-
+TrueAction_FileTransfer_Model_Protocol_Types_Ftps
 concrete configuration generator for the ftp protocol.
  */
 class TrueAction_FileTransfer_Model_Protocol_Types_Ftps extends TrueAction_FileTransfer_Model_Protocol_Types_Ftp
 {
 	public function _construct()
 	{
-		parent::_construct();
 		if( !$this->hasAdapter() ) {
 			$this->setAdapter(Mage::getModel('filetransfer/adapter_ftps'));
 		}
+		parent::_construct();
 		$this->setName('File Transfer Protocol (SSL)');
 	}
 
@@ -35,4 +34,5 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftps extends TrueAction_FileT
 			}
 		}
 		return $success;
-	} }
+	} 
+}

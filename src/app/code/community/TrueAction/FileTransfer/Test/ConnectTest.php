@@ -42,6 +42,20 @@ class TrueAction_FileTransfer_Test_ConnectTest extends TrueAction_FileTransfer_T
 	}
 
 	/**
+	 * Test invalid_protocol calls, mocking the sftp adapter
+	 *
+	 * @test
+	 * @expectedException Mage_Core_Exception
+	 */
+	public function testMikeSftpConnectivity()
+	{
+		$model = Mage::helper('filetransfer')->getProtocolModel(
+			'testsection/testgroup',
+			'SomeStrangeAndUnnaturalValueForAProtocol8D82507D585D579A01235E6A51288E0A1B186EED'
+		);
+	}
+
+	/**
 	 * Test sftp calls, mocking the sftp adapter
 	 * 
 	 * @test
@@ -73,32 +87,6 @@ class TrueAction_FileTransfer_Test_ConnectTest extends TrueAction_FileTransfer_T
 		$this->assertSame(self::FILE1_CONTENTS, $model->getString($this->_vRemoteFile));
 		$this->assertTrue($model->getFile($this->_vLocalFile, $this->_vRemoteFile));
 		$this->assertTrue($model->sendFile($this->_vLocalFile, $this->_vRemoteFile));
-	}
-
-	/**
-	 * Xtest
-	 * @loadFixture connectSettings.yaml
-	 * @dataProvider dataProvider
-	 */
-	public function XtestConnectivity($protocol)
-	{
-		$result = $model->sendString(',,,,,', '3471_ftransfer_test.csv');
-		$this->assertTrue($result);
-
-		$result = $model->getString('3471_ftransfer_test.csv');
-		$this->assertSame(',,,,,', $result);
-
-		$result = $model->getFile(
-			'/tmp/foo.txt',
-			'3471_ftransfer_test.csv'
-		);
-		$this->assertTrue($result);
-
-		$result = $model->sendFile(
-			'/tmp/foo.txt',
-			'3471_ftransfer_test2.csv'
-		);
-		$this->assertTrue($result);
 	}
 
 	/**
