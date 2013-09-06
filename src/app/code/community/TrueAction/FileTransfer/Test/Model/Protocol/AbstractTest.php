@@ -44,19 +44,13 @@ class TrueAction_FileTransfer_Test_Model_Protocol_AbstractTest extends EcomDev_P
 		$this->assertSame($model->getConfig()->getHost(), self::FAKE_HOST);
 		$this->assertSame($model->getConfig()->getPort(), self::FAKE_PORT);
 		$this->assertSame($model->getConfig()->getUsername(), self::FAKE_USER);
-	}
 
-	/**
-	 * Test protected method
-	 *
-	 * @todo: Perhaps a better way to do this.
-	 * @test
-	 */
-	public function testProtectedMethod()
-	{
-		$dummy = new DummyClass();
-		$dataString = $dummy->testGetDataUriFromString(self::STRING_DATA);
+		// Test getDataUriFromString method
+		$dataString = $model->getDataUriFromString(self::STRING_DATA);
 		$this->assertStringStartsWith('data:text/plain,', $dataString);
+
+		$dataStringTwo = TrueAction_FileTransfer_Model_Protocol_Abstract::getDataUriFromString(self::STRING_DATA);
+		$this->assertStringStartsWith('data:text/plain,', $dataStringTwo);
 	}
 
 	/**
@@ -70,39 +64,5 @@ class TrueAction_FileTransfer_Test_Model_Protocol_AbstractTest extends EcomDev_P
 		$this->assertNotContains('..', $ls);
 		$lsTwo = $this->getCodes->invoke(null);
 		$this->assertSame($ls, $lsTwo);
-	}
-}
-
-/**
- * getMockForAbstractClass specifically lets me test concrete methods of an abstract class,
- * but I can't get to protected members.
- * @todo: Is '_getDataUriFromString' being 'protected' the right thing to do?
- *
- */
-class DummyClass extends TrueAction_FileTransfer_Model_Protocol_Abstract
-{
-	/**
-	 * To cover the protected member '_getDataUriFromString'
-	 * @todo: Probabaly a better way to do this
-	 */
-	public function testGetDataUriFromString($string)
-	{
-		return $this->_getDataUriFromString($string);
-	}
-
-	/**
-	 * Required to fulfill contract
-	 */
-	public function sendFile($remoteFile, $localFile)
-	{
-		return;
-	}
-
-	/**
-	 * Required to fulfill contract
-	 */
-	public function getFile($remoteFile, $localFile)
-	{
-		return;
 	}
 }

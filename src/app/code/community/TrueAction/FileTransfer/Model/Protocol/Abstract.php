@@ -77,7 +77,7 @@ abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core
 	 * @param  string $data
 	 * @return string
 	 */
-	protected function _getDataUriFromString($data='')
+	public static function getDataUriFromString($data='')
 	{
 		return 'data:text/plain,' . $data;
 	}

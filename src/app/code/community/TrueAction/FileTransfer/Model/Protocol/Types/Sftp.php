@@ -82,7 +82,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		// init sftp subsystem
 		$isSuccess = $isSuccess && $this->initSftp();
 		// Transfer file
-		$stream = $this->getAdapter()->fopen($this->_getDataUriFromString($string), 'r+');
+		$stream = $this->getAdapter()->fopen($this->getDataUriFromString($string), 'r+');
 		$isSuccess = $isSuccess && $this->transfer($stream, $remotePath);
 		$this->getAdapter()->fclose($stream);
 		return $isSuccess;
@@ -102,7 +102,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		// init sftp subsystem
 		$isSuccess = $isSuccess && $this->initSftp();
 		// Transfer file
-		$stream = $this->getAdapter()->fopen($this->_getDataUriFromString(), 'r+');
+		$stream = $this->getAdapter()->fopen($this->getDataUriFromString(), 'r+');
 		$isSuccess = $isSuccess && $this->retrieve($stream, $remotePath);
 		$output = $this->getAdapter()->streamGetContents($stream, -1, 0);
 		$this->getAdapter()->fclose($stream);
