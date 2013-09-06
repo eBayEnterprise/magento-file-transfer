@@ -1,5 +1,5 @@
 config:
-  default/testsection/testgroup/filetransfer_protocol: ftp
+  default/testsection/testgroup/filetransfer_protocol: sftp
   default/testsection/testgroup/filetransfer_ftp_username: anonymous
   default/testsection/testgroup/filetransfer_ftp_password: phangm@trueaction.com
   default/testsection/testgroup/filetransfer_ftp_host: ftp.ubuntu.com
