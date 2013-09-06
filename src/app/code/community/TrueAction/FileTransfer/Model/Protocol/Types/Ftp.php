@@ -13,6 +13,9 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 	public function _construct()
 	{
 		parent::_construct();
+		if( !$this->hasAdapter() ) {
+			$this->setAdapter(Mage::getModel('filetransfer/adapter_ftp'));
+		}
 		$this->setName('File Transfer Protocol');
 	}
 
@@ -30,11 +33,11 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 		// check to see if ftp connect is in passive mode
 		$isSuccess = $isSuccess && $this->isPassive();
 		// Transfer file
-		$stream = fopen($localFile, 'r');
+		$stream = $this->getAdapter()->fopen($localFile, 'r');
 		$isSuccess = $isSuccess && $this->transfer($stream, $remotePath);
 		// close ftp connection
 		$this->close();
-		fclose($stream);
+		$this->getAdapter()->fclose($stream);
 		return $isSuccess;
 	}
 
@@ -56,11 +59,11 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 		// check to see if ftp connect is in passive mode
 		$isSuccess = $isSuccess && $this->isPassive();
 		// Transfer file
-		$stream = fopen($localFile, 'w+');
+		$stream = $this->getAdapter()->fopen($localFile, 'w+');
 		$isSuccess = $isSuccess && $this->retrieve($stream, $remotePath);
 		// close ftp connection
 		$this->close();
-		fclose($stream);
+		$this->getAdapter()->fclose($stream);
 		return $isSuccess;
 	}
 
@@ -77,11 +80,11 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 		// check to see if ftp connect is in passive mode
 		$isSuccess = $isSuccess && $this->isPassive();
 		// Transfer file
-		$stream = fopen($this->_getDataUriFromString($string), 'r+');
+		$stream = $this->getAdapter()->fopen($this->_getDataUriFromString($string), 'r+');
 		$isSuccess = $isSuccess && $this->transfer($stream, $remoteFile);
 		// close ftp connection
 		$this->close();
-		fclose($stream);
+		$this->getAdapter()->fclose($stream);
 		return $isSuccess;
 	}
 
@@ -98,12 +101,12 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 		// check to see if ftp connect is in passive mode
 		$isSuccess = $isSuccess && $this->isPassive();
 		// Transfer file
-		$stream = fopen($this->_getDataUriFromString(), 'r+');
+		$stream = $this->getAdapter()->fopen($this->_getDataUriFromString(), 'r+');
 		$isSuccess = $isSuccess && $this->retrieve($stream, $remoteFile);
 		// close ftp connection
 		$this->close();
-		$output = stream_get_contents($stream, -1, 0);
-		fclose($stream);
+		$output = $this->getAdapter()->streamGetContents($stream, -1, 0);
+		$this->getAdapter()->fclose($stream);
 		return $output;
 	}
 
@@ -123,7 +126,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 	{
 		$config = $this->getConfig();
 		$success = true;
-		$this->_conn = ftp_connect($config->getHost(), $config->getPort());
+		$this->_conn = $this->getAdapter()->ftpConnect($config->getHost(), $config->getPort());
 		if (!$this->_conn){
 			try{
 				Mage::throwException("Failed to connect to 'ftp://" . $this->getConfig()->getHost() . "'.");
@@ -145,7 +148,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 	{
 		$success = true;
 		$config = $this->getConfig();
-		if (!$this->_auth = ftp_login($this->_conn, $config->getUsername(), $config->getPassword())){
+		if (!$this->_auth = $this->getAdapter()->ftpLogin($this->_conn, $config->getUsername(), $config->getPassword())){
 			try{
 				Mage::throwException("Failed to authenticate to 'ftp://" . $this->getConfig()->getHost() . '@' . $this->getConfig()->getHost() . "'.");
 			} catch (Exception $e) {
@@ -165,7 +168,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 	public function isPassive()
 	{
 		$success = true;
-		if (!$this->_pasv = ftp_pasv($this->_conn, true)){
+		if (!$this->_pasv = $this->getAdapter()->ftpPasv($this->_conn, true)){
 			try{
 				Mage::throwException("Failed to switch to passive mode on 'ftp://" . $this->getConfig()->getHost() . "'.");
 			} catch (Exception $e) {
@@ -186,7 +189,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 	{
 		$success = true;
 		Mage::log('Connected to ftp://' . $this->getConfig()->getUsername() . '@' . $this->getConfig()->getHost());
-		if (!$up = ftp_fput($this->_conn, $remoteFile, $stream, FTP_BINARY)) {
+		if (!$up = $this->getAdapter()->ftpFput($this->_conn, $remoteFile, $stream, FTP_BINARY)) {
 			try{
 				Mage::throwException("Failed to upload data to 'ftp://" . $this->getConfig()->getHost() . "'.");
 			} catch (Exception $e) {
@@ -210,7 +213,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 	{
 		$success = true;
 		Mage::log('Connected to ftp://' . $this->getConfig()->getUsername() . '@' . $this->getConfig()->getHost() );
-		$up = ftp_fget($this->_conn, $stream, $remoteFile, FTP_BINARY);
+		$up = $this->getAdapter()->ftpFget($this->_conn, $stream, $remoteFile, FTP_BINARY);
 		if (!$up) {
 			try{
 				Mage::throwException("Failed to download 'ftp://" . $this->getConfig()->getHost() . "/$remoteFile'.");
@@ -234,7 +237,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Ftp extends TrueAction_FileTr
 	public function close()
 	{
 		if ($this->_conn){
-			ftp_close($this->_conn);
+			$this->getAdapter()->ftpClose($this->_conn);
 		}
 	}
 }
