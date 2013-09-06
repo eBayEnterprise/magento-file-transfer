@@ -1,0 +1,2 @@
+config:
+  default/testsection/testgroup/filetransfer_protocol: 'sftp'

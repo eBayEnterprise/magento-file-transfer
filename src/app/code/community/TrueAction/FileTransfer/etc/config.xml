@@ -38,7 +38,7 @@
 	<default>
 		<filetransfer>
 			<global>
-				<default_protocol>ftp</default_protocol>
+				<default_protocol>sftp</default_protocol>
 				<sort_order>500</sort_order>
 				<show_in_default>1</show_in_default>
 				<show_in_website>1</show_in_website>

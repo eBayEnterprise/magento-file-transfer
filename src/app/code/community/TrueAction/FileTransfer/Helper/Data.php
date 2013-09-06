@@ -99,10 +99,10 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 		// not having the config path set is a non-recoverable error since there
 		// is currently no way to figure which set of data to get otherwise.
 		if (!$configPath) {
-			Mage::throwException(
-				'FileTransfer Config Error: config path not set'
-			);
+			Mage::throwException('FileTransfer Config Error: config path not set');
+// @codeCoverageIgnoreStart
 		}
+// @codeCoverageIgnoreEnd
 		// if the protocol code was not specified, try reading it from the mage config.
 		if (!$protocol){
 			$protocol = Mage::getStoreConfig(
@@ -131,7 +131,7 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 			$store
 		);
 		try {
-			return Mage::getModel(
+			$protocolModel = Mage::getModel(
 				'filetransfer/protocol_types_' . $config['protocol_code'],
 				array('config' => $config)
 			);
@@ -140,6 +140,7 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 				"Unable to get the protocol model where protocol='$protocol'."
 			);
 		}
+		return $protocolModel;
 	}
 
 	/**

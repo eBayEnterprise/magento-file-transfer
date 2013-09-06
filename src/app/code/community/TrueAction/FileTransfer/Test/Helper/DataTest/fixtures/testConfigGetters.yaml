@@ -1,0 +1,6 @@
+config:
+  default/filetransfer/global/default_protocol: 'ProtocolX'
+  default/filetransfer/global/sort_order: 9
+  default/filetransfer/global/show_in_default: 18 
+  default/filetransfer/global/show_in_website: 27
+  default/filetransfer/global/show_in_store: 36
