@@ -55,6 +55,8 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp_Config
 			</filetransfer_{$protocol}_password>
 			<filetransfer_{$protocol}_ssh_prv_key translate=\"label\">
 				<label>SSH Private Key</label>
+				<frontend_type>obscure</frontend_type>
+				<backend_model>adminhtml/system_config_backend_encrypted</backend_model>
 				<depends>
 					<filetransfer_protocol>sftp</filetransfer_protocol>
 					<filetransfer_sftp_auth_type>pub_key</filetransfer_sftp_auth_type>
