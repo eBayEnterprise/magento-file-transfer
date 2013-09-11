@@ -125,14 +125,32 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		$a = $b = 'foo';
 
 		$model = Mage::getModel('filetransfer/protocol_types_sftp');
-		$this->assertFalse( $model->connect() );
-		$this->assertFalse( $model->initSftp() );
-		$this->assertFalse( $model->retrieve($a, $b) );
-		$this->assertFalse( $model->transfer($a, $b) );
+		$this->assertFalse($model->connect());
+		$this->assertFalse($model->initSftp());
+		$this->assertFalse($model->retrieve($a, $b));
+		$this->assertFalse($model->transfer($a, $b));
 
-		$this->assertFalse( $model->login() );
+		$this->assertFalse($model->login());
+
+		$keyMakerMock = $this->getModelMockBuilder('filetransfer/key_maker')
+			->disableOriginalConstructor(true)
+			->setMethods(array('createKeyFiles','getPublicKeyPath','getPrivateKeyPath','destroyKeys'))
+			->getMock();
+		$keyMakerMock->expects($this->once())
+			->method('createKeyFiles')
+			->will($this->returnValue(true));
+		$keyMakerMock->expects($this->once())
+			->method('getPublicKeyPath')
+			->will($this->returnValue('foo/bar.pub'));
+		$keyMakerMock->expects($this->once())
+			->method('getPrivateKeyPath')
+			->will($this->returnValue('foo/bar.priv'));
+		$keyMakerMock->expects($this->once())
+			->method('destroyKeys')
+			->will($this->returnValue(true));
+		$this->replaceByMock('model', 'filetransfer/key_maker', $keyMakerMock);
 
 		$model->getConfig()->setAuthType('pub_key');
-		$this->assertFalse( $model->login() );
+		$this->assertFalse($model->login());
 	}
 }
