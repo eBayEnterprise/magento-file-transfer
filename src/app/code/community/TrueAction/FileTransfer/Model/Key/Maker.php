@@ -69,6 +69,11 @@ class TrueAction_FileTransfer_Model_Key_Maker
 		$this->getFsTool()->open(array('path' => $this->getBaseDir()));
 		$pubCreated = $this->getFsTool()->write($this->getPublicKeyPath(), $pubKey, 0644);
 		$privCreated = $this->getFsTool()->write($this->getPrivateKeyPath(), $privKey, 0600);
+		$msg = sprintf(
+			'[ %s ] Generated files successfully: pub - %d, priv - %d', __CLASS__,
+			$pubCreated, $privCreated
+		);
+		Mage::log($msg, Zend_Log::DEBUG);
 		return $pubCreated && $privCreated;
 	}
 
@@ -87,6 +92,8 @@ class TrueAction_FileTransfer_Model_Key_Maker
 			}
 			$results = $results && $this->getFsTool()->rmdir($this->getBaseDir());
 		}
+		$msg = sprintf('[ %s ] Files deleted successfully: %d', __CLASS__, $results);
+		Mage::log($msg, Zend_Log::DEBUG);
 		return $results;
 	}
 
