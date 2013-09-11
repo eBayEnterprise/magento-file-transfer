@@ -100,9 +100,9 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 		// is currently no way to figure which set of data to get otherwise.
 		if (!$configPath) {
 			Mage::throwException('FileTransfer Config Error: config path not set');
-// @codeCoverageIgnoreStart
+			// @codeCoverageIgnoreStart
 		}
-// @codeCoverageIgnoreEnd
+		// @codeCoverageIgnoreEnd
 		// if the protocol code was not specified, try reading it from the mage config.
 		if (!$protocol){
 			$protocol = Mage::getStoreConfig(

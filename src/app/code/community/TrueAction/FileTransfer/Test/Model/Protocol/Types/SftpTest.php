@@ -30,7 +30,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 
 	/**
 	 * Test sftp calls, mocking the sftp adapter
-	 * 
+	 *
 	 * @todo move Config tests to TrueAction_FileTransfer_Model_Protocol_Types_Sftp_Config Unit Test (when it pops into existence)
 	 * @test
 	 */
@@ -55,7 +55,6 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 
 		$model = Mage::getModel('filetransfer/protocol_types_sftp');
 
-
 		// Setting the port just to cover it and see that it chains
 		$this->assertTrue($model->setPort(87)->sendString(self::FILE1_CONTENTS, $this->_vRemoteFile));
 
@@ -68,16 +67,14 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		// Sort this into proper Config Unit Test:
 		$this->assertInstanceOf(
 			'Varien_Simplexml_Config',
-			$model->getConfig()
-				->setPassword('justToCoverPassword')
-				->getBaseFields()
+			$model->getConfig()->setPassword('justToCoverPassword')->getBaseFields()
 		);
 	}
 
 	/**
 	 * Test we can get remote, but not write locally
 	 * Test we can get locally, but not write remote
-	 * 
+	 *
 	 * @test
 	 */
 	public function testSftpFwriteFails()
@@ -108,7 +105,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 
 	/**
 	 * Force some failures to complete coverage
-	 * 
+	 *
 	 * @test
 	 */
 	public function testSftpConnectFail()
@@ -135,7 +132,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 
 		$this->assertFalse( $model->login() );
 
-		$model->getConfig()->setAuthType('pub_key');	
+		$model->getConfig()->setAuthType('pub_key');
 		$this->assertFalse( $model->login() );
 	}
 }

@@ -9,7 +9,6 @@ class TrueAction_FileTransfer_Test_Helper_DataTest extends TrueAction_FileTransf
 
 	private $_vfs;
 
-
 	private $_helper;
 
 	public function setUp()
@@ -31,7 +30,7 @@ class TrueAction_FileTransfer_Test_Helper_DataTest extends TrueAction_FileTransf
 
 	/**
 	 * My go-to - just instantiate and assert 'it is what it is'
-	 * 
+	 *
 	 * @test
 	 */
 	public function testConstruct()
@@ -41,7 +40,7 @@ class TrueAction_FileTransfer_Test_Helper_DataTest extends TrueAction_FileTransf
 
 	/**
 	 * Take the error path of these methods, they should return false
-	 * 
+	 *
 	 * @test
 	 */
 	public function testMethodsFail()
@@ -65,7 +64,7 @@ class TrueAction_FileTransfer_Test_Helper_DataTest extends TrueAction_FileTransf
 
 	/**
 	 * Tests the various config getters
-	 * 
+	 *
 	 * @test
 	 * @loadFixture
 	 */
@@ -80,7 +79,7 @@ class TrueAction_FileTransfer_Test_Helper_DataTest extends TrueAction_FileTransf
 
 	/**
 	 * Test send and get by specifying protocol, and mocking the adapter ('sftp')
-	 * 
+	 *
 	 * @test
 	 * @loadFixture
 	 */

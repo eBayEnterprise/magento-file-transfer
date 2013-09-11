@@ -59,7 +59,7 @@ class TrueAction_FileTransfer_Test_Model_Adapter_SftpTest extends EcomDev_PHPUni
 
 	/**
 	 * Here we fopen and use fread to get contents, and naturally we fclose
-	 * 
+	 *
 	 * @test
 	 */
 	public function testFread()
@@ -76,7 +76,7 @@ class TrueAction_FileTransfer_Test_Model_Adapter_SftpTest extends EcomDev_PHPUni
 
 	/**
 	 * Here we fopen and use fwrite to put some contents, and naturally we fclose
-	 * 
+	 *
 	 * @test
 	 */
 	public function testFwrite()
@@ -98,11 +98,11 @@ class TrueAction_FileTransfer_Test_Model_Adapter_SftpTest extends EcomDev_PHPUni
 	}
 
 	/**
-	 * Coverage for ssh2Connect 
+	 * Coverage for ssh2Connect
 	 *
 	 * @test
-     * @expectedException Exception
-     */
+	 * @expectedException Exception
+	 */
 	public function testSshConnect()
 	{
 		$this->_adapter->ssh2Connect(null, 0);
@@ -112,7 +112,7 @@ class TrueAction_FileTransfer_Test_Model_Adapter_SftpTest extends EcomDev_PHPUni
 	 * Coverage for ssh2Sftp
 	 *
 	 * @test
-     * @expectedException Exception
+	 * @expectedException Exception
 	 */
 	public function testSshSftp()
 	{
@@ -123,7 +123,7 @@ class TrueAction_FileTransfer_Test_Model_Adapter_SftpTest extends EcomDev_PHPUni
 	 * Coverage for ssh2AuthPubkeyFile
 	 *
 	 * @test
-     * @expectedException Exception
+	 * @expectedException Exception
 	 */
 	public function testSshAuthPubkeyFile()
 	{
