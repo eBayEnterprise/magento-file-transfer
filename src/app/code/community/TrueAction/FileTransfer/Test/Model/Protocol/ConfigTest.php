@@ -70,6 +70,12 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev_PHP
 	 * */
 	public function testConfigValues()
 	{
+		$helper = $this->getHelperMock('core/data', array('decrypt'));
+		$helper->expects($this->any())
+			->method('decrypt')
+			->with($this->identicalTo('0:2:3fbb7c95e7c84df0:ZA2CwPF1DexZjAOEXMLcxA=='))
+			->will($this->returnValue('welcome1'));
+		$this->replaceByMock('helper', 'core', $helper);
 		$cfg = $this->class->newInstance(self::$_config);
 		$this->assertSame('testsection/testgroup', $cfg->getConfigPath());
 		$this->assertSame('ftp', $cfg->getProtocolCode());
