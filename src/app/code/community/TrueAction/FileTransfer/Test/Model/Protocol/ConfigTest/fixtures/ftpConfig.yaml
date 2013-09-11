@@ -1,5 +1,4 @@
 config:
-  global/crypt/key: '9bccf1f1a23ed700de1df9d9a687e7a4'
   default/testsection/testgroup/filetransfer_protocol: ftp
   default/testsection/testgroup/filetransfer_ftp_username: somename
   default/testsection/testgroup/filetransfer_ftp_password: "0:2:3fbb7c95e7c84df0:ZA2CwPF1DexZjAOEXMLcxA=="
