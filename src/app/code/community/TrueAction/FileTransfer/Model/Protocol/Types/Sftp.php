@@ -193,7 +193,15 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 	{
 		$config = $this->getConfig();
 		if ($config->getAuthType() === 'pub_key') {
-			$this->_auth = $this->getAdapter()->ssh2AuthPubkeyFile($this->_conn, $config->getUsername(), $config->getPublicKey(), $config->getPrivateKey());
+			$keyMaker = Mage::getModel('filetransfer/key_maker');
+			$keyMaker->createKeyFiles($config->getPublicKey(), $config->getPrivateKey());
+			$this->_auth = $this->getAdapter()->ssh2AuthPubkeyFile(
+				$this->_conn,
+				$config->getUsername(),
+				$keyMaker->getPublicKeyPath(),
+				$keyMaker->getPrivateKeyPath()
+			);
+			$keyMaker->destroyKeys();
 		} else {
 			$this->_auth = $this->getAdapter()->ssh2AuthPassword($this->_conn, $config->getUsername(), $config->getPassword());
 		}
