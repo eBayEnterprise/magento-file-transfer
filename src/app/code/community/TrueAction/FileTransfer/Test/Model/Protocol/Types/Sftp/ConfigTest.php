@@ -28,6 +28,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_Sftp_ConfigTest
 	}
 
 	/**
+	 * Ensure the private key is decrypted and reformatted when being returned from this.
 	 * @test
 	 * @loadFixture privKeyConfig
 	 * @doNotIndexAll
@@ -41,11 +42,44 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_Sftp_ConfigTest
 		$helper->expects($this->once())
 			->method('decrypt')
 			->with($this->identicalTo('encrypted private key in config'))
-			->will($this->returnValue('decrypted private key'));
+			->will($this->returnValue('-----BEGIN RSA PRIVATE KEY----- 1111111111111111111111111111111111111111111111111111111111111111 111111111111111111111111111111111111111111111111111111111111 -----END RSA PRIVATE KEY-----'));
 		$this->replaceByMock('helper', 'core', $helper);
 
 		$config = Mage::getModel('filetransfer/protocol_types_sftp_config', self::$_config);
-		$this->assertSame('decrypted private key', $config->getPrivateKey());
+		$this->assertSame('-----BEGIN RSA PRIVATE KEY-----
+1111111111111111111111111111111111111111111111111111111111111111
+111111111111111111111111111111111111111111111111111111111111
+-----END RSA PRIVATE KEY-----', $config->getPrivateKey());
+		$config->setPrivateKey('dectypted private key');
+		$this->assertSame('encrypted private key', $config->getData('private_key'));
+	}
+
+	/**
+	 * Make sure the reformatting works with an already formatted string.
+	 * @test
+	 * @loadFixture privKeyConfig
+	 * @doNotIndexAll
+	 * */
+	public function testPrivateKeyEncryptionPreFormatted()
+	{
+		$helper = $this->getHelperMock('core/data', array('encrypt', 'decrypt'));
+		$helper->expects($this->once())
+			->method('encrypt')
+			->will($this->returnValue('encrypted private key'));
+		$helper->expects($this->once())
+			->method('decrypt')
+			->with($this->identicalTo('encrypted private key in config'))
+			->will($this->returnValue('-----BEGIN RSA PRIVATE KEY-----
+1111111111111111111111111111111111111111111111111111111111111111
+111111111111111111111111111111111111111111111111111111111111
+-----END RSA PRIVATE KEY-----'));
+		$this->replaceByMock('helper', 'core', $helper);
+
+		$config = Mage::getModel('filetransfer/protocol_types_sftp_config', self::$_config);
+		$this->assertSame('-----BEGIN RSA PRIVATE KEY-----
+1111111111111111111111111111111111111111111111111111111111111111
+111111111111111111111111111111111111111111111111111111111111
+-----END RSA PRIVATE KEY-----', $config->getPrivateKey());
 		$config->setPrivateKey('dectypted private key');
 		$this->assertSame('encrypted private key', $config->getData('private_key'));
 	}
