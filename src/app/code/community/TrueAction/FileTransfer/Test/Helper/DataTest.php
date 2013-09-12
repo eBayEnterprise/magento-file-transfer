@@ -42,13 +42,12 @@ class TrueAction_FileTransfer_Test_Helper_DataTest extends TrueAction_FileTransf
 	 * Take the error path of these methods, they should return false
 	 *
 	 * @test
+	 * @dataProvider dataProvider
 	 */
-	public function testMethodsFail()
+	public function testMethodsFail($method, $args, $exception, $message)
 	{
-		$this->assertFalse($this->_helper->getFile(null, null, null));
-		$this->assertFalse($this->_helper->sendFile(null, null, null));
-		$this->assertFalse($this->_helper->getString(null, null, null));
-		$this->assertFalse($this->_helper->sendString(null, null, null));
+		$this->setExpectedException($exception, $message);
+		call_user_func_array(array($this->_helper, $method), $args);
 	}
 
 	/**

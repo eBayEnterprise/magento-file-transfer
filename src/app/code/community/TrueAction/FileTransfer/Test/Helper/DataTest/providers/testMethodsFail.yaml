@@ -1,0 +1,20 @@
+-
+  - sendFile
+  - [ ~, ~, ~ ]
+  - Mage_Core_Exception
+  - 'FileTransfer Config Error: config path not set'
+-
+  - getFile
+  - [ ~, ~, ~ ]
+  - Mage_Core_Exception
+  - 'FileTransfer Config Error: config path not set'
+-
+  - sendString
+  - [ ~, ~, ~ ]
+  - Mage_Core_Exception
+  - 'FileTransfer Config Error: config path not set'
+-
+  - getString
+  - [ ~, ~, ~ ]
+  - Mage_Core_Exception
+  - 'FileTransfer Config Error: config path not set'
