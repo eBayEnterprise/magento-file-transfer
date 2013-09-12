@@ -88,4 +88,24 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp_Config
 		");
 		return $fields;
 	}
+
+	/**
+	 * Decrypt the private key when retrieving it from the database.
+	 * @return string
+	 */
+	public function getPrivateKey()
+	{
+		return Mage::helper('core')->decrypt($this->getData('private_key'));
+	}
+
+	/**
+	 * Encrypt the private key when setting it.
+	 * @param string $key
+	 * @return  TrueAction_FileTransfer_Model_Protocol_Types_Sftp_Config $this object
+	 */
+	public function setPrivateKey($key)
+	{
+		return $this->setData('private_key', Mage::helper('core')->encrypt($key));
+	}
+
 }
