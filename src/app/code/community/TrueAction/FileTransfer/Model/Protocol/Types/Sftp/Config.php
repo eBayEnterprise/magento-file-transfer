@@ -55,6 +55,8 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp_Config
 			</filetransfer_{$protocol}_password>
 			<filetransfer_{$protocol}_ssh_prv_key translate=\"label\">
 				<label>SSH Private Key</label>
+				<frontend_type>obscure</frontend_type>
+				<backend_model>adminhtml/system_config_backend_encrypted</backend_model>
 				<depends>
 					<filetransfer_protocol>sftp</filetransfer_protocol>
 					<filetransfer_sftp_auth_type>pub_key</filetransfer_sftp_auth_type>
@@ -86,4 +88,24 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp_Config
 		");
 		return $fields;
 	}
+
+	/**
+	 * Decrypt the private key when retrieving it from the database.
+	 * @return string
+	 */
+	public function getPrivateKey()
+	{
+		return Mage::helper('core')->decrypt($this->getData('private_key'));
+	}
+
+	/**
+	 * Encrypt the private key when setting it.
+	 * @param string $key
+	 * @return  TrueAction_FileTransfer_Model_Protocol_Types_Sftp_Config $this object
+	 */
+	public function setPrivateKey($key)
+	{
+		return $this->setData('private_key', Mage::helper('core')->encrypt($key));
+	}
+
 }

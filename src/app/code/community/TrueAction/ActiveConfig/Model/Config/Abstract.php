@@ -2,9 +2,8 @@
 /**
  * TrueAction_ActiveConfig_Model_Config_Abstract
  *
- * @method setConfigPath
- * @method getConfigPath
- * @todo Complete this docblock – what should these method signatures be?
+ * @method string getConfigPath()
+ * @method        setConfigPath(string $configPath)
  */
 abstract class TrueAction_ActiveConfig_Model_Config_Abstract extends Mage_Core_Model_Abstract
 {
