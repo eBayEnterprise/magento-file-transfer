@@ -3,7 +3,7 @@
  * TrueAction_ActiveConfig_Model_Config_Abstract
  *
  * @method string getConfigPath()
- * @method        setConfigPath(string $configPath)
+ * @method self setConfigPath(string $configPath)
  */
 abstract class TrueAction_ActiveConfig_Model_Config_Abstract extends Mage_Core_Model_Abstract
 {
