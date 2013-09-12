@@ -134,7 +134,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 
 		$keyMakerMock = $this->getModelMockBuilder('filetransfer/key_maker')
 			->disableOriginalConstructor(true)
-			->setMethods(array('createKeyFiles','getPublicKeyPath','getPrivateKeyPath','destroyKeys'))
+			->setMethods(array('createKeyFiles','getPublicKeyPath','getPrivateKeyPath','_destroyKeys'))
 			->getMock();
 		$keyMakerMock->expects($this->once())
 			->method('createKeyFiles')
@@ -145,9 +145,6 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		$keyMakerMock->expects($this->once())
 			->method('getPrivateKeyPath')
 			->will($this->returnValue('foo/bar.priv'));
-		$keyMakerMock->expects($this->once())
-			->method('destroyKeys')
-			->will($this->returnValue(true));
 		$this->replaceByMock('model', 'filetransfer/key_maker', $keyMakerMock);
 
 		$model->getConfig()->setAuthType('pub_key');

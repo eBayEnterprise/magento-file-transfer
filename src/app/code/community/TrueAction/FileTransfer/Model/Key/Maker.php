@@ -12,8 +12,8 @@ class TrueAction_FileTransfer_Model_Key_Maker extends Varien_Object
 		if (!$this->hasFsTool()) {
 			$this->setFsTool(new Varien_Io_File());
 		}
-		if (!$this->hasBaseDir()) {
-			$this->setBaseDir(Mage::getBaseDir('tmp'));
+		if (!$this->hasTmpDir()) {
+			$this->setTmpDir(Mage::getBaseDir('tmp'));
 		}
 		if (!$this->hasTmpPrefix()) {
 			// Advise callers to set a prefix value for the tempnam() builtin.
@@ -24,11 +24,17 @@ class TrueAction_FileTransfer_Model_Key_Maker extends Varien_Object
 			);
 			$this->setTmpPrefix(__CLASS__);
 		}
-		// Don't make it possible for calling functions to modify the public
-		// and private key paths. They should always be created by a secure
-		// temporary file creation tool.
-		$this->_publicKeyPath = tempnam($this->getBaseDir(), $this->getTmpPrefix());
-		$this->_privateKeyPath = tempnam($this->getBaseDir(), $this->getTmpPrefix());
+	}
+
+	/**
+	 * Wrapper around the tempnam builtin function so it can be mocked around while testing
+	 *
+	 * @return  string path to the created tmp file
+	 * @codeCoverateIgnore
+	 */
+	protected function _tempnam()
+	{
+		return call_user_func_array('tempnam', func_get_args());
 	}
 
 	/**
@@ -37,6 +43,12 @@ class TrueAction_FileTransfer_Model_Key_Maker extends Varien_Object
 	 */
 	public function getPublicKeyPath()
 	{
+		if (is_null($this->_publicKeyPath)) {
+			// Don't make it possible for calling functions to modify the public
+			// and private key paths. They should always be created by a secure
+			// temporary file creation tool.
+			$this->_publicKeyPath = $this->_tempnam($this->getTmpDir(), $this->getTmpPrefix());
+		}
 		return $this->_publicKeyPath;
 	}
 
@@ -46,6 +58,12 @@ class TrueAction_FileTransfer_Model_Key_Maker extends Varien_Object
 	 */
 	public function getPrivateKeyPath()
 	{
+		if (is_null($this->_privateKeyPath)) {
+			// Don't make it possible for calling functions to modify the public
+			// and private key paths. They should always be created by a secure
+			// temporary file creation tool.
+			$this->_privateKeyPath = $this->_tempnam($this->getTmpDir(), $this->getTmpPrefix());
+		}
 		return $this->_privateKeyPath;
 	}
 
@@ -67,7 +85,7 @@ class TrueAction_FileTransfer_Model_Key_Maker extends Varien_Object
 	{
 		// this is required by Varien_File_Io - sets up the _iw property,
 		// without which the write calls error out. >:|
-		$this->getFsTool()->open(array('path' => $this->getBaseDir()));
+		$this->getFsTool()->open(array('path' => $this->getTmpDir()));
 		$pubCreated = $this->getFsTool()->write($this->getPublicKeyPath(), $pubKey, 0600);
 		$privCreated = $this->getFsTool()->write($this->getPrivateKeyPath(), $privKey, 0600);
 		$msg = sprintf(
@@ -82,7 +100,7 @@ class TrueAction_FileTransfer_Model_Key_Maker extends Varien_Object
 	 * Destroy/delete the key files
 	 * @return null
 	 */
-	private function _destroyKeys()
+	protected function _destroyKeys()
 	{
 		$fs = $this->getFsTool();
 		$pub = $this->getPublicKeyPath();
@@ -102,4 +120,5 @@ class TrueAction_FileTransfer_Model_Key_Maker extends Varien_Object
 			);
 		}
 	}
+
 }

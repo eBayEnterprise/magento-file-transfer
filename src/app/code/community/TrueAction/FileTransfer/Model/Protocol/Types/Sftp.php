@@ -201,7 +201,6 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 				$keyMaker->getPublicKeyPath(),
 				$keyMaker->getPrivateKeyPath()
 			);
-			$keyMaker->destroyKeys();
 		} else {
 			$this->_auth = $this->getAdapter()->ssh2AuthPassword($this->_conn, $config->getUsername(), $config->getPassword());
 		}
