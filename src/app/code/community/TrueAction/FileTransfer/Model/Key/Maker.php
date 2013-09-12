@@ -30,7 +30,7 @@ class TrueAction_FileTransfer_Model_Key_Maker extends Varien_Object
 	 * Wrapper around the tempnam builtin function so it can be mocked around while testing
 	 *
 	 * @return  string path to the created tmp file
-	 * @codeCoverateIgnore
+	 * @codeCoverageIgnore
 	 */
 	protected function _tempnam()
 	{
