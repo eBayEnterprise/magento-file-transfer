@@ -21,7 +21,6 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 	{
 		$protocol = $this->getProtocolModel($configPath, $store);
 		return $protocol->sendFile($localFile, $remoteFile);
-		return false;
 	}
 
 	/**
