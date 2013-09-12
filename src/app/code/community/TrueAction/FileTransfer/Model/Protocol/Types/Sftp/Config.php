@@ -102,10 +102,12 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp_Config
 		$header = '-----BEGIN RSA PRIVATE KEY-----';
 		$footer = '-----END RSA PRIVATE KEY-----';
 		$key = trim(substr($key, strlen($header), (strlen($footer) * -1)));
-		for ($i = 0; $i < strlen($key); $i++) {
-			if ($i !== 0 && $i % 64 === 0) {
-				$key[$i] = PHP_EOL;
-			}
+		$i = 1;
+		$c = 64;
+		while ($c < strlen($key)) {
+			$key[$c] = "\n";
+			++$i;
+			$c = 64 * $i + ($i - 1);
 		}
 		return $header . PHP_EOL . $key . PHP_EOL . $footer;
 	}
