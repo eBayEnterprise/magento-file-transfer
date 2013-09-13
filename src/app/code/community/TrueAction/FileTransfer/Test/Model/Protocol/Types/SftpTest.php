@@ -79,8 +79,12 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 	 */
 	public function testSftpFwriteFails()
 	{
-
+		$this->setExpectedException('TrueAction_FileTransfer_Exception_Transfer', 'the://url/ transfer error: Unable to write /vfs:/testBase/munsters.txt to the local stream');
 		// Simulate the low-level Adapter that fails on fwrite
+		$config = $this->getModelMock('filetransfer/protocol_types_sftp_config', array('getUrl'));
+		$config->expects($this->any())
+			->method('getUrl')
+			->will($this->returnValue('the://url/'));
 		$this->replaceModel(
 			'filetransfer/adapter_sftp',
 			array (
@@ -97,6 +101,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		);
 
 		$model = Mage::getModel('filetransfer/protocol_types_sftp');
+		$model->setConfig($config);
 
 		$this->assertSame(self::FILE1_CONTENTS, $model->getString($this->_vRemoteFile));
 
@@ -110,6 +115,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 	 */
 	public function testSftpConnectFail()
 	{
+		$this->setExpectedException('TrueAction_FileTransfer_Exception_Connection', 'the://url/ connection error');
 		// Force some low-level adapter failures
 		$this->replaceModel(
 			'filetransfer/adapter_sftp',
@@ -125,6 +131,17 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		$a = $b = 'foo';
 
 		$model = Mage::getModel('filetransfer/protocol_types_sftp');
+		$configData = $model->getConfig()
+			->setAuthType('pub_key')
+			->getData();
+
+		$config = $this->getModelMock('filetransfer/protocol_types_sftp_config', array('getUrl'));
+		$config->expects($this->any())
+			->method('getUrl')
+			->will($this->returnValue('the://url/'));
+		$config->setData($configData);
+		$model->setConfig($config);
+
 		$this->assertFalse($model->connect());
 		$this->assertFalse($model->initSftp());
 		$this->assertFalse($model->retrieve($a, $b));
@@ -147,7 +164,6 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 			->will($this->returnValue('foo/bar.priv'));
 		$this->replaceByMock('model', 'filetransfer/key_maker', $keyMakerMock);
 
-		$model->getConfig()->setAuthType('pub_key');
 		$this->assertFalse($model->login());
 	}
 }

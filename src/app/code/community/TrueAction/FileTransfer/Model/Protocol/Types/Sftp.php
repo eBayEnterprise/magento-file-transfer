@@ -30,6 +30,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 			$remoteFile
 		);
 		$localPath = $localFile;
+		Mage::log("Transfering $localFile to $remotePath on " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
 		// connect to sftp server
 		$isSuccess = $this->connect();
 		// login to sftp connection
@@ -37,7 +38,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		// init sftp subsystem
 		$isSuccess = $isSuccess && $this->initSftp();
 		// Transfer file
-		$stream = fopen($localFile, 'r');
+		$stream = $this->getAdapter()->fopen($localFile, 'r');
 		$isSuccess = $isSuccess && $this->transfer($stream, $remotePath);
 		fclose($stream);
 		return $isSuccess;
@@ -53,8 +54,8 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		$localPath = $this->normalPaths(
 			$localFile
 		);
-		Mage::log("Attempting to get $remotePath");
 
+		Mage::log("Transfering $remotePath to $localFile from " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
 		// connect to ftp server
 		$isSuccess = $this->connect();
 		// login to ftp connection
@@ -75,6 +76,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 			$this->getConfig()->getRemotePath(),
 			$remoteFile
 		);
+		Mage::log("Writing to $remotePath on " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
 		// connect to ftp server
 		$isSuccess = $this->connect();
 		// login to ftp connection
@@ -95,6 +97,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 			$this->getConfig()->getRemotePath(),
 			$remoteFile
 		);
+		Mage::log("Reading from $remotePath on " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
 		// connect to ftp server
 		$isSuccess = $this->connect();
 		// login to ftp connection
@@ -127,15 +130,9 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		$success = true;
 		$this->_conn = $this->getAdapter()->ssh2Connect($config->getHost(), $config->getPort());
 		if (!$this->_conn) {
-			try{
-				Mage::throwException(
-					"Failed to connect to 'sftp://" . $this->getConfig()->getHost() . "'."
-				);
-			} catch (Exception $e) {
-				$success = false;
-				Mage::logException($e);
-			}
+			$this->_connectionError();
 		}
+		Mage::log('Connected to ' . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
 		return $success;
 	}
 
@@ -150,14 +147,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		$config = $this->getConfig();
 		$success = true;
 		if (!$this->_sftp = $this->getAdapter()->ssh2Sftp($this->_conn)) {
-			try{
-				Mage::throwException(
-					"Failed to start SFTP subsystem on 'sftp://" . $this->getConfig()->getHost() . "'."
-				);
-			} catch (Exception $e) {
-				$success = false;
-				Mage::logException($e);
-			}
+			$this->_connectionError('Remote host failed to start SFTP subsystem');
 		}
 		return $success;
 	}
@@ -174,14 +164,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		$config = $this->getConfig();
 		$this->_authenticate();
 		if (!$this->_auth){
-			try{
-				Mage::throwException(
-					"Failed to authenticate to 'sftp://" . $config->getHost() . '@' . $config->getHost() . "'."
-				);
-			} catch (Exception $e) {
-				$success = false;
-				Mage::logException($e);
-			}
+			$this->_authenticationError();
 		}
 		return $success;
 	}
@@ -215,21 +198,14 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 	public function transfer($stream, $remoteFile)
 	{
 		$success = true;
-		Mage::log("$remoteFile");
-		Mage::log('Connected to sftp://' . $this->getConfig()->getUsername() . '@' . $this->getConfig()->getHost());
 		$remoteStream = $this->getAdapter()->fopen("ssh2.sftp://{$this->_sftp}{$remoteFile}", 'w');
 		if (!$remoteStream) {
-			try{
-				Mage::throwException("Failed to open $remoteFile on 'sftp://" . $this->getConfig()->getHost() . "'.");
-			} catch (Exception $e) {
-				$success = false;
-				Mage::logException($e);
-			}
+			$this->_transferError('Failed to open $remoteFile');
 		}else{
 			if (false === $this->getAdapter()->fwrite($remoteStream, $this->getAdapter()->streamGetContents($stream))) {
-				$success = false;
+				$this->_transferError("Failed to write $remoteFile to the remote host");
 			}
-			Mage::log("Uploaded data to 'sftp://" . $this->getConfig()->getHost() . "'.");
+			Mage::log("Uploaded $remoteFile to " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
 		}
 		$this->getAdapter()->fclose($remoteStream);
 		return $success;
@@ -244,20 +220,14 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 	public function retrieve($stream, $remoteFile)
 	{
 		$success = true;
-		Mage::log('Connected to sftp://' . $this->getConfig()->getUsername() . '@' . $this->getConfig()->getHost());
 		$remoteStream = $this->getAdapter()->fopen("ssh2.sftp://{$this->_sftp}{$remoteFile}", 'r');
 		if (!$remoteStream) {
-			try{
-				Mage::throwException("Failed to open $remoteFile on 'sftp://" . $this->getConfig()->getHost() . "'.");
-			} catch (Exception $e) {
-				$success = false;
-				Mage::logException($e);
-			}
+			$this->_transferError("Failed to open $remoteFile on remote host");
 		}else{
 			if (false === $this->getAdapter()->fwrite($stream, $this->getAdapter()->streamGetContents($remoteStream))) {
-				$success = false;
+				$this->_transferError("Unable to write $remoteFile to the local stream");
 			}
-			Mage::log("Downloaded data from 'sftp://" . $this->getConfig()->getHost() . "'.");
+			Mage::log("Downloaded $remoteFile from " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
 		}
 		$this->getAdapter()->fclose($remoteStream);
 		return $success;
