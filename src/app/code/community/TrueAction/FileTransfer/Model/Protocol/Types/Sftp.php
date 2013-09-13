@@ -163,9 +163,6 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		$success = true;
 		$config = $this->getConfig();
 		$this->_authenticate();
-		if (!$this->_auth){
-			$this->_authenticationError();
-		}
 		return $success;
 	}
 
@@ -178,14 +175,20 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		if ($config->getAuthType() === 'pub_key') {
 			$keyMaker = Mage::getModel('filetransfer/key_maker');
 			$keyMaker->createKeyFiles($config->getPublicKey(), $config->getPrivateKey());
-			$this->_auth = $this->getAdapter()->ssh2AuthPubkeyFile(
+			$result = $this->getAdapter()->ssh2AuthPubkeyFile(
 				$this->_conn,
 				$config->getUsername(),
 				$keyMaker->getPublicKeyPath(),
 				$keyMaker->getPrivateKeyPath()
 			);
+			if (!$result) {
+				$this->_authenticationError('Could not authenticate using public key');
+			}
 		} else {
-			$this->_auth = $this->getAdapter()->ssh2AuthPassword($this->_conn, $config->getUsername(), $config->getPassword());
+			$result = $this->getAdapter()->ssh2AuthPassword($this->_conn, $config->getUsername(), $config->getPassword());
+			if (!$result) {
+				$this->_authenticationError('The username or password is incorrect');
+			}
 		}
 	}
 
@@ -200,10 +203,10 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		$success = true;
 		$remoteStream = $this->getAdapter()->fopen("ssh2.sftp://{$this->_sftp}{$remoteFile}", 'w');
 		if (!$remoteStream) {
-			$this->_transferError('Failed to open $remoteFile');
+			$this->_transferError("Failed to open $remoteFile on the remote host");
 		}else{
 			if (false === $this->getAdapter()->fwrite($remoteStream, $this->getAdapter()->streamGetContents($stream))) {
-				$this->_transferError("Failed to write $remoteFile to the remote host");
+				$this->_transferError("Failed to write to $remoteFile on the remote host");
 			}
 			Mage::log("Uploaded $remoteFile to " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
 		}
@@ -222,10 +225,10 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		$success = true;
 		$remoteStream = $this->getAdapter()->fopen("ssh2.sftp://{$this->_sftp}{$remoteFile}", 'r');
 		if (!$remoteStream) {
-			$this->_transferError("Failed to open $remoteFile on remote host");
+			$this->_transferError("Failed to open $remoteFile on the remote host");
 		}else{
 			if (false === $this->getAdapter()->fwrite($stream, $this->getAdapter()->streamGetContents($remoteStream))) {
-				$this->_transferError("Unable to write $remoteFile to the local stream");
+				$this->_transferError("Failed to write $remoteFile to the local system");
 			}
 			Mage::log("Downloaded $remoteFile from " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
 		}
