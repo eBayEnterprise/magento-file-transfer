@@ -158,4 +158,22 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 		");
 		return $fields;
 	}
+
+	/**
+	 * return a URL using the configured values.
+	 * @param  bool $includePath
+	 * @return string
+	 */
+	public function getUrl($includePath=false)
+	{
+		$url = sprintf(
+			'%s://%s%s%s/%s',
+			$this->getProtocolCode(),
+			$this->getUser() ? $this->getUser() . '@' : '',
+			$this->getHost(),
+			$this->getPort() ? ':' . $this->getPort() : '',
+			$includePath && $this->hasRemotePath() ? $this->getRemotePath() : ''
+		);
+		return $url;
+	}
 }

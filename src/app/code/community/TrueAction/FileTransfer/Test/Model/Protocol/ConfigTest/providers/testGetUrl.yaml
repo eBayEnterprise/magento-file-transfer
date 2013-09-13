@@ -1,0 +1,20 @@
+-
+  - { host: 'somehost', user: 'someuser', protocol_code: 'proto', remote_path: 'some/path', port: '21' }
+  - false
+  - 'proto://someuser@somehost:21/'
+-
+  - { host: 'somehost', user: 'someuser', protocol_code: 'proto', remote_path: 'some/path', port: '21' }
+  - true
+  - 'proto://someuser@somehost:21/some/path'
+-
+  - { host: 'somehost', user: 'someuser', protocol_code: 'proto', remote_path: 'some/path', port: '' }
+  - false
+  - 'proto://someuser@somehost/'
+-
+  - { host: 'somehost', user: , protocol_code: 'proto', remote_path: 'some/path', port: '' }
+  - false
+  - 'proto://somehost/'
+-
+  - [ ]
+  - false
+  - ':///'

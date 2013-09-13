@@ -86,4 +86,14 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev_PHP
 		$this->assertSame('21', $cfg->getPort());
 		$this->assertSame('/', $cfg->getRemotePath());
 	}
+
+	/**
+	 * @dataProvider dataProvider
+	 */
+	public function testGetUrl($data, $includePath, $url)
+	{
+		$config = Mage::getModel('filetransfer/protocol_config');
+		$config->setData($data);
+		$this->assertSame($url, $config->getUrl($includePath));
+	}
 }
