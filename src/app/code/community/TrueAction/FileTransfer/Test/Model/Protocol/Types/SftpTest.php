@@ -79,7 +79,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 	 */
 	public function testSftpFwriteFails()
 	{
-		$this->setExpectedException('TrueAction_FileTransfer_Exception_Transfer', 'the://url/ transfer error: Unable to write /vfs:/testBase/munsters.txt to the local stream');
+		$this->setExpectedException('TrueAction_FileTransfer_Exception_Transfer', 'the://url/ transfer error: Failed to write /vfs:/testBase/munsters.txt to the local system');
 		// Simulate the low-level Adapter that fails on fwrite
 		$config = $this->getModelMock('filetransfer/protocol_types_sftp_config', array('getUrl'));
 		$config->expects($this->any())
@@ -112,29 +112,49 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 	 * Force some failures to complete coverage
 	 *
 	 * @test
+	 * @dataProvider dataProvider
 	 */
-	public function testSftpConnectFail()
+	public function testSftpConnectionFail($method, $mockedMethods, $expectedMessage)
 	{
-		$this->setExpectedException('TrueAction_FileTransfer_Exception_Connection', 'the://url/ connection error');
+		$this->setExpectedException('TrueAction_FileTransfer_Exception_Connection', $expectedMessage);
+		// Force some low-level adapter failures
+		$this->replaceModel('filetransfer/adapter_sftp', $mockedMethods);
+
+		$model = Mage::getModel('filetransfer/protocol_types_sftp');
+
+		$config = $this->getModelMock('filetransfer/protocol_types_sftp_config', array('getUrl'));
+		$configData = $model->getConfig()
+			->getData();
+		$config->expects($this->any())
+			->method('getUrl')
+			->will($this->returnValue('the://url/'));
+		$config->setData($configData);
+		$model->setConfig($config);
+
+		$model->$method();
+	}
+
+	/**
+	 * Force some failures to complete coverage
+	 *
+	 * @test
+	 * @dataProvider dataProvider
+	 */
+	public function testSftpAuthFail($authType, $expectedMessage)
+	{
+		$this->setExpectedException('TrueAction_FileTransfer_Exception_Authentication', $expectedMessage);
 		// Force some low-level adapter failures
 		$this->replaceModel(
 			'filetransfer/adapter_sftp',
-			array (
-				'ssh2Connect'        => false, // Force 'connect()' to fail
-				'ssh2Sftp'           => false, // Force 'initSftp()' to fail
-				'fopen'              => false, // Force 'retrieve()' to fail
-				'fclose'             => true,  // Just don't complain on fclose
-				'ssh2AuthPassword'   => false, // Force 'login()' to fail
-				'ssh2AuthPubkeyFile' => false, // Force 'login()' to fail when 'pub_key' configured
+			array(
+				'ssh2AuthPubkeyFile' => false,
+				'ssh2AuthPassword' => false
 			)
 		);
-		$a = $b = 'foo';
-
 		$model = Mage::getModel('filetransfer/protocol_types_sftp');
 		$configData = $model->getConfig()
-			->setAuthType('pub_key')
+			->setAuthType($authType)
 			->getData();
-
 		$config = $this->getModelMock('filetransfer/protocol_types_sftp_config', array('getUrl'));
 		$config->expects($this->any())
 			->method('getUrl')
@@ -142,28 +162,41 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		$config->setData($configData);
 		$model->setConfig($config);
 
-		$this->assertFalse($model->connect());
-		$this->assertFalse($model->initSftp());
-		$this->assertFalse($model->retrieve($a, $b));
-		$this->assertFalse($model->transfer($a, $b));
+		$model->login();
+	}
 
-		$this->assertFalse($model->login());
+	/**
+	 * Force some failures to complete coverage
+	 *
+	 * @test
+	 * @dataProvider dataProvider
+	 */
+	public function testSftpTransferFail($method, $fopen, $fwrite, $message)
+	{
+		$this->setExpectedException('TrueAction_FileTransfer_Exception_Transfer', $message);
+		// Force some low-level adapter failures
+		$this->replaceModel(
+			'filetransfer/adapter_sftp',
+			array (
+				'fopen' => $fopen,
+				'fwrite' => $fwrite,
+				'streamGetContents' => self::FILE1_CONTENTS,
+				'fclose' => true,
+			)
+		);
+		$a = $b = 'foo';
 
-		$keyMakerMock = $this->getModelMockBuilder('filetransfer/key_maker')
-			->disableOriginalConstructor(true)
-			->setMethods(array('createKeyFiles','getPublicKeyPath','getPrivateKeyPath','_destroyKeys'))
-			->getMock();
-		$keyMakerMock->expects($this->once())
-			->method('createKeyFiles')
-			->will($this->returnValue(true));
-		$keyMakerMock->expects($this->once())
-			->method('getPublicKeyPath')
-			->will($this->returnValue('foo/bar.pub'));
-		$keyMakerMock->expects($this->once())
-			->method('getPrivateKeyPath')
-			->will($this->returnValue('foo/bar.priv'));
-		$this->replaceByMock('model', 'filetransfer/key_maker', $keyMakerMock);
+		$model = Mage::getModel('filetransfer/protocol_types_sftp');
 
-		$this->assertFalse($model->login());
+		$config = $this->getModelMock('filetransfer/protocol_types_sftp_config', array('getUrl'));
+		$configData = $model->getConfig()
+			->getData();
+		$config->expects($this->any())
+			->method('getUrl')
+			->will($this->returnValue('the://url/'));
+		$config->setData($configData);
+		$model->setConfig($config);
+
+		$model->$method($a, $b);
 	}
 }

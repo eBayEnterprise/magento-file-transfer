@@ -1,0 +1,20 @@
+-
+  - transfer
+  - false
+  - false
+  - 'the://url/ transfer error: Failed to open foo on the remote host'
+-
+  - transfer
+  - true
+  - false
+  - 'the://url/ transfer error: Failed to write to foo on the remote host'
+-
+  - retrieve
+  - false
+  - false
+  - 'the://url/ transfer error: Failed to open foo on the remote host'
+-
+  - retrieve
+  - true
+  - false
+  - 'the://url/ transfer error: Failed to write foo to the local system'

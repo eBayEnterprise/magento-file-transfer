@@ -1,0 +1,8 @@
+-
+  - connect
+  - { ssh2Connect: false }
+  - 'the://url/ connection error'
+-
+  - initSftp
+  - { ssh2Sftp: false }
+  - 'the://url/ connection error: Remote host failed to start SFTP subsystem'

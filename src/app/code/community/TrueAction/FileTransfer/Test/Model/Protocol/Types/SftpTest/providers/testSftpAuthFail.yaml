@@ -1,0 +1,6 @@
+-
+  - pub_key
+  - 'the://url/ authentication error: Could not authenticate using public key'
+-
+  - password
+  - 'the://url/ authentication error: The username or password is incorrect'
