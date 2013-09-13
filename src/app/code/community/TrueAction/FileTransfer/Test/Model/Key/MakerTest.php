@@ -157,7 +157,7 @@ class TrueAction_FileTransfer_Test_Model_Key_MakerTest
 	 */
 	public function testActualFileAccess()
 	{
-		// $this->markTestSkipped('Too much of an integration test - hits the filesystem. Not a unit test so skipping');
+		$this->markTestSkipped('Too much of an integration test - hits the filesystem. Not a unit test so skipping');
 
 		$pubKey = 'public key file contents';
 		$privKey = 'private key file contents';

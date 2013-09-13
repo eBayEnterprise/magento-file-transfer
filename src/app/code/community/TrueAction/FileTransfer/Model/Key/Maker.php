@@ -30,7 +30,7 @@ class TrueAction_FileTransfer_Model_Key_Maker extends Varien_Object
 	 * Wrapper around the tempnam builtin function so it can be mocked around while testing
 	 *
 	 * @return  string path to the created tmp file
-	 * @codeCoverateIgnore
+	 * @codeCoverageIgnore
 	 */
 	protected function _tempnam()
 	{
@@ -89,8 +89,8 @@ class TrueAction_FileTransfer_Model_Key_Maker extends Varien_Object
 		$pubCreated = $this->getFsTool()->write($this->getPublicKeyPath(), $pubKey, 0600);
 		$privCreated = $this->getFsTool()->write($this->getPrivateKeyPath(), $privKey, 0600);
 		$msg = sprintf(
-			'[ %s ] Generated files successfully: pub - %d, priv - %d', __CLASS__,
-			$pubCreated, $privCreated
+			'[ %s ] Generated files: pub - %s, priv - %s', __CLASS__,
+			($pubCreated !== false ? $pubCreated : 'false'), ($privCreated !== false ? $privCreated : 'false')
 		);
 		Mage::log($msg, Zend_Log::DEBUG);
 		return $pubCreated && $privCreated;
