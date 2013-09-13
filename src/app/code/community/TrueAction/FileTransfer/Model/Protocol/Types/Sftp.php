@@ -39,6 +39,9 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		$isSuccess = $isSuccess && $this->initSftp();
 		// Transfer file
 		$stream = $this->getAdapter()->fopen($localFile, 'r');
+		if (!$stream) {
+			$this->_transferError("Failed to open local file $localFile for reading");
+		}
 		$isSuccess = $isSuccess && $this->transfer($stream, $remotePath);
 		fclose($stream);
 		return $isSuccess;
@@ -64,6 +67,9 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		$isSuccess = $isSuccess && $this->initSftp();
 		// Transfer file
 		$stream = $this->getAdapter()->fopen($localFile, 'w+');
+		if (!$stream) {
+			$this->_transferError("Failed to open local file $localFile for writing");
+		}
 		$isSuccess = $isSuccess && $this->retrieve($stream, $remotePath);
 		$this->getAdapter()->fclose($stream);
 		return $isSuccess;

@@ -1,0 +1,6 @@
+-
+  - sendFile
+  - Failed to open local file somelocalfile for reading
+-
+  - getFile
+  - Failed to open local file somelocalfile for writing

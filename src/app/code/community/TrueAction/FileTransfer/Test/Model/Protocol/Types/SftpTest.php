@@ -72,6 +72,31 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 	}
 
 	/**
+	 * Test sftp calls, mocking the sftp adapter
+	 * @test
+	 * @dataProvider dataProvider
+	 */
+	public function testSftpConnectivityFail($method, $expectedMessage)
+	{
+		$this->setExpectedException('TrueAction_FileTransfer_Exception_Transfer', $expectedMessage);
+		// This is the key to testing here - we simulate the low-level Adapter, and we can cover all the calls
+		$this->replaceModel(
+			'filetransfer/adapter_sftp',
+			array (
+				'fopen' => false,
+			)
+		);
+		$methods = array('connect', 'login', 'initSftp');
+		$model = $this->getModelMock('filetransfer/protocol_types_sftp', $methods);
+		foreach ($methods as $mockedMethod) {
+			$model->expects($this->any())
+				->method($mockedMethod)
+				->will($this->returnValue(true));
+		}
+		$model->$method('somelocalfile', 'someremotefile');
+	}
+
+	/**
 	 * Test we can get remote, but not write locally
 	 * Test we can get locally, but not write remote
 	 *
