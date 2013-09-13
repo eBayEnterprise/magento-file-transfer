@@ -105,4 +105,70 @@ abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core
 		$this->getConfig()->setPassword($password);
 		return $this;
 	}
+
+	/**
+	 * throw a connection exception.
+	 * if $useDefaultFormat is false, the $message will be used as the exception
+	 * message without alteration.
+	 * otherwise the following message format will be used.
+	 * sftp://host[/remote_path] connection error[: $message]
+	 * @param  string  $message
+	 * @param  boolean $useDefaultFormat
+	 * @throws TrueAction_FileTransfer_Exception_Connection
+	 */
+	protected function _connectionError($message='', $useDefaultFormat=true)
+	{
+		if ($useDefaultFormat) {
+			$message = sprintf(
+				'%s connection error%s',
+				$this->getConfig()->getUrl(),
+				($message) ? ': ' . $message : ''
+			);
+		}
+		throw new TrueAction_FileTransfer_Exception_Connection($message);
+	}
+
+	/**
+	 * throw an authentication exception.
+	 * if $useDefaultFormat is false, the $message will be used as the exception
+	 * message without alteration.
+	 * otherwise the following message format will be used.
+	 * sftp://host[/remote_path] authentication error[: $message]
+	 * @param  string  $message
+	 * @param  boolean $useDefaultFormat
+	 * @throws TrueAction_FileTransfer_Exception_Connection
+	 */
+	protected function _authenticationError($message='', $useDefaultFormat=true)
+	{
+		if ($useDefaultFormat) {
+			$message = sprintf(
+				'%s authentication error%s',
+				$this->getConfig()->getUrl(),
+				($message) ? ': ' . $message : ''
+			);
+		}
+		throw new TrueAction_FileTransfer_Exception_Authentication($message);
+	}
+
+	/**
+	 * throw a transfer exception.
+	 * if $useDefaultFormat is false, the $message will be used as the exception
+	 * message without alteration.
+	 * otherwise the following message format will be used.
+	 * sftp://host[/remote_path] transfer error[: $message]
+	 * @param  string  $message
+	 * @param  boolean $useDefaultFormat
+	 * @throws TrueAction_FileTransfer_Exception_Connection
+	 */
+	protected function _transferError($message='', $useDefaultFormat=true)
+	{
+		if ($useDefaultFormat) {
+			$message = sprintf(
+				'%s transfer error%s',
+				$this->getConfig()->getUrl(),
+				($message) ? ': ' . $message : ''
+			);
+		}
+		throw new TrueAction_FileTransfer_Exception_Transfer($message);
+	}
 }

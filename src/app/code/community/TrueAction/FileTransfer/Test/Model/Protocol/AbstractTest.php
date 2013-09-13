@@ -65,4 +65,47 @@ class TrueAction_FileTransfer_Test_Model_Protocol_AbstractTest extends EcomDev_P
 		$lsTwo = $this->getCodes->invoke(null);
 		$this->assertSame($ls, $lsTwo);
 	}
+
+	/**
+	 * @dataProvider dataProvider
+	 */
+	public function testExceptionMethods($method, $exception, $message)
+	{
+		$config = Mage::getModel('filetransfer/protocol_config');
+		$config->setData(array(
+			'host' => 'somehost.com',
+			'user' => 'someuser',
+			'protocol_code' => 'proto',
+			'remote_path' => 'remote/path'
+		));
+		$this->setExpectedException($exception, $message);
+		$methods = array('sendFile, getFile');
+		$model = $this->getModelMock('filetransfer/protocol_abstract', $methods, true);
+		$model->setConfig($config);
+		$fn = new ReflectionMethod($model, $method);
+		$fn->setAccessible(true);
+		$fn->invoke($model, 'foo');
+	}
+
+	/**
+	 * @dataProvider dataProvider
+	 */
+	public function testExceptionMethodsCustomMessage($method, $exception)
+	{
+		$config = Mage::getModel('filetransfer/protocol_config');
+		$config->setData(array(
+			'host' => 'somehost.com',
+			'user' => 'someuser',
+			'protocol_code' => 'proto',
+			'remote_path' => 'remote/path'
+		));
+		$message = 'this is a completely custom message';
+		$this->setExpectedException($exception, $message);
+		$methods = array('sendFile, getFile');
+		$model = $this->getModelMock('filetransfer/protocol_abstract', $methods, true);
+		$model->setConfig($config);
+		$fn = new ReflectionMethod($model, $method);
+		$fn->setAccessible(true);
+		$fn->invoke($model, $message, false);
+	}
 }

@@ -1,0 +1,12 @@
+-
+  - _connectionError
+  - TrueAction_FileTransfer_Exception_Connection
+  - 'proto://someuser@somehost.com/ connection error: foo'
+-
+  - _transferError
+  - TrueAction_FileTransfer_Exception_Transfer
+  - 'proto://someuser@somehost.com/ transfer error: foo'
+-
+  - _authenticationError
+  - TrueAction_FileTransfer_Exception_Authentication
+  - 'proto://someuser@somehost.com/ authentication error: foo'

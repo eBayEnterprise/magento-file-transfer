@@ -1,0 +1,9 @@
+-
+  - _connectionError
+  - TrueAction_FileTransfer_Exception_Connection
+-
+  - _transferError
+  - TrueAction_FileTransfer_Exception_Transfer
+-
+  - _authenticationError
+  - TrueAction_FileTransfer_Exception_Authentication
