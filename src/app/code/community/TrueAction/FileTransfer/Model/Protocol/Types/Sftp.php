@@ -41,7 +41,9 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		$stream = $this->getAdapter()->fopen($localFile, 'r');
 		if (!$stream) {
 			$this->_transferError("Failed to open local file $localFile for reading");
+			// @codeCoverageIgnoreStart
 		}
+		// @codeCoverageIgnoreEnd
 		$isSuccess = $isSuccess && $this->transfer($stream, $remotePath);
 		fclose($stream);
 		return $isSuccess;
@@ -69,7 +71,9 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		$stream = $this->getAdapter()->fopen($localFile, 'w+');
 		if (!$stream) {
 			$this->_transferError("Failed to open local file $localFile for writing");
+			// @codeCoverageIgnoreStart
 		}
+		// @codeCoverageIgnoreEnd
 		$isSuccess = $isSuccess && $this->retrieve($stream, $remotePath);
 		$this->getAdapter()->fclose($stream);
 		return $isSuccess;
@@ -137,7 +141,9 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		$this->_conn = $this->getAdapter()->ssh2Connect($config->getHost(), $config->getPort());
 		if (!$this->_conn) {
 			$this->_connectionError();
+			// @codeCoverageIgnoreStart
 		}
+		// @codeCoverageIgnoreEnd
 		Mage::log('Connected to ' . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
 		return $success;
 	}
@@ -154,7 +160,9 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		$success = true;
 		if (!$this->_sftp = $this->getAdapter()->ssh2Sftp($this->_conn)) {
 			$this->_connectionError('Remote host failed to start SFTP subsystem');
+			// @codeCoverageIgnoreStart
 		}
+		// @codeCoverageIgnoreEnd
 		return $success;
 	}
 
@@ -189,12 +197,16 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 			);
 			if (!$result) {
 				$this->_authenticationError('Could not authenticate using public key');
+				// @codeCoverageIgnoreStart
 			}
 		} else {
+			// @codeCoverageIgnoreEnd
 			$result = $this->getAdapter()->ssh2AuthPassword($this->_conn, $config->getUsername(), $config->getPassword());
 			if (!$result) {
 				$this->_authenticationError('The username or password is incorrect');
+				// @codeCoverageIgnoreStart
 			}
+			// @codeCoverageIgnoreEnd
 		}
 	}
 
@@ -210,12 +222,18 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		$remoteStream = $this->getAdapter()->fopen("ssh2.sftp://{$this->_sftp}{$remoteFile}", 'w');
 		if (!$remoteStream) {
 			$this->_transferError("Failed to open $remoteFile on the remote host");
+			// @codeCoverageIgnoreStart
 		}else{
+			// @codeCoverageIgnoreEnd
 			if (false === $this->getAdapter()->fwrite($remoteStream, $this->getAdapter()->streamGetContents($stream))) {
 				$this->_transferError("Failed to write to $remoteFile on the remote host");
+				// @codeCoverageIgnoreStart
 			}
+			// @codeCoverageIgnoreEnd
 			Mage::log("Uploaded $remoteFile to " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
+			// @codeCoverageIgnoreStart
 		}
+		// @codeCoverageIgnoreEnd
 		$this->getAdapter()->fclose($remoteStream);
 		return $success;
 	}
@@ -232,10 +250,14 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		$remoteStream = $this->getAdapter()->fopen("ssh2.sftp://{$this->_sftp}{$remoteFile}", 'r');
 		if (!$remoteStream) {
 			$this->_transferError("Failed to open $remoteFile on the remote host");
+			// @codeCoverageIgnoreStart
 		}else{
+			// @codeCoverageIgnoreEnd
 			if (false === $this->getAdapter()->fwrite($stream, $this->getAdapter()->streamGetContents($remoteStream))) {
 				$this->_transferError("Failed to write $remoteFile to the local system");
+				// @codeCoverageIgnoreStart
 			}
+			// @codeCoverageIgnoreEnd
 			Mage::log("Downloaded $remoteFile from " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
 		}
 		$this->getAdapter()->fclose($remoteStream);
