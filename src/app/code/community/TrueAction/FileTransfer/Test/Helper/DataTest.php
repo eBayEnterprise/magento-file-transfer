@@ -107,6 +107,33 @@ class TrueAction_FileTransfer_Test_Helper_DataTest extends TrueAction_FileTransf
 	}
 
 	/**
+	 * Test that the helper getAllFiles method loads a protocol model and then passes
+	 * the localPath, remotePath and pattern args through to it.
+	 *
+	 * @test
+	 */
+	public function testGetAllFilesPassthrough()
+	{
+		$protocolModel = $this->getModelMock('filetransfer/protocol_types_sftp', array('getAllFiles'));
+		$protocolModel->expects($this->once())
+			->method('getAllFiles')
+			->with(
+				$this->identicalTo('remote/path'),
+				$this->identicalTo('local/path'),
+				$this->identicalTo('.*man')
+			)
+			->will($this->returnValue(true));
+
+		$helper = $this->getHelperMock('filetransfer/data', array('getProtocolModel'));
+		$helper->expects($this->any())
+			->method('getProtocolModel')
+			->with($this->identicalTo('config/path'), $this->identicalTo('store'))
+			->will($this->returnValue($protocolModel));
+
+		$this->assertTrue($helper->getAllFiles('remote/path', 'local/path', '.*man', 'config/path', 'store'));
+	}
+
+	/**
 	 * Test getInitData(); loads protocol from defined-config-path fixture
 	 *
 	 * @test

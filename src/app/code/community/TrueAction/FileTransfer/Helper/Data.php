@@ -37,6 +37,12 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 		return $protocol->getFile($localFile, $remoteFile);
 	}
 
+	public function getAllFiles($localDir, $remoteDir, $pattern, $configPath, $store=null)
+	{
+		$protocol = $this->getProtocolModel($configPath, $store);
+		return $protocol->getAllFiles($localDir, $remoteDir, $pattern);
+	}
+
 	/**
 	 * Transmit a string and save it to a file on a remote host.
 	 * @param  string $localFile
