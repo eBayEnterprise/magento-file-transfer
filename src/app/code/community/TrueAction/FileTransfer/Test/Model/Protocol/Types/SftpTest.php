@@ -116,7 +116,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 	 */
 	public function testSftpFwriteFails()
 	{
-		$this->setExpectedException('TrueAction_FileTransfer_Exception_Transfer', 'the://url/ transfer error: Failed to write /vfs:/testBase/munsters.txt to the local system');
+		$this->setExpectedException('TrueAction_FileTransfer_Exception_Transfer', 'the://url/ transfer error: Failed to write /vfs:/testBase/there/munsters.txt to the local system');
 		// Simulate the low-level Adapter that fails on fwrite
 		$config = $this->getModelMock('filetransfer/protocol_types_sftp_config', array('getUrl'));
 		$config->expects($this->any())
@@ -277,7 +277,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 			->method('readdir')
 			->with($this->identicalTo($this->_vRemoteDir))
 			->will($this->onConsecutiveCalls(self::FILE1_NAME, self::FILE3_NAME, false));
-		$adapter->expects($this->exactly(2))
+		$adapter->expects($this->once())
 			->method('isFile')
 			->with(
 				$this->logicalOr(
@@ -319,6 +319,37 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 
 		fclose($localStream);
 		fclose($remoteStream);
+	}
+
+	/**
+	 * Ensure that a SFTP connection cannot be made and authed, that no remote
+	 * directory access is attempted.
+	 *
+	 * @test
+	 * @dataProvider dataProvider
+	 */
+	public function testDoNotAttemptRemoteDirAccessIfNoAuth($connect, $sftp, $auth)
+	{
+		$adapter = $this->getModelMock('filetransfer/adapter_sftp', array(
+			'opendir'
+		));
+		$adapter->expects($this->never())
+			->method('opendir');
+		$this->replaceByMock('model', 'filetransfer/adapter_sftp', $adapter);
+
+		$model = $this->getModelMock('filetransfer/protocol_types_sftp', array(
+			'connect', 'login', 'initSftp'
+		));
+		$model->expects($this->any())
+			->method('connect')
+			->will($this->returnValue($connect));
+		$model->expects($this->any())
+			->method('login')
+			->will($this->returnValue($sftp));
+		$model->expects($this->any())
+			->method('initSftp')
+			->will($this->returnValue($auth));
+		$this->assertFalse($model->getAllFiles($this->_vLocalDir, $this->_vRemoteDir, '*.txt'));
 	}
 
 }

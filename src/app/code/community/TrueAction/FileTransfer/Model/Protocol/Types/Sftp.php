@@ -30,7 +30,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 			$remoteFile
 		);
 		$localPath = $localFile;
-		Mage::log("Transfering $localFile to $remotePath on " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
+		Mage::log("[ " . __CLASS__ . "] Transferring $localFile to $remotePath on " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
 		// connect to sftp server
 		$isSuccess = $this->connect();
 		// login to sftp connection
@@ -60,7 +60,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 			$localFile
 		);
 
-		Mage::log("Transfering $remotePath to $localFile from " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
+		Mage::log("[ " . __CLASS__ . "] Transferring $remotePath to $localFile from " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
 		// connect to ftp server
 		$isSuccess = $this->connect();
 		// login to ftp connection
@@ -97,7 +97,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		);
 		$localPath = $this->normalPaths($localDirPath);
 
-		Mage::log("Transfering $remotePath to $localFile matching $pattern from " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
+		Mage::log("[ " . __CLASS__ . "] Transferring $remotePath to $localPath matching $pattern from " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
 		// connect
 		$isSuccess = $this->connect();
 		// login
@@ -105,43 +105,45 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		// init sftp
 		$isSuccess = $isSuccess && $this->initSftp();
 
-		$sftpPath = $this->_remoteSftpPath($remotePath);
+		if ($isSuccess) {
+			$sftpPath = $this->_remoteSftpPath($remotePath);
 
-		// get list of files that match the pattern
-		$remoteDir = $this->getAdapter()->opendir($sftpPath);
-		while (($fName = $this->getAdapter()->readdir($remoteDir)) !== false) {
-			$remoteFName = $sftpPath . DS .  $fName;
-			if ($this->getAdapter()->isFile($remoteFName) && fnmatch($pattern, $fName)) {
-				$files[] = array(
-					'name' => $fName,
-					'remote' => $this->normalPaths($remotePath, $fName),
-					'local' => $this->normalPaths($localPath, $fName)
-				);
+			// get list of files that match the pattern
+			$remoteDir = $this->getAdapter()->opendir($sftpPath);
+			while (($fName = $this->getAdapter()->readdir($remoteDir)) !== false) {
+				$remoteFName = $sftpPath . DS .  $fName;
+				if (fnmatch($pattern, $fName) && $this->getAdapter()->isFile($remoteFName)) {
+					$files[] = array(
+						'name' => $fName,
+						'remote' => $this->normalPaths($remotePath, $fName),
+						'local' => $this->normalPaths($localPath, $fName)
+					);
+				}
 			}
+			$this->getAdapter()->closedir($remoteDir);
+
+			// callback fn for logging
+			$fnFNames = function ($a) {
+				return implode(', ', array_map(function ($e) { return $e['remote']; }, $a));
+			};
+
+			Mage::log(sprintf('[ %s ] Retrieving files from remote: %s', __CLASS__, $fnFNames($files)), Zend_Log::DEBUG);
+
+			foreach ($files as $idx => $file) {
+				$stream = $this->getAdapter()->fopen($file['local'], 'w+');
+				$file['retrieved'] = $this->retrieve($stream, $file['remote']);
+				$this->getAdapter()->fclose($stream);
+				$files[$idx] = $file;
+				$isSuccess = $isSuccess && $file['retrieved'];
+			}
+
+			Mage::log(
+				sprintf('[ %s ] Successfully retrieved files from remote: %s',
+					__CLASS__, $fnFNames(array_filter($files, function ($e) { return $e['retrieved']; }))
+				),
+				Zend_Log::DEBUG
+			);
 		}
-		$this->getAdapter()->closedir($remoteDir);
-
-		// callback fn for logging
-		$fnFNames = function ($a) {
-			return implode(', ', array_map(function ($e) { return $e['remote']; }, $a));
-		};
-
-		Mage::log(sprintf('[ %s ] Retrieving files from remote: %s', __CLASS__, $fnFNames($files)), Zend_Log::DEBUG);
-
-		foreach ($files as $idx => $file) {
-			$stream = $this->getAdapter()->fopen($file['local'], 'w+');
-			$file['retrieved'] = $this->retrieve($stream, $file['remote']);
-			$this->getAdapter()->fclose($stream);
-			$files[$idx] = $file;
-			$isSuccess = $isSuccess && $file['retrieved'];
-		}
-
-		Mage::log(
-			sprintf('[ %s ] Successfully retrieved files from remote: %s',
-				__CLASS__, $fnFNames(array_filter($files, function ($e) { return $e['retrieved']; }))
-			),
-			Zend_Log::DEBUG
-		);
 		return $isSuccess;
 	}
 
