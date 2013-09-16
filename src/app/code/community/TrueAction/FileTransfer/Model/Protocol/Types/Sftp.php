@@ -79,6 +79,72 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		return $isSuccess;
 	}
 
+	/**
+	 * Retrieve all files in the given remote directory, optionally matching the given
+	 * pattern and copy them to the provided local directory
+	 *
+	 * @param  string  $localDirPath  Path to local target directory
+	 * @param  string  $remoteDirPath Path to the source directory on the remote server
+	 * @param  string  $pattern       Optional glob pattern the files must match
+	 * @return boolean                Success of the transfer
+	 */
+	public function getAllFiles($localDirPath, $remoteDirPath, $pattern='*')
+	{
+		$remotePath = $this->normalPaths(
+			'/',
+			$this->getConfig()->getRemotePath(),
+			$remoteDirPath
+		);
+		$localPath = $this->normalPaths($localDirPath);
+
+		Mage::log("Transfering $remotePath to $localFile matching $pattern from " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
+		// connect
+		$isSuccess = $this->connect();
+		// login
+		$isSuccess = $isSuccess && $this->login();
+		// init sftp
+		$isSuccess = $isSuccess && $this->initSftp();
+
+		$sftpPath = $this->_remoteSftpPath($remotePath);
+
+		// get list of files that match the pattern
+		$remoteDir = $this->getAdapter()->opendir($sftpPath);
+		while (($fName = $this->getAdapter()->readdir($remoteDir)) !== false) {
+			$remoteFName = $sftpPath . DS .  $fName;
+			if ($this->getAdapter()->isFile($remoteFName) && fnmatch($pattern, $fName)) {
+				$files[] = array(
+					'name' => $fName,
+					'remote' => $this->normalPaths($remotePath, $fName),
+					'local' => $this->normalPaths($localPath, $fName)
+				);
+			}
+		}
+		$this->getAdapter()->closedir($remoteDir);
+
+		// callback fn for logging
+		$fnFNames = function ($a) {
+			return implode(', ', array_map(function ($e) { return $e['remote']; }, $a));
+		};
+
+		Mage::log(sprintf('[ %s ] Retrieving files from remote: %s', __CLASS__, $fnFNames($files)), Zend_Log::DEBUG);
+
+		foreach ($files as $idx => $file) {
+			$stream = $this->getAdapter()->fopen($file['local'], 'w+');
+			$file['retrieved'] = $this->retrieve($stream, $file['remote']);
+			$this->getAdapter()->fclose($stream);
+			$files[$idx] = $file;
+			$isSuccess = $isSuccess && $file['retrieved'];
+		}
+
+		Mage::log(
+			sprintf('[ %s ] Successfully retrieved files from remote: %s',
+				__CLASS__, $fnFNames(array_filter($files, function ($e) { return $e['retrieved']; }))
+			),
+			Zend_Log::DEBUG
+		);
+		return $isSuccess;
+	}
+
 	public function sendString($string, $remoteFile)
 	{
 		$remotePath = $this->normalPaths(
@@ -210,6 +276,11 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		}
 	}
 
+	protected function _remoteSftpPath($path)
+	{
+		return "ssh2.sftp://{$this->_sftp}{$path}";
+	}
+
 	/**
 	 * Transfer data from current local server to destination remote server.
 	 *
@@ -219,7 +290,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 	public function transfer($stream, $remoteFile)
 	{
 		$success = true;
-		$remoteStream = $this->getAdapter()->fopen("ssh2.sftp://{$this->_sftp}{$remoteFile}", 'w');
+		$remoteStream = $this->getAdapter()->fopen($this->_remoteSftpPath($remoteFile), 'w');
 		if (!$remoteStream) {
 			$this->_transferError("Failed to open $remoteFile on the remote host");
 			// @codeCoverageIgnoreStart
@@ -247,7 +318,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 	public function retrieve($stream, $remoteFile)
 	{
 		$success = true;
-		$remoteStream = $this->getAdapter()->fopen("ssh2.sftp://{$this->_sftp}{$remoteFile}", 'r');
+		$remoteStream = $this->getAdapter()->fopen($this->_remoteSftpPath($remoteFile), 'r');
 		if (!$remoteStream) {
 			$this->_transferError("Failed to open $remoteFile on the remote host");
 			// @codeCoverageIgnoreStart

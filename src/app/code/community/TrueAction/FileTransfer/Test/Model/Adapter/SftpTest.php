@@ -140,4 +140,27 @@ class TrueAction_FileTransfer_Test_Model_Adapter_SftpTest extends EcomDev_PHPUni
 	{
 		$this->_adapter->ssh2AuthPassword(null, null, null);
 	}
+
+	public function testDirectoryFunctions()
+	{
+		$dirHandle = $this->_adapter->opendir($this->_vfs->url(self::TESTBASE_DIR_NAME));
+		$this->assertSame('stream', get_resource_type($dirHandle));
+		$first = $this->_adapter->readdir($dirHandle);
+		$second = $this->_adapter->readdir($dirHandle);
+		$third = $this->_adapter->readdir($dirHandle);
+		$term = $this->_adapter->readdir($dirHandle);
+		$this->assertSame(self::FILE1_NAME, $first);
+		$this->assertSame(self::FILE2_NAME, $second);
+		$this->assertSame(self::FILE3_NAME, $third);
+		$this->assertFalse($term);
+		$this->assertNull($this->_adapter->closedir($dirHandle));
+		try {
+			$this->_adapter->readdir($dirHandle);
+			// if the resource has been properly closed, attempting to use it again
+			// should thrown an exception. If it doesn't, fail.
+			$this->fail('Directory resource not closed.');
+		} catch (Exception $e) {
+		}
+	}
+
 }

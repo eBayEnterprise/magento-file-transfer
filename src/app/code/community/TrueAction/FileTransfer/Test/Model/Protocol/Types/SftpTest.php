@@ -6,9 +6,12 @@
 class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAction_FileTransfer_Test_Abstract
 {
 	const TESTBASE_DIR_NAME = 'testBase';
+	const DIR1_NAME         = 'there';
 	const FILE1_NAME        = 'munsters.txt';
 	const FILE1_CONTENTS    = 'The Munsters is an American television sitcom depicting the home life of a family of benign monsters.';
+	const DIR2_NAME         = 'here';
 	const FILE2_NAME        = 'addams.txt';
+	const FILE3_NAME        = 'munsters.xml';
 
 	private $_vfs;
 
@@ -18,14 +21,23 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		$this->_vfs->apply(
 			array(
 				self::TESTBASE_DIR_NAME =>
-				array (
-					self::FILE1_NAME   => self::FILE1_CONTENTS,
-					self::FILE2_NAME   => '',
+				array(
+					self::DIR1_NAME =>
+					array(
+						self::FILE1_NAME => self::FILE1_CONTENTS,
+						self::FILE3_NAME => '',
+					),
+					self::DIR2_NAME =>
+					array(
+						self::FILE2_NAME => '',
+					),
 				)
 			)
 		);
-		$this->_vRemoteFile = $this->_vfs->url(self::TESTBASE_DIR_NAME . '/' . self::FILE1_NAME);
-		$this->_vLocalFile  = $this->_vfs->url(self::TESTBASE_DIR_NAME . '/' . self::FILE2_NAME);
+		$this->_vRemoteDir  = $this->_vfs->url(self::TESTBASE_DIR_NAME . '/' . self::DIR1_NAME);
+		$this->_vRemoteFile = $this->_vfs->url(self::TESTBASE_DIR_NAME . '/' . self::DIR1_NAME . '/' . self::FILE1_NAME);
+		$this->_vLocalDir   = $this->_vfs->url(self::TESTBASE_DIR_NAME . '/' . self::DIR2_NAME);
+		$this->_vLocalFile  = $this->_vfs->url(self::TESTBASE_DIR_NAME . '/' . self::DIR2_NAME . '/' . self::FILE2_NAME);
 	}
 
 	/**
@@ -224,4 +236,89 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 
 		$model->$method($a, $b);
 	}
+
+	/**
+	 * Test getting all files from a directory that match a given pattern
+	 *
+	 * @test
+	 */
+	public function testGetAllFiles()
+	{
+		$localStream = fopen($this->_vLocalFile, 'w+');
+		$remoteStream = fopen($this->_vRemoteFile, 'r');
+		$sftpResource = 'sftp resource';
+		$sshRemotePath = "ssh2.sftp://{$sftpResource}/vfs:/" . self::TESTBASE_DIR_NAME . '/' . self::DIR1_NAME;
+
+		$adapter = $this->getModelMock('filetransfer/adapter_sftp', array(
+			'ssh2Connect', 'ssh2Sftp', 'ssh2AuthPassword', 'opendir', 'closedir',
+			'readdir', 'isFile', 'fopen', 'fclose', 'fwrite', 'streamGetContents'
+		));
+		$adapter->expects($this->any())
+			->method('ssh2Connect')
+			->will($this->returnValue(true));
+		$adapter->expects($this->any())
+			->method('ssh2Sftp')
+			->will($this->returnValue($sftpResource));
+		$adapter->expects($this->any())
+			->method('ssh2AuthPassword')
+			->will($this->returnValue(true));
+
+		$adapter->expects($this->any())
+			->method('opendir')
+			->with(
+				$this->identicalTo($sshRemotePath)
+			)
+			->will($this->returnValue($this->_vRemoteDir));
+		$adapter->expects($this->any())
+			->method('closedir')
+			->with($this->identicalTo($this->_vRemoteDir))
+			->will($this->returnValue(true));
+		$adapter->expects($this->exactly(3))
+			->method('readdir')
+			->with($this->identicalTo($this->_vRemoteDir))
+			->will($this->onConsecutiveCalls(self::FILE1_NAME, self::FILE3_NAME, false));
+		$adapter->expects($this->exactly(2))
+			->method('isFile')
+			->with(
+				$this->logicalOr(
+					$this->identicalTo($sshRemotePath . '/' . self::FILE1_NAME),
+					$this->identicalTo($sshRemotePath . '/' . self::FILE3_NAME)
+				)
+			)
+			->will($this->returnValue($this->returnValue(true)));
+		$adapter->expects($this->exactly(2))
+			->method('fopen')
+			->with(
+				$this->logicalOr(
+					$this->identicalTo($sshRemotePath . '/' . self::FILE1_NAME),
+					$this->identicalTo('vfs:/' . self::TESTBASE_DIR_NAME . '/' . self::DIR2_NAME . '/' . self::FILE1_NAME)
+				),
+				$this->logicalOr($this->identicalTo('r'), $this->identicalTo('w+'))
+			)
+			->will($this->onConsecutiveCalls($localStream, $remoteStream));
+		$adapter->expects($this->exactly(2))
+			->method('fclose')
+			->with(
+				$this->logicalOr($this->identicalTo($remoteStream), $this->identicalTo($localStream))
+			)
+			->will($this->returnValue(true));
+		$adapter->expects($this->any())
+			->method('fwrite')
+			->with($this->identicalTo($localStream), $this->identicalTo(self::FILE1_CONTENTS))
+			->will($this->returnValue(123));
+		$adapter->expects($this->once())
+			->method('streamGetContents')
+			->with($this->identicalTo($remoteStream))
+			->will($this->returnValue(self::FILE1_CONTENTS));
+
+		$this->replaceByMock('model', 'filetransfer/adapter_sftp', $adapter);
+
+		$model = Mage::getModel('filetransfer/protocol_types_sftp');
+
+		$this->assertTrue($model->getAllFiles($this->_vLocalDir, $this->_vRemoteDir, '*.txt'));
+
+		fclose($localStream);
+		fclose($remoteStream);
+	}
+
 }
