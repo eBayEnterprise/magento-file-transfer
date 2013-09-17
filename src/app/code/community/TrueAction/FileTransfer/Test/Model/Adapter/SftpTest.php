@@ -163,4 +163,10 @@ class TrueAction_FileTransfer_Test_Model_Adapter_SftpTest extends EcomDev_PHPUni
 		}
 	}
 
+	public function testIsFile()
+	{
+		$this->assertTrue($this->_adapter->isFile($this->_vfs->url(self::TESTBASE_DIR_NAME . '/' . self::FILE1_NAME)));
+		$this->assertFalse($this->_adapter->isFile($this->_vfs->url(self::TESTBASE_DIR_NAME)));
+	}
+
 }

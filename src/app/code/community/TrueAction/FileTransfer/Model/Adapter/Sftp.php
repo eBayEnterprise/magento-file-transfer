@@ -79,6 +79,16 @@ class TrueAction_FileTransfer_Model_Adapter_Sftp extends Varien_Object
 	}
 
 	/**
+	 * Check if the given file is a regular file
+	 *
+	 * @see  is_file
+	 */
+	public function isFile()
+	{
+		return call_user_func_array($this->_underscore(__FUNCTION__), func_get_args());
+	}
+
+	/**
 	 * Get contents of a stream
 	 *
 	 * @see stream_get_contents
