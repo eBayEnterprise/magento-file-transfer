@@ -322,7 +322,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 	}
 
 	/**
-	 * Attemtping to retrieve zero files should not cause errors.
+	 * Attempting to retrieve zero files should not cause errors.
 	 *
 	 * @test
 	 */
