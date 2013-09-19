@@ -322,6 +322,65 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 	}
 
 	/**
+	 * Attemtping to retrieve zero files should not cause errors.
+	 *
+	 * @test
+	 */
+	public function testGetAllFilesNoMatching()
+	{
+		$localStream = fopen($this->_vLocalFile, 'w+');
+		$remoteStream = fopen($this->_vRemoteFile, 'r');
+		$sftpResource = 'sftp resource';
+		$sshRemotePath = "ssh2.sftp://{$sftpResource}/vfs:/" . self::TESTBASE_DIR_NAME . '/' . self::DIR1_NAME;
+
+		$adapter = $this->getModelMock('filetransfer/adapter_sftp', array(
+			'ssh2Connect', 'ssh2Sftp', 'ssh2AuthPassword', 'opendir', 'closedir',
+			'readdir', 'isFile', 'fopen', 'fclose', 'fwrite', 'streamGetContents'
+		));
+		$adapter->expects($this->any())
+			->method('ssh2Connect')
+			->will($this->returnValue(true));
+		$adapter->expects($this->any())
+			->method('ssh2Sftp')
+			->will($this->returnValue($sftpResource));
+		$adapter->expects($this->any())
+			->method('ssh2AuthPassword')
+			->will($this->returnValue(true));
+
+		$adapter->expects($this->any())
+			->method('opendir')
+			->with($this->identicalTo($sshRemotePath))
+			->will($this->returnValue($this->_vRemoteDir));
+		$adapter->expects($this->any())
+			->method('closedir')
+			->with($this->identicalTo($this->_vRemoteDir))
+			->will($this->returnValue(true));
+		$adapter->expects($this->once())
+			->method('readdir')
+			->with($this->identicalTo($this->_vRemoteDir))
+			->will($this->returnValue(false));
+		$adapter->expects($this->never())
+			->method('isFile');
+		$adapter->expects($this->never())
+			->method('fopen');
+		$adapter->expects($this->never())
+			->method('fclose');
+		$adapter->expects($this->never())
+			->method('fwrite');
+		$adapter->expects($this->never())
+			->method('streamGetContents');
+
+		$this->replaceByMock('model', 'filetransfer/adapter_sftp', $adapter);
+
+		$model = Mage::getModel('filetransfer/protocol_types_sftp');
+
+		$this->assertTrue($model->getAllFiles($this->_vLocalDir, $this->_vRemoteDir, 'nothing'));
+
+		fclose($localStream);
+		fclose($remoteStream);
+	}
+
+	/**
 	 * Ensure that a SFTP connection cannot be made and authed, that no remote
 	 * directory access is attempted.
 	 *

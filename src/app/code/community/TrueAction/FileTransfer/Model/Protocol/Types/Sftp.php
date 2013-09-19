@@ -109,6 +109,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 			$sftpPath = $this->_remoteSftpPath($remotePath);
 
 			// get list of files that match the pattern
+			$files = array();
 			$remoteDir = $this->getAdapter()->opendir($sftpPath);
 			while (($fName = $this->getAdapter()->readdir($remoteDir)) !== false) {
 				$remoteFName = $sftpPath . DS .  $fName;
