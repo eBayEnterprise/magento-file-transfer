@@ -49,6 +49,16 @@ class TrueAction_FileTransfer_Model_Adapter_Sftp extends Varien_Object
 	}
 
 	/**
+	 * Unlink a file
+	 *
+	 * @see  unlink
+	 */
+	public function unlink()
+	{
+		return call_user_func_array(__FUNCTION__, func_get_args());
+	}
+
+	/**
 	 * Open a directory handle
 	 *
 	 * @see  opendir

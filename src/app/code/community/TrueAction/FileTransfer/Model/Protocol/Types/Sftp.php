@@ -10,7 +10,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 	protected $_auth;
 	protected $_sftp;
 
-	public function _construct()
+	protected function _construct()
 	{
 		if( !$this->hasAdapter() ) {
 			$this->setAdapter(Mage::getModel('filetransfer/adapter_sftp'));
@@ -30,7 +30,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 			$remoteFile
 		);
 		$localPath = $localFile;
-		Mage::log("[ " . __CLASS__ . "] Transferring $localFile to $remotePath on " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
+		Mage::log('[ ' . __CLASS__ . "] Transferring $localFile to $remotePath on " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
 		// connect to sftp server
 		$isSuccess = $this->connect();
 		// login to sftp connection
@@ -60,7 +60,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 			$localFile
 		);
 
-		Mage::log("[ " . __CLASS__ . "] Transferring $remotePath to $localFile from " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
+		Mage::log('[ ' . __CLASS__ . "] Transferring $remotePath to $localFile from " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
 		// connect to ftp server
 		$isSuccess = $this->connect();
 		// login to ftp connection
@@ -77,6 +77,30 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		$isSuccess = $isSuccess && $this->retrieve($stream, $remotePath);
 		$this->getAdapter()->fclose($stream);
 		return $isSuccess;
+	}
+
+	/**
+	 * Unlink the remote file via SFTP.
+	 * @param  string $remoteFile File to be unlinked on the remote.
+	 * @return boolean            Success or failure of unlinking the file.
+	 */
+	public function deleteFile($remoteFile)
+	{
+		$remotePath = $this->normalPaths(
+			'/', // all remote paths must start with a /
+			$this->getConfig()->getRemotePath(),
+			$remoteFile
+		);
+
+		Mage::log('[ ' . __CLASS__ . "] Deleting $remotePath from " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
+		// connect to ftp server
+		$isSuccess = $this->connect();
+		// login to ftp connection
+		$isSuccess = $isSuccess && $this->login();
+		// init sftp subsystem
+		$isSuccess = $isSuccess && $this->initSftp();
+		// delete the remote file
+		return $isSuccess && $this->getAdapter()->unlink($this->_remoteSftpPath($remotePath));
 	}
 
 	/**
@@ -97,7 +121,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		);
 		$localPath = $this->normalPaths($localDirPath);
 
-		Mage::log("[ " . __CLASS__ . "] Transferring $remotePath to $localPath matching $pattern from " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
+		Mage::log('[ ' . __CLASS__ . "] Transferring $remotePath to $localPath matching $pattern from " . $this->getConfig()->getUrl(), Zend_Log::DEBUG);
 		// connect
 		$isSuccess = $this->connect();
 		// login
@@ -112,7 +136,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 			$files = array();
 			$remoteDir = $this->getAdapter()->opendir($sftpPath);
 			while (($fName = $this->getAdapter()->readdir($remoteDir)) !== false) {
-				$remoteFName = $sftpPath . DS .  $fName;
+				$remoteFName = $sftpPath . DS . $fName;
 				if (fnmatch($pattern, $fName) && $this->getAdapter()->isFile($remoteFName)) {
 					$files[] = array(
 						'name' => $fName,
@@ -279,6 +303,11 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		}
 	}
 
+	/**
+	 * Build a path using the ssh2.sftp stream wrapper
+	 * @param  string $path File path
+	 * @return string       ssh2.sftp path
+	 */
 	protected function _remoteSftpPath($path)
 	{
 		return "ssh2.sftp://{$this->_sftp}{$path}";

@@ -52,7 +52,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		// This is the key to testing here - we simulate the low-level Adapter, and we can cover all the calls
 		$this->replaceModel(
 			'filetransfer/adapter_sftp',
-			array (
+			array(
 				'fclose'             => true,
 				'fread'              => self::FILE1_CONTENTS,
 				'fopen'              => fopen($this->_vRemoteFile, 'wb+'),
@@ -94,7 +94,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		// This is the key to testing here - we simulate the low-level Adapter, and we can cover all the calls
 		$this->replaceModel(
 			'filetransfer/adapter_sftp',
-			array (
+			array(
 				'fopen' => false,
 			)
 		);
@@ -124,7 +124,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 			->will($this->returnValue('the://url/'));
 		$this->replaceModel(
 			'filetransfer/adapter_sftp',
-			array (
+			array(
 				'fclose'             => true,
 				'fread'              => self::FILE1_CONTENTS,
 				'fopen'              => fopen($this->_vLocalFile, 'wb+'),
@@ -214,7 +214,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		// Force some low-level adapter failures
 		$this->replaceModel(
 			'filetransfer/adapter_sftp',
-			array (
+			array(
 				'fopen' => $fopen,
 				'fwrite' => $fwrite,
 				'streamGetContents' => self::FILE1_CONTENTS,
@@ -409,6 +409,72 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 			->method('initSftp')
 			->will($this->returnValue($auth));
 		$this->assertFalse($model->getAllFiles($this->_vLocalDir, $this->_vRemoteDir, '*.txt'));
+	}
+
+	/**
+	 * Test unlinking a file via the ssh2.sftp protocol. Primary concerns are to:
+	 * 1. Ensure the connection is created, authed and the sftp subsytem is created
+	 * 2. The adapter's unlink method is called with a proper ssh2.sftp wrapped path.
+	 *
+	 * @test
+	 */
+	public function testUnlinkRemoteFile()
+	{
+		// clearly not a real sftp resource but will at least be testable in the ssh2.sftp path
+		$sftpResource = 'sftp resource';
+		$remotePath = self::TESTBASE_DIR_NAME . '/' . self::DIR1_NAME . '/' . self::FILE1_NAME;
+
+		$adapter = $this->getModelMock('filetransfer/adapter_sftp', array(
+			'ssh2Connect', 'ssh2Sftp', 'ssh2AuthPassword', 'unlink',
+		));
+		$adapter->expects($this->once())
+			->method('ssh2Connect')
+			->will($this->returnValue(true));
+		$adapter->expects($this->once())
+			->method('ssh2Sftp')
+			->will($this->returnValue($sftpResource));
+		$adapter->expects($this->once())
+			->method('ssh2AuthPassword')
+			->will($this->returnValue(true));
+		$adapter->expects($this->once())
+			->method('unlink')
+			// remote path gets "normal"ed - leading slash and any duplicate slashes removed
+			->with($this->identicalTo("ssh2.sftp://{$sftpResource}/{$remotePath}"))
+			->will($this->returnValue(true));
+
+		$sftp = Mage::getModel('filetransfer/protocol_types_sftp', array('adapter' => $adapter));
+		$this->assertTrue($sftp->deleteFile($remotePath));
+	}
+
+	/**
+	 * Ensure that a SFTP connection cannot be made and authed, that no remote
+	 * directory access is attempted.
+	 *
+	 * @test
+	 * @dataProvider dataProvider
+	 */
+	public function testDoNotAttemptUnlinkIfNoAuth($connect, $sftp, $auth)
+	{
+		$adapter = $this->getModelMock('filetransfer/adapter_sftp', array(
+			'unlink'
+		));
+		$adapter->expects($this->never())
+			->method('unlink');
+		$this->replaceByMock('model', 'filetransfer/adapter_sftp', $adapter);
+
+		$model = $this->getModelMock('filetransfer/protocol_types_sftp', array(
+			'connect', 'login', 'initSftp'
+		));
+		$model->expects($this->any())
+			->method('connect')
+			->will($this->returnValue($connect));
+		$model->expects($this->any())
+			->method('login')
+			->will($this->returnValue($sftp));
+		$model->expects($this->any())
+			->method('initSftp')
+			->will($this->returnValue($auth));
+		$this->assertFalse($model->deleteFile($this->_vRemoteDir));
 	}
 
 }

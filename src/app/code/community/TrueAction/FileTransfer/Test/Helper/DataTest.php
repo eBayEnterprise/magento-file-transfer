@@ -107,6 +107,32 @@ class TrueAction_FileTransfer_Test_Helper_DataTest extends TrueAction_FileTransf
 	}
 
 	/**
+	 * Test the deleteFile helper method. Ensure proper args are passed through to the
+	 * getProtocolModel method and the protocol's deleteFile method.
+	 *
+	 * @test
+	 */
+	public function testDeleteFile()
+	{
+		$protocolModel = $this->getModelMockBuilder('filetransfer/protocol_types_sftp')
+			->setMethods(array('deleteFile'))
+			->disableOriginalConstructor()
+			->getMock();
+		$protocolModel->expects($this->once())
+			->method('deleteFile')
+			->with($this->identicalTo('remote/file'))
+			->will($this->returnValue(true));
+
+		$helper = $this->getHelperMock('filetransfer/data', array('getProtocolModel'));
+		$helper->expects($this->once())
+			->method('getProtocolModel')
+			->with($this->identicalTo('config/path'), $this->identicalTo('store'))
+			->will($this->returnValue($protocolModel));
+
+		$this->assertTrue($helper->deleteFile('remote/file', 'config/path', 'store'));
+	}
+
+	/**
 	 * Test that the helper getAllFiles method loads a protocol model and then passes
 	 * the localPath, remotePath and pattern args through to it.
 	 *

@@ -37,6 +37,28 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 		return $protocol->getFile($localFile, $remoteFile);
 	}
 
+	/**
+	 * Delete the given file from the remote.
+	 * @param  string $remoteFile Remote location of the file
+	 * @param  string $configPath @see README.md
+	 * @param  mixed  $store      Any valid store reference
+	 * @return boolean            Success or failure
+	 */
+	public function deleteFile($remoteFile, $configPath, $store=null)
+	{
+		$protocol = $this->getProtocolModel($configPath, $store);
+		return $protocol->deleteFile($remoteFile);
+	}
+
+	/**
+	 * Get all files in the given directory matching the pattern.
+	 * @param  string $localDir   Local directory where files should be placed
+	 * @param  string $remoteDir  Remote directory to copy files from
+	 * @param  string $pattern    Glob file name must match
+	 * @param  string $configPath @see README.md
+	 * @param  mixed  $store      Any valid store reference
+	 * @return boolean            Success or failure
+	 */
 	public function getAllFiles($localDir, $remoteDir, $pattern, $configPath, $store=null)
 	{
 		$protocol = $this->getProtocolModel($configPath, $store);
