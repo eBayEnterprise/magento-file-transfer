@@ -88,15 +88,15 @@ class TrueAction_FileTransfer_Test_Helper_DataTest extends TrueAction_FileTransf
 		$this->replaceModel(
 			'filetransfer/adapter_sftp',
 			array (
-				'fclose'             => true,
-				'fread'              => self::FILE1_CONTENTS,
-				'fopen'              => fopen($this->_vRemoteFile, 'wb+'),
-				'fwrite'             => 100,
-				'streamGetContents'  => self::FILE1_CONTENTS,
-				'ssh2Connect'        => true,
-				'ssh2Sftp'           => true,
-				'ssh2AuthPubkeyFile' => true,
-				'ssh2AuthPassword'   => true,
+				'fclose'             => $this->returnValue(true),
+				'fread'              => $this->returnValue(self::FILE1_CONTENTS),
+				'fopen'              => $this->returnValue(fopen($this->_vRemoteFile, 'wb+')),
+				'fwrite'             => $this->returnValue(100),
+				'streamGetContents'  => $this->returnValue(self::FILE1_CONTENTS),
+				'ssh2Connect'        => $this->returnValue(true),
+				'ssh2Sftp'           => $this->returnValue(true),
+				'ssh2AuthPubkeyFile' => $this->returnValue(true),
+				'ssh2AuthPassword'   => $this->returnValue(true),
 			)
 		);
 

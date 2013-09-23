@@ -24,7 +24,7 @@ abstract class TrueAction_FileTransfer_Test_Abstract extends EcomDev_PHPUnit_Tes
 		foreach($mockedMethodSet as $method => $returnSet ) {
 			$mock->expects($this->any())
 				->method($method)
-				->will($this->returnValue($returnSet));
+				->will($returnSet);
 		}
 		return $mock;
 	}

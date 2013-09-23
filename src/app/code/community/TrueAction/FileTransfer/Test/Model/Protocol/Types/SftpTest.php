@@ -53,15 +53,15 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		$this->replaceModel(
 			'filetransfer/adapter_sftp',
 			array(
-				'fclose'             => true,
-				'fread'              => self::FILE1_CONTENTS,
-				'fopen'              => fopen($this->_vRemoteFile, 'wb+'),
-				'fwrite'             => 100,
-				'streamGetContents'  => self::FILE1_CONTENTS,
-				'ssh2Connect'        => true,
-				'ssh2Sftp'           => true,
-				'ssh2AuthPubkeyFile' => true,
-				'ssh2AuthPassword'   => true,
+				'fclose'             => $this->returnValue(true),
+				'fread'              => $this->returnValue(self::FILE1_CONTENTS),
+				'fopen'              => $this->returnValue(fopen($this->_vRemoteFile, 'wb+')),
+				'fwrite'             => $this->returnValue(100),
+				'streamGetContents'  => $this->returnValue(self::FILE1_CONTENTS),
+				'ssh2Connect'        => $this->returnValue(true),
+				'ssh2Sftp'           => $this->returnValue(true),
+				'ssh2AuthPubkeyFile' => $this->returnValue(true),
+				'ssh2AuthPassword'   => $this->returnValue(true),
 			)
 		);
 
@@ -95,7 +95,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		$this->replaceModel(
 			'filetransfer/adapter_sftp',
 			array(
-				'fopen' => false,
+				'fopen' => $this->returnValue(false),
 			)
 		);
 		$methods = array('connect', 'login', 'initSftp');
@@ -103,7 +103,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		foreach ($methods as $mockedMethod) {
 			$model->expects($this->any())
 				->method($mockedMethod)
-				->will($this->returnValue(true));
+				->will($this->returnSelf());
 		}
 		$model->$method('somelocalfile', 'someremotefile');
 	}
@@ -125,15 +125,15 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		$this->replaceModel(
 			'filetransfer/adapter_sftp',
 			array(
-				'fclose'             => true,
-				'fread'              => self::FILE1_CONTENTS,
-				'fopen'              => fopen($this->_vLocalFile, 'wb+'),
-				'fwrite'             => false,
-				'streamGetContents'  => self::FILE1_CONTENTS,
-				'ssh2Connect'        => true,
-				'ssh2Sftp'           => true,
-				'ssh2AuthPubkeyFile' => true,
-				'ssh2AuthPassword'   => true,
+				'fclose'             => $this->returnValue(true),
+				'fread'              => $this->returnValue(self::FILE1_CONTENTS),
+				'fopen'              => $this->returnValue(fopen($this->_vLocalFile, 'wb+')),
+				'fwrite'             => $this->returnValue(false),
+				'streamGetContents'  => $this->returnValue(self::FILE1_CONTENTS),
+				'ssh2Connect'        => $this->returnValue(true),
+				'ssh2Sftp'           => $this->returnValue(true),
+				'ssh2AuthPubkeyFile' => $this->returnValue(true),
+				'ssh2AuthPassword'   => $this->returnValue(true),
 			)
 		);
 
@@ -155,7 +155,11 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 	{
 		$this->setExpectedException('TrueAction_FileTransfer_Exception_Connection', $expectedMessage);
 		// Force some low-level adapter failures
-		$this->replaceModel('filetransfer/adapter_sftp', $mockedMethods);
+		$methods = array();
+		foreach ($mockedMethods as $mockMethod => $retVal) {
+			$methods[$mockMethod] = $this->returnValue($retVal);
+		}
+		$this->replaceModel('filetransfer/adapter_sftp', $methods);
 
 		$model = Mage::getModel('filetransfer/protocol_types_sftp');
 
@@ -184,8 +188,8 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		$this->replaceModel(
 			'filetransfer/adapter_sftp',
 			array(
-				'ssh2AuthPubkeyFile' => false,
-				'ssh2AuthPassword' => false
+				'ssh2AuthPubkeyFile' => $this->returnValue(false),
+				'ssh2AuthPassword'   => $this->returnValue(false),
 			)
 		);
 		$model = Mage::getModel('filetransfer/protocol_types_sftp');
@@ -215,10 +219,10 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		$this->replaceModel(
 			'filetransfer/adapter_sftp',
 			array(
-				'fopen' => $fopen,
-				'fwrite' => $fwrite,
-				'streamGetContents' => self::FILE1_CONTENTS,
-				'fclose' => true,
+				'fopen'             => $this->returnValue($fopen),
+				'fwrite'            => $this->returnValue($fwrite),
+				'streamGetContents' => $this->returnValue(self::FILE1_CONTENTS),
+				'fclose'            => $this->returnValue(true),
 			)
 		);
 		$a = $b = 'foo';
@@ -265,9 +269,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 
 		$adapter->expects($this->any())
 			->method('opendir')
-			->with(
-				$this->identicalTo($sshRemotePath)
-			)
+			->with($this->identicalTo($sshRemotePath))
 			->will($this->returnValue($this->_vRemoteDir));
 		$adapter->expects($this->any())
 			->method('closedir')
@@ -311,9 +313,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 			->with($this->identicalTo($remoteStream))
 			->will($this->returnValue(self::FILE1_CONTENTS));
 
-		$this->replaceByMock('model', 'filetransfer/adapter_sftp', $adapter);
-
-		$model = Mage::getModel('filetransfer/protocol_types_sftp');
+		$model = Mage::getModel('filetransfer/protocol_types_sftp', array('adapter' => $adapter));
 
 		$this->assertTrue($model->getAllFiles($this->_vLocalDir, $this->_vRemoteDir, '*.txt'));
 
@@ -401,14 +401,22 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		));
 		$model->expects($this->any())
 			->method('connect')
-			->will($this->returnValue($connect));
+			->will($connect ? $this->returnSelf() : $this->throwException(new TrueAction_FileTransfer_Exception_Connection()));
 		$model->expects($this->any())
 			->method('login')
-			->will($this->returnValue($sftp));
+			->will($sftp ? $this->returnSelf() : $this->throwException(new TrueAction_FileTransfer_Exception_Connection()));
 		$model->expects($this->any())
 			->method('initSftp')
-			->will($this->returnValue($auth));
-		$this->assertFalse($model->getAllFiles($this->_vLocalDir, $this->_vRemoteDir, '*.txt'));
+			->will($auth ? $this->returnSelf() : $this->throwException(new TrueAction_FileTransfer_Exception_Authentication()));
+
+		// set up expected exceptions - if no connect or sftp, should have connection exception
+		// if no auth, should have auth exception.
+		if (!($connect && $sftp)) {
+			$this->setExpectedException('TrueAction_FileTransfer_Exception_Connection');
+		} elseif (!$auth) {
+			$this->setExpectedException('TrueAction_FileTransfer_Exception_Authentication');
+		}
+		$model->getAllFiles($this->_vLocalDir, $this->_vRemoteDir, '*.txt');
 	}
 
 	/**
@@ -467,13 +475,22 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		));
 		$model->expects($this->any())
 			->method('connect')
-			->will($this->returnValue($connect));
+			->will($connect ? $this->returnSelf() : $this->throwException(new TrueAction_FileTransfer_Exception_Connection()));
 		$model->expects($this->any())
 			->method('login')
-			->will($this->returnValue($sftp));
+			->will($sftp ? $this->returnSelf() : $this->throwException(new TrueAction_FileTransfer_Exception_Connection()));
 		$model->expects($this->any())
 			->method('initSftp')
-			->will($this->returnValue($auth));
+			->will($auth ? $this->returnSelf() : $this->throwException(new TrueAction_FileTransfer_Exception_Authentication()));
+
+		// set up expected exceptions - if no connect or sftp, should have connection exception
+		// if no auth, should have auth exception.
+		if (!($connect && $sftp)) {
+			$this->setExpectedException('TrueAction_FileTransfer_Exception_Connection');
+		} elseif (!$auth) {
+			$this->setExpectedException('TrueAction_FileTransfer_Exception_Authentication');
+		}
+
 		$this->assertFalse($model->deleteFile($this->_vRemoteDir));
 	}
 
