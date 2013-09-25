@@ -96,7 +96,7 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 		$defaultFlag = isset($moduleSpec->$showInDefault) ?
 			(string) $moduleSpec->$showInDefault : $helper->getGlobalShowInDefault();
 		$websiteFlag = isset($moduleSpec->$showInWebsite) ?
-			(string) $moduleSpec->$showInWebSite : $helper->getGlobalShowInWebsite();
+			(string) $moduleSpec->$showInWebsite : $helper->getGlobalShowInWebsite();
 		$storeFlag = isset($moduleSpec->$showInStore) ?
 			(string) $moduleSpec->$showInStore : $helper->getGlobalShowInStore();
 
