@@ -179,6 +179,10 @@ class TrueAction_FileTransfer_Test_Helper_DataTest extends TrueAction_FileTransf
 	 */
 	public function testGetInitDataDefault()
 	{
+		$store = Mage::app()->getStore();
+		$cc = new ReflectionProperty($store, '_configCache');
+		$cc->setAccessible(true);
+		$cc->setValue($store, array());
 		$configArray = $this->_helper->getInitData(self::MAGE_CONFIG_PATH);
 		$this->assertSame('DefaultProtocol', $configArray['protocol_code']);
 	}
