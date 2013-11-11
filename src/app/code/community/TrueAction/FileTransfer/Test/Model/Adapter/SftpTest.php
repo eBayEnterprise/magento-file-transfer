@@ -7,7 +7,7 @@ class TrueAction_FileTransfer_Test_Model_Adapter_SftpTest extends EcomDev_PHPUni
 	const FILE2_NAME        = 'addams.txt';
 	const FILE2_CONTENTS    = 'The Addams Family is an American television series based on the characters in Charles Addams';
 	const FILE3_NAME        = 'gilligan.txt';
-	const FILE3_CONTENTS	= 'Gilligan\'s Island is an American sitcom created and produced by Sherwood Schwartz.';
+	const FILE3_CONTENTS    = 'Gilligan\'s Island is an American sitcom created and produced by Sherwood Schwartz.';
 
 	const CHUNK_SIZE = 1024;
 
@@ -28,16 +28,6 @@ class TrueAction_FileTransfer_Test_Model_Adapter_SftpTest extends EcomDev_PHPUni
 			)
 		);
 		$this->_adapter = Mage::getModel('filetransfer/adapter_sftp');
-	}
-
-	/**
-	 * Make sure _adapter really is the right object
-	 *
-	 * @test
-	 */
-	public function testNewObject()
-	{
-		$this->assertInstanceOf('TrueAction_FileTransfer_Model_Adapter_Sftp', $this->_adapter);
 	}
 
 	/**
@@ -98,14 +88,27 @@ class TrueAction_FileTransfer_Test_Model_Adapter_SftpTest extends EcomDev_PHPUni
 	}
 
 	/**
-	 * Coverage for ssh2Connect
-	 *
+	 * Test ssh2Connect with port=0 will instead try port 22 
 	 * @test
-	 * @expectedException Exception
+	 * The inverse of this test is to have
+     * expectedException Exception
+	 * and then look for
+	 * expectedExceptionMessage localhost on port
 	 */
-	public function testSshConnect()
+	public function testSshConnectZeroPort()
 	{
-		$this->_adapter->ssh2Connect(null, 0);
+		$this->_adapter->ssh2Connect('localhost',0);
+	}
+
+	/**
+	 * Test ssh2Connect with invalid host will throw Exception as expected
+	 * @test
+     * @expectedException Exception
+	 * @expectedExceptionMessage getaddrinfo failed
+	 */
+	public function testSshConnectInvalidHost()
+	{
+		$this->_adapter->ssh2Connect('monkeyBusinessHostName',0);
 	}
 
 	/**

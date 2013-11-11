@@ -109,13 +109,17 @@ class TrueAction_FileTransfer_Model_Adapter_Sftp extends Varien_Object
 	}
 
 	/**
-	 * Connect using ssh2
+	 * Connect using ssh2. If port isn't specified, set it to default ssh2 port
 	 *
 	 * @see ssh2_connect
 	 */
 	public function ssh2Connect()
 	{
-		return call_user_func_array($this->_underscore(__FUNCTION__), func_get_args());
+		$functionArgs = func_get_args();
+
+		$host = $functionArgs[0];
+		$port = (int) $functionArgs[1];
+		return ssh2_connect($host, ($port ? $port : 22));
 	}
 
 	/**
