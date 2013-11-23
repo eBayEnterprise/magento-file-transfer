@@ -1,0 +1,20 @@
+-
+  - 'remote'
+  -
+    'bar': []
+    'baz': []
+    'corge': []
+    'foo': []
+    'fred': []
+    'garply': []
+    'grault': []
+    'plugh': []
+    'qux': []
+    'thud': []
+    'waldo': []
+    'xyzzy': []
+  - [ '/remote/foo', '/remote/fred' ]
+-
+  - 'remote'
+  - false
+  - false

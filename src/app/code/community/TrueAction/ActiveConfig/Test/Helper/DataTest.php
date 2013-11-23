@@ -1,6 +1,17 @@
 <?php
-class TrueAction_ActiveConfig_Test_Helper_DataTest extends EcomDev_PHPUnit_Test_Case_Config
+class TrueAction_ActiveConfig_Test_Helper_DataTest extends EcomDev_PHPUnit_Test_Case
 {
+
+	public function setUp()
+	{
+		$this->replaceByMock(
+			'model',
+			'filetransfer/protocol_types_sftp',
+			$this->getModelMockBuilder('filetransfer/protocol_types_sftp')
+				->disableOriginalConstructor()
+				->getMock()
+		);
+	}
 	/**
 	 * Tests by pulling protocol argument from config
 	 *
@@ -11,9 +22,9 @@ class TrueAction_ActiveConfig_Test_Helper_DataTest extends EcomDev_PHPUnit_Test_
 	{
 		$model = Mage::helper('filetransfer')
 			->getProtocolModel('testsection/testgroup');
-		$this->assertSame(
+		$this->assertInstanceOf(
 			'TrueAction_FileTransfer_Model_Protocol_Types_Sftp',
-			get_class($model)
+			$model
 		);
 	}
 
@@ -27,9 +38,9 @@ class TrueAction_ActiveConfig_Test_Helper_DataTest extends EcomDev_PHPUnit_Test_
 	{
 		$model = Mage::helper('filetransfer')
 			->getProtocolModel('testsection/testgroup', 'sftp');
-		$this->assertSame(
+		$this->assertInstanceOf(
 			'TrueAction_FileTransfer_Model_Protocol_Types_Sftp',
-			get_class($model)
+			$model
 		);
 	}
 

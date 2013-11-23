@@ -1,11 +1,7 @@
 <?php
 /**
- *
- *
  * @method TrueAction_ActiveConfig_Model_Config_Abstract getConfig()
  * @method string getString(string $remoteFile, string $data)
- *
- *
  */
 abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core_Model_Abstract
 {

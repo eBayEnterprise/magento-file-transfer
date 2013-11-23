@@ -138,17 +138,10 @@ class TrueAction_FileTransfer_Helper_Data extends Mage_Core_Helper_Abstract
 			$protocol,
 			$store
 		);
-		try {
-			$protocolModel = Mage::getModel(
-				'filetransfer/protocol_types_' . $config['protocol_code'],
-				array('config' => $config)
-			);
-		} catch (Exception $e) {
-			Mage::throwException(
-				"Unable to get the protocol model where protocol='$protocol'."
-			);
-		}
-		return $protocolModel;
+		return Mage::getModel(
+			'filetransfer/protocol_types_' . $config['protocol_code'],
+			array('config' => $config)
+		);
 	}
 
 	/**

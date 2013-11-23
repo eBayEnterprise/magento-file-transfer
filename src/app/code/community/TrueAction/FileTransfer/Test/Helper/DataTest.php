@@ -27,7 +27,6 @@ class TrueAction_FileTransfer_Test_Helper_DataTest extends TrueAction_FileTransf
 		$this->_vRemoteFile = $this->_vfs->url(self::TESTBASE_DIR_NAME . '/' . self::FILE1_NAME);
 		$this->_vLocalFile  = $this->_vfs->url(self::TESTBASE_DIR_NAME . '/' . self::FILE2_NAME);
 	}
-
 	/**
 	 * My go-to - just instantiate and assert 'it is what it is'
 	 *
@@ -75,90 +74,150 @@ class TrueAction_FileTransfer_Test_Helper_DataTest extends TrueAction_FileTransf
 		$this->assertEquals(27, $this->_helper->getGlobalShowInWebsite());
 		$this->assertEquals(36, $this->_helper->getGlobalShowInStore());
 	}
-
 	/**
-	 * Test send and get by specifying protocol, and mocking the adapter ('sftp')
-	 *
-	 * @test
-	 * @loadFixture
-	 */
-	public function testSendAndGet()
-	{
-		// Simulate the low-level Adapter, and we can cover all the calls
-		$this->replaceModel(
-			'filetransfer/adapter_sftp',
-			array (
-				'fclose'             => $this->returnValue(true),
-				'fread'              => $this->returnValue(self::FILE1_CONTENTS),
-				'fopen'              => $this->returnValue(fopen($this->_vRemoteFile, 'wb+')),
-				'fwrite'             => $this->returnValue(100),
-				'streamGetContents'  => $this->returnValue(self::FILE1_CONTENTS),
-				'ssh2Connect'        => $this->returnValue(true),
-				'ssh2Sftp'           => $this->returnValue(true),
-				'ssh2AuthPubkeyFile' => $this->returnValue(true),
-				'ssh2AuthPassword'   => $this->returnValue(true),
-			)
-		);
-
-		$this->assertTrue($this->_helper->sendString(self::FILE1_CONTENTS, $this->_vRemoteFile, self::MAGE_CONFIG_PATH));
-		$this->assertSame(self::FILE1_CONTENTS, $this->_helper->getString($this->_vRemoteFile, self::MAGE_CONFIG_PATH));
-		$this->assertTrue($this->_helper->getFile($this->_vLocalFile, $this->_vRemoteFile, self::MAGE_CONFIG_PATH));
-		$this->assertTrue($this->_helper->sendFile($this->_vLocalFile, $this->_vRemoteFile, self::MAGE_CONFIG_PATH));
-	}
-
-	/**
-	 * Test the deleteFile helper method. Ensure proper args are passed through to the
-	 * getProtocolModel method and the protocol's deleteFile method.
+	 * Test the helper pass through to a protocol model for sending files to a remote
 	 *
 	 * @test
 	 */
-	public function testDeleteFile()
+	public function testSendFile()
 	{
-		$protocolModel = $this->getModelMockBuilder('filetransfer/protocol_types_sftp')
-			->setMethods(array('deleteFile'))
+		$protocol = $this->getModelMockBuilder('filetransfer/protocol_types_sftp')
 			->disableOriginalConstructor()
+			->setMethods(array('sendFile'))
 			->getMock();
-		$protocolModel->expects($this->once())
-			->method('deleteFile')
-			->with($this->identicalTo('remote/file'))
-			->will($this->returnValue(true));
-
-		$helper = $this->getHelperMock('filetransfer/data', array('getProtocolModel'));
-		$helper->expects($this->once())
-			->method('getProtocolModel')
-			->with($this->identicalTo('config/path'), $this->identicalTo('store'))
-			->will($this->returnValue($protocolModel));
-
-		$this->assertTrue($helper->deleteFile('remote/file', 'config/path', 'store'));
-	}
-
-	/**
-	 * Test that the helper getAllFiles method loads a protocol model and then passes
-	 * the localPath, remotePath and pattern args through to it.
-	 *
-	 * @test
-	 */
-	public function testGetAllFilesPassthrough()
-	{
-		$protocolModel = $this->getModelMock('filetransfer/protocol_types_sftp', array('getAllFiles'));
-		$protocolModel->expects($this->once())
-			->method('getAllFiles')
-			->with(
-				$this->identicalTo('remote/path'),
-				$this->identicalTo('local/path'),
-				$this->identicalTo('.*man')
-			)
+		$protocol->expects($this->once())
+			->method('sendFile')
+			->with($this->identicalTo('local'), $this->identicalTo('remote'))
 			->will($this->returnValue(true));
 
 		$helper = $this->getHelperMock('filetransfer/data', array('getProtocolModel'));
 		$helper->expects($this->any())
 			->method('getProtocolModel')
-			->with($this->identicalTo('config/path'), $this->identicalTo('store'))
-			->will($this->returnValue($protocolModel));
+			->with($this->identicalTo('config/path'), $this->identicalTo(1))
+			->will($this->returnValue($protocol));
 
-		$this->assertTrue($helper->getAllFiles('remote/path', 'local/path', '.*man', 'config/path', 'store'));
+		$this->assertTrue($helper->sendFile('local', 'remote', 'config/path', 1));
 	}
+	/**
+	 * Test the helper passing through to a protocol model to get a file from the remote
+	 *
+	 * @test
+	 */
+	public function testGetFile()
+	{
+		$protocol = $this->getModelMockBuilder('filetransfer/protocol_types_sftp')
+			->disableOriginalConstructor()
+			->setMethods(array('getFile'))
+			->getMock();
+		$protocol->expects($this->once())
+			->method('getFile')
+			->with('local', 'remote')
+			->will($this->returnValue(true));
 
+		$helper = $this->getHelperMock('filetransfer/data', array('getProtocolModel'));
+		$helper->expects($this->any())
+			->method('getProtocolModel')
+			->with($this->identicalTo('config/path'), $this->identicalTo(1))
+			->will($this->returnValue($protocol));
+
+		$this->assertTrue($helper->getFile('local', 'remote', 'config/path', 1));
+	}
+	/**
+	 * Test the helper passing through to a protocol model to delete a file from the remote
+	 *
+	 * @test
+	 */
+	public function testDeleteFile()
+	{
+		$protocol = $this->getModelMockBuilder('filetransfer/protocol_types_sftp')
+			->disableOriginalConstructor()
+			->setMethods(array('deleteFile'))
+			->getMock();
+		$protocol->expects($this->once())
+			->method('deleteFile')
+			->with($this->identicalTo('remote/file'))
+			->will($this->returnValue(true));
+
+		$helper = $this->getHelperMock('filetransfer/data', array('getProtocolModel'));
+		$helper->expects($this->any())
+			->method('getProtocolModel')
+			->with($this->identicalTo('config/path'), $this->identicalTo(1))
+			->will($this->returnValue($protocol));
+
+		$this->assertTrue($helper->deleteFile('remote/file', 'config/path', 1));
+	}
+	/**
+	 * Test the helper passing through to a protocol model to get all files matching a pattern from the remote
+	 *
+	 * @test
+	 */
+	public function testGetAllFiles()
+	{
+		$protocol = $this->getModelMockBuilder('filetransfer/protocol_types_sftp')
+			->disableOriginalConstructor()
+			->setMethods(array('getAllFiles'))
+			->getMock();
+		$protocol->expects($this->once())
+			->method('getAllFiles')
+			->with($this->identicalTo('local/dir'), $this->identicalTo('remote/dir'), $this->identicalTo('*man'))
+			->will($this->returnValue(true));
+
+		$helper = $this->getHelperMock('filetransfer/data', array('getProtocolModel'));
+		$helper->expects($this->any())
+			->method('getProtocolModel')
+			->with($this->identicalTo('config/path'), $this->identicalTo(1))
+			->will($this->returnValue($protocol));
+
+		$this->assertTrue($helper->getAllFiles('local/dir', 'remote/dir', '*man', 'config/path', 1));
+	}
+	/**
+	 * Test the helper passing through to a protocol model to send a string to the remote
+	 *
+	 * @test
+	 */
+	public function testSendString()
+	{
+		$protocol = $this->getModelMockBuilder('filetransfer/protocol_types_sftp')
+			->disableOriginalConstructor()
+			->setMethods(array('sendString'))
+			->getMock();
+		$protocol->expects($this->once())
+			->method('sendString')
+			->with($this->identicalTo('dataString'), $this->identicalTo('remote/file'))
+			->will($this->returnValue(true));
+
+		$helper = $this->getHelperMock('filetransfer/data', array('getProtocolModel'));
+		$helper->expects($this->any())
+			->method('getProtocolModel')
+			->with($this->identicalTo('config/path'), $this->identicalTo(1))
+			->will($this->returnValue($protocol));
+
+		$this->assertTrue($helper->sendString('dataString', 'remote/file', 'config/path', 1));
+	}
+	/**
+	 * Test the helper passing through to a protocol model to get a string from the remote
+	 *
+	 * @test
+	 */
+	public function testGetString()
+	{
+		$protocol = $this->getModelMockBuilder('filetransfer/protocol_types_sftp')
+			->disableOriginalConstructor()
+			->setMethods(array('getString'))
+			->getMock();
+		$protocol->expects($this->once())
+			->method('getString')
+			->with($this->identicalTo('remote/file'))
+			->will($this->returnValue('data string'));
+
+		$helper = $this->getHelperMock('filetransfer/data', array('getProtocolModel'));
+		$helper->expects($this->any())
+			->method('getProtocolModel')
+			->with($this->identicalTo('config/path'), $this->identicalTo(1))
+			->will($this->returnValue($protocol));
+
+		$this->assertSame('data string', $helper->getString('remote/file', 'config/path', 1));
+	}
 	/**
 	 * Test getInitData(); loads protocol from defined-config-path fixture
 	 *
@@ -202,7 +261,7 @@ class TrueAction_FileTransfer_Test_Helper_DataTest extends TrueAction_FileTransf
 	 * Test failure path of getProtocolModel, by sending in an unsupported protocol
 	 *
 	 * @test
-	 * @expectedException Mage_Core_Exception
+	 * @expectedException Exception
 	 */
 	public function testInvalidProtocolModel()
 	{

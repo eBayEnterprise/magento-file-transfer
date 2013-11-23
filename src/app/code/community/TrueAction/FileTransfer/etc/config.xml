@@ -1,15 +1,8 @@
 <?xml version="1.0"?>
-<!--
-/**
- * Module configuration
- *
- * @author TrueAction
- */
--->
 <config>
 	<modules>
 		<TrueAction_FileTransfer>
-			<version>0.1.0</version>
+			<version>0.2.0</version>
 		</TrueAction_FileTransfer>
 	</modules>
 	<global>

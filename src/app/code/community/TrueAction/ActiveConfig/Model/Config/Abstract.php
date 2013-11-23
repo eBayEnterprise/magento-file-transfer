@@ -18,7 +18,7 @@ abstract class TrueAction_ActiveConfig_Model_Config_Abstract extends Mage_Core_M
 	 * @param $importOptions
 	 * @return
 	 * @todo Complete this docblock.
-	 **/
+	 */
 	abstract public function generateFields($importOptions);
 
 	/**
@@ -27,7 +27,7 @@ abstract class TrueAction_ActiveConfig_Model_Config_Abstract extends Mage_Core_M
 	 * @param $magicName
 	 * @return
 	 * @todo Complete this docblock.
-	 **/
+	 */
 	protected function _loadFieldAsMagic($configName, $magicName)
 	{
 		$this->setData(
