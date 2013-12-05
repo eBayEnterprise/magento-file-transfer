@@ -1,6 +1,7 @@
 <?php
 /**
- * @method TrueAction_ActiveConfig_Model_Config_Abstract getConfig()
+ * @method array getConfig()
+ * @method TrueAction_ActiveConfig_Model_Config_Abstract getConfigModel()
  * @method string getString(string $remoteFile, string $data)
  */
 abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core_Model_Abstract
@@ -11,10 +12,10 @@ abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core
 	 */
 	protected function _construct()
 	{
-		$this->setConfig(
+		$this->setConfigModel(
 			new TrueAction_FileTransfer_Model_Protocol_Config($this->getConfig())
 		);
-		$this->setCode($this->getConfig()->getProtocolCode());
+		$this->setCode($this->getConfigModel()->getProtocolCode());
 	}
 
 	// cache of available protocols.
@@ -80,25 +81,25 @@ abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core
 
 	public function setHost($host='')
 	{
-		$this->getConfig()->setHost($host);
+		$this->getConfigModel()->setHost($host);
 		return $this;
 	}
 
 	public function setPort($port=null)
 	{
-		$this->getConfig()->setPort($port);
+		$this->getConfigModel()->setPort($port);
 		return $this;
 	}
 
 	public function setUsername($username='')
 	{
-		$this->getConfig()->setUsername($username);
+		$this->getConfigModel()->setUsername($username);
 		return $this;
 	}
 
 	public function setPassword($password='')
 	{
-		$this->getConfig()->setPassword($password);
+		$this->getConfigModel()->setPassword($password);
 		return $this;
 	}
 
@@ -117,7 +118,7 @@ abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core
 		if ($useDefaultFormat) {
 			$message = sprintf(
 				'%s connection error%s',
-				$this->getConfig()->getUrl(),
+				$this->getConfigModel()->getUrl(),
 				($message) ? ': ' . $message : ''
 			);
 		}
@@ -139,7 +140,7 @@ abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core
 		if ($useDefaultFormat) {
 			$message = sprintf(
 				'%s authentication error%s',
-				$this->getConfig()->getUrl(),
+				$this->getConfigModel()->getUrl(),
 				($message) ? ': ' . $message : ''
 			);
 		}
@@ -161,7 +162,7 @@ abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core
 		if ($useDefaultFormat) {
 			$message = sprintf(
 				'%s transfer error%s',
-				$this->getConfig()->getUrl(),
+				$this->getConfigModel()->getUrl(),
 				($message) ? ': ' . $message : ''
 			);
 		}

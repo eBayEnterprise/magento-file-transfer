@@ -41,9 +41,9 @@ class TrueAction_FileTransfer_Test_Model_Protocol_AbstractTest extends EcomDev_P
 		$this->assertInstanceOf(get_class($model), $chain);
 
 		// Assert sets resulted in proper gets
-		$this->assertSame($model->getConfig()->getHost(), self::FAKE_HOST);
-		$this->assertSame($model->getConfig()->getPort(), self::FAKE_PORT);
-		$this->assertSame($model->getConfig()->getUsername(), self::FAKE_USER);
+		$this->assertSame(self::FAKE_HOST, $model->getConfigModel()->getHost());
+		$this->assertSame(self::FAKE_PORT, $model->getConfigModel()->getPort());
+		$this->assertSame(self::FAKE_USER, $model->getConfigModel()->getUsername());
 
 		// Test getDataUriFromString method
 		$dataString = $model->getDataUriFromString(self::STRING_DATA);
@@ -81,7 +81,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_AbstractTest extends EcomDev_P
 		$this->setExpectedException($exception, $message);
 		$methods = array('sendFile, getFile');
 		$model = $this->getModelMock('filetransfer/protocol_abstract', $methods, true);
-		$model->setConfig($config);
+		$model->setConfigModel($config);
 		$fn = new ReflectionMethod($model, $method);
 		$fn->setAccessible(true);
 		$fn->invoke($model, 'foo');

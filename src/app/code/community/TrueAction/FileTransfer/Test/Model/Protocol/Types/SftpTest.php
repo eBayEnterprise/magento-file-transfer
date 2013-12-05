@@ -1,4 +1,7 @@
 <?php
+// include this file here so the tests can make use of
+// the NET_SSH2_MASK_... constants
+require_once('phpseclib/Net/SSH2.php');
 class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAction_FileTransfer_Test_Abstract
 {
 	const DIR1_NAME = 'there';
@@ -27,16 +30,8 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		$sftp = $this
 			->getModelMockBuilder('filetransfer/protocol_types_sftp')
 			->disableOriginalConstructor()
-			->setMethods(array('_initCon', '_login', 'getConfigModel', 'setConfigModel'))
+			->setMethods(array('getConfigModel', 'setConfigModel'))
 			->getMock();
-		$sftp
-			->expects($this->once())
-			->method('_initCon')
-			->will($this->returnSelf());
-		$sftp
-			->expects($this->once())
-			->method('_login')
-			->will($this->returnSelf());
 		$sftp
 			->expects($this->any())
 			->method('getConfig')
@@ -363,47 +358,159 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		// Test that the return value of getString mirrors the return value of Net_SFTP::get
 		$this->assertSame($str, $sftp->getString($rem));
 	}
+	public function testGetConnection()
+	{
+		$netSftp = $this->getMockBuilder('Net_SFTP')
+			->disableOriginalConstructor()
+			->setMethods(array())
+			->getMock();
+		$sftp = $this->getModelMockBuilder('filetransfer/protocol_types_sftp')
+			->disableOriginalConstructor()
+			->setMethods(array('connect', 'login', 'getData'))
+			->getMock();
+		$sftp->expects($this->once())
+			->method('connect')
+			->will($this->returnSelf());
+		$sftp->expects($this->once())
+			->method('login')
+			->will($this->returnSelf());
+		$sftp->expects($this->once())
+			->method('getData')
+			->with($this->identicalTo('con'))
+			->will($this->returnValue($netSftp));
+
+		$this->assertSame($netSftp, $sftp->getCon());
+	}
+	/**
+	 * Data Provider - returns possible NET_SSH2_MASK values and whether or not
+	 * those values should be considered as having been logged in
+	 * @return array argument arrays to testIsLoggedIn
+	 */
+	public function providerIsLoggedIn()
+	{
+		return array(
+			array(NET_SSH2_MASK_CONSTRUCTOR, false),
+			array(NET_SSH2_MASK_LOGIN, true),
+			array(0, false),
+		);
+	}
+	/**
+	 * Test checking if the Net_SFTP connection has been logged in
+	 * @param  int     $bitmap   value of the Net_SFTP bitmap property
+	 * @param  boolean $loggedIn should the Net_SFTP instance be considered logged in
+	 * @mock TrueAction_FileTransfer_Model_Protocol_Types_Sftp::getData return the stub Net_SFTP instance
+	 * @mock Net_SFTP
+	 * @test
+	 * @dataProvider providerIsLoggedIn
+	 */
+	public function testIsLoggedIn($bitmap, $loggedIn)
+	{
+		$sftp = $this
+			->getModelMockBuilder('filetransfer/protocol_types_sftp')
+			->disableOriginalConstructor()
+			->setMethods(array('getData', 'hasCon'))
+			->getMock();
+		$con = $this
+			->getMockBuilder('Net_SFTP')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$sftp
+			->expects($this->any())
+			->method('getData')
+			->with($this->identicalTo('con'))
+			->will($this->returnValue($con));
+		$sftp
+			->expects($this->any())
+			->method('hasCon')
+			->will($this->returnValue(true));
+		$con->bitmap = $bitmap;
+		$this->assertSame($loggedIn, $sftp->isLoggedIn());
+	}
+	/**
+	 * If the connection has already been logged in, it should not try to login the
+	 * instance again.
+	 * @mock TrueAction_FileTransfer_Protocol_Types_Sftp::isLoggedIn make it think the connection is logged in already
+	 * @mock TrueAction_FileTransfer_Protocol_Types_Sftp::_loginPass make sure it is never called
+	 * @mock TrueAction_FileTransfer_Protocol_Types_sftp::getConfigModel swap out a stubbed config
+	 * @mock TrueAction_FileTransfer_Protocol_Types_Sftp_Config::getAuthType make sure that if the auth is attempted, it should hit the password login we want to avoid
+	 * @test
+	 */
+	public function testDoNotLoginAlreadyLoggedInConnection()
+	{
+		$cfg = $this
+			->getModelMockBuilder('filetransfer/protocol_types_sftp_config')
+			->disableOriginalConstructor()
+			->setMethods(array('getAuthType'))
+			->getMock();
+		$sftp = $this
+			->getModelMockBuilder('filetransfer/protocol_types_sftp')
+			->disableOriginalConstructor()
+			->setMethods(array('isLoggedIn', '_loginPass', 'getConfigModel'))
+			->getMock();
+		// this should never actually be called in this scenario...but I want to make sure
+		// the behavior of the mocks is as true to life as possible
+		$cfg
+			->expects($this->any())
+			->method('getAuthType')
+			->will($this->returnValue('pass'));
+		$sftp
+			->expects($this->any())
+			->method('getConfigModel')
+			->will($this->returnValue($cfg));
+		$sftp
+			->expects($this->any())
+			->method('isLoggedIn')
+			->will($this->returnValue(true));
+		$sftp
+			->expects($this->never())
+			->method('_loginPass');
+
+		$this->assertSame($sftp, $sftp->login());
+	}
+	public function providerLoginAuthType()
+	{
+		return array(
+			array('pub_key', '_loginKey'),
+			array('pass', '_loginPass'),
+		);
+	}
 	/**
 	 * Test passing the buck to the more specific _loginKey and _loginPass functions
 	 * @stub TrueAction_FileTransfer_Protocol_Types_Sftp_Config::getAuthType to test branching
 	 * @stub TrueAction_FileTransfer_Protocol_Types_Sftp::getConfigModel
+	 * @stub TrueAction_FileTransfer_Protocol_Types_Sftp::isLoggedIn
 	 * @mock TrueAction_FileTransfer_Protocol_Types_Sftp::_loginKey to check that it's called
 	 * @mock TrueAction_FileTransfer_Protocol_Types_Sftp::_loginPass to check that it's called
 	 * @test
+	 * @dataProvider providerLoginAuthType
 	 */
-	public function testLogin()
+	public function testLogin($authType, $loginMethod)
 	{
-		$authTypes = array('pub_key', 'pass'); // If there were more than two it might be worth a provider.
 		$cfg = $this->getModelMock('filetransfer/protocol_types_sftp_config', array('getAuthType'));
 		$sftp = $this
 			->getModelMockBuilder('filetransfer/protocol_types_sftp')
-			->setMethods(array('getConfigModel', '_loginKey', '_loginPass'))
+			->setMethods(array('getConfigModel', '_loginKey', '_loginPass', 'isLoggedIn'))
 			->disableOriginalConstructor()
 			->getMock();
 		$cfg
-			->expects($this->exactly(2))
+			->expects($this->any())
 			->method('getAuthType')
-			->will($this->onConsecutiveCalls($this->returnValue($authTypes[0]), $this->returnValue($authTypes[1])));
+			->will($this->returnValue($authType));
 		$sftp
-			->expects($this->exactly(2))
+			->expects($this->any())
 			->method('getConfigModel')
 			->will($this->returnValue($cfg));
 		$sftp
-			->expects($this->once())
-			->method('_loginKey')
-			->will($this->returnSelf());
+			->expects($this->any())
+			->method('isLoggedIn')
+			->will($this->returnValue(false));
 		$sftp
 			->expects($this->once())
-			->method('_loginPass')
+			->method($loginMethod)
 			->will($this->returnSelf());
 
-		$sftpRef = new ReflectionObject($sftp);
-		$loginMethod = $sftpRef->getMethod('_login');
-		$loginMethod->setAccessible(true);
-		// first pass will auth via key
-		$this->assertSame($sftp, $loginMethod->invoke($sftp));
-		// second pass will auth via pass
-		$this->assertSame($sftp, $loginMethod->invoke($sftp));
+		$this->assertSame($sftp, $sftp->login());
 	}
 	public function testLoginPass()
 	{
@@ -418,7 +525,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 			->getMock();
 		$sftp = $this
 			->getModelMockBuilder('filetransfer/protocol_types_sftp')
-			->setMethods(array('getCon', 'getConfigModel'))
+			->setMethods(array('getData', 'getConfigModel'))
 			->disableOriginalConstructor()
 			->getMock();
 		$cfg
@@ -436,7 +543,8 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 			->will($this->returnValue(true));
 		$sftp
 			->expects($this->once())
-			->method('getCon')
+			->method('getData')
+			->with($this->identicalTo('con'))
 			->will($this->returnValue($netSftp));
 		$sftp
 			->expects($this->once())
@@ -447,6 +555,10 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		$loginPass->setAccessible(true);
 		$this->assertSame($sftp, $loginPass->invoke($sftp));
 	}
+	/**
+	 * When a login fails, an exception should be thrown
+	 * @test
+	 */
 	public function testLoginPassFailure()
 	{
 		$user = 'fred';
@@ -474,11 +586,12 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		$sftp = $this
 			->getModelMockBuilder('filetransfer/protocol_types_sftp')
 			->disableOriginalConstructor()
-			->setMethods(array('getCon', 'getConfigModel'))
+			->setMethods(array('getData', 'getConfigModel'))
 			->getMock();
 		$sftp
 			->expects($this->any())
-			->method('getCon')
+			->method('getData')
+			->with($this->identicalTo('con'))
 			->will($this->returnValue($netSftp));
 		$sftp
 			->expects($this->any())
@@ -540,7 +653,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 	 * @mock Crypt_RSA stub instance used as the private key used to login with
 	 * @mock Net_SFTP::login make sure the instance is logged in with the proper username and key
 	 * @mock Net_SFTP::disconnect called by __destruct, just make sure it doesn't error out
-	 * @mock TryeAction_FileTransfer_Model_Protocol_Types_Sftp::getCon swap out the mock Net_SFTP instance
+	 * @mock TryeAction_FileTransfer_Model_Protocol_Types_Sftp::getData swap out the mock Net_SFTP instance
 	 * @mock TryeAction_FileTransfer_Model_Protocol_Types_Sftp::getConfigModel swap out the mock config model
 	 * @mock TryeAction_FileTransfer_Model_Protocol_Types_Sftp::_getPrivateKey swap out the mock RSA instance
 	 */
@@ -560,7 +673,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 			->getMock();
 		$sftp = $this
 			->getModelMockBuilder('filetransfer/protocol_types_sftp')
-			->setMethods(array('getCon', 'getConfigModel', '_getPrivateKey'))
+			->setMethods(array('getData', 'getConfigModel', '_getPrivateKey'))
 			->disableOriginalConstructor()
 			->getMock();
 		$cfg
@@ -574,7 +687,8 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 			->will($this->returnValue(true));
 		$sftp
 			->expects($this->once())
-			->method('getCon')
+			->method('getData')
+			->with($this->identicalTo('con'))
 			->will($this->returnValue($netSftp));
 		$sftp
 			->expects($this->once())
@@ -595,7 +709,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 	 * @mock Crypt_RSA stub instance used as the private key used to login with
 	 * @mock Net_SFTP::login make sure the instance is logged in with the proper username and key
 	 * @mock Net_SFTP::disconnect called by __destruct, just make sure it doesn't error out
-	 * @mock TryeAction_FileTransfer_Model_Protocol_Types_Sftp::getCon swap out the mock Net_SFTP instance
+	 * @mock TryeAction_FileTransfer_Model_Protocol_Types_Sftp::getData swap out the mock Net_SFTP instance
 	 * @mock TryeAction_FileTransfer_Model_Protocol_Types_Sftp::getConfigModel swap out the mock config model
 	 * @mock TryeAction_FileTransfer_Model_Protocol_Types_Sftp::_getPrivateKey swap out the mock RSA instance
 	 */
@@ -615,7 +729,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 			->getMock();
 		$sftp = $this
 			->getModelMockBuilder('filetransfer/protocol_types_sftp')
-			->setMethods(array('getCon', 'getConfigModel', '_getPrivateKey'))
+			->setMethods(array('getData', 'getConfigModel', '_getPrivateKey'))
 			->disableOriginalConstructor()
 			->getMock();
 		$cfg
@@ -629,7 +743,8 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 			->will($this->returnValue(false));
 		$sftp
 			->expects($this->once())
-			->method('getCon')
+			->method('getData')
+			->with($this->identicalTo('con'))
 			->will($this->returnValue($netSftp));
 		$sftp
 			->expects($this->once())

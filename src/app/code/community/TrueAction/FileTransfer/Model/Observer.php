@@ -5,12 +5,12 @@ class TrueAction_FileTransfer_Model_Observer
 	{
 		$event = $observer->getEvent();
 		$injector = $event->getInjector();
-		$helper = mage::helper('filetransfer');
+		$helper = Mage::helper('filetransfer');
 		foreach ($helper->getProtocolCodes() as $protocol) {
 			$config = $helper->getProtocolModel(
 				$event->getConfigPath(),
 				$protocol
-			)->getConfig();
+			)->getConfigModel();
 			$fields = $config->generateFields($event->getModuleSpec());
 			$injector->insertConfig($fields);
 		}

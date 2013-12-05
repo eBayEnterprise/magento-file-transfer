@@ -17,8 +17,6 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 	{
 		$this->setName(self::NAME);
 		$this->setConfigModel(Mage::getModel('filetransfer/protocol_types_sftp_config', $this->getConfig()));
-		$this->_initCon()->_login();
-		Mage::log(sprintf('[%s] Created and authed new %s model', __CLASS__, $this->getName()));
 	}
 	/**
 	 * Log a put.
@@ -168,11 +166,20 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		return $this;
 	}
 	/**
+	 * When getting the connection object, make sure to make the connection
+	 * and log it in.
+	 * @return Net_SFTP connection object
+	 */
+	public function getCon()
+	{
+		return $this->connect()->login()->getData('con');
+	}
+	/**
 	 * Set up the Net_SFTP object.
 	 * Allow, but don't require, dependency injection of the Net_SFTP instance.
 	 * @return self
 	 */
-	protected function _initCon()
+	public function connect()
 	{
 		if (!$this->hasCon()) {
 			$cfg = $this->getConfigModel();
@@ -181,17 +188,30 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		return $this;
 	}
 	/**
+	 * Check if the connection object (Net_SFTP) has been logged in
+	 * @return boolean true if logged in, false if not
+	 */
+	public function isLoggedIn()
+	{
+		// use getData method to get the con object to get around the actual getCon method
+		// which would result in an infinite loop (getCon --> login --> isLoggedIn --> getCon --> ...)
+		return $this->hasCon() && $this->getData('con')->bitmap & NET_SSH2_MASK_LOGIN;
+	}
+	/**
 	 * Login to server
 	 * @return self
 	 */
-	protected function _login()
+	public function login()
 	{
-		$cfg = $this->getConfigModel();
-		if ($cfg->getAuthType() === 'pub_key') {
-			return $this->_loginKey();
-		} else {
-			return $this->_loginPass();
+		if (!$this->isLoggedIn()) {
+			$cfg = $this->getConfigModel();
+			if ($cfg->getAuthType() === 'pub_key') {
+				return $this->_loginKey();
+			} else {
+				return $this->_loginPass();
+			}
 		}
+		return $this;
 	}
 	/**
 	 * Log in to sftp using a password.
@@ -199,7 +219,8 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 	 */
 	protected function _loginPass()
 	{
-		$sftp = $this->getCon();
+		// use getData to avoid actual getCon method which which would result in loop
+		$sftp = $this->getData('con');
 		$cfg = $this->getConfigModel();
 		if (!$sftp->login($cfg->getUsername(), $cfg->getPassword())) {
 			throw new TrueAction_FileTransfer_Exception_Authentication();
@@ -212,7 +233,8 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 	 */
 	protected function _loginKey()
 	{
-		$sftp = $this->getCon();
+		// use getData to avoid actual getCon method which which would result in loop
+		$sftp = $this->getData('con');
 		if (!$sftp->login($this->getConfigModel()->getUsername(), $this->_getPrivateKey())) {
 			throw new TrueAction_FileTransfer_Exception_Authentication();
 		}
