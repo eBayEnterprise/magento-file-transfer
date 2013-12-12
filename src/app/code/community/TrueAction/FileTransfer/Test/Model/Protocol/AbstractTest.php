@@ -22,6 +22,42 @@ class TrueAction_FileTransfer_Test_Model_Protocol_AbstractTest extends EcomDev_P
 		);
 	}
 
+	public function testConstructor()
+	{
+		$configData = array();
+		$protocolCode = 'somecode';
+		$configModel = $this->getModelMockBuilder('filetransfer/protocol_config')
+			->disableOriginalConstructor()
+			->setMethods(array('getProtocolCode'))
+			->getMock();
+		$configModel->expects($this->once())
+			->method('getProtocolCode')
+			->will($this->returnValue($protocolCode));
+		$this->replaceByMock('model', 'filetransfer/protocol_config', $configModel);
+
+		$testModel = $this->getModelMockBuilder('filetransfer/protocol_abstract')
+			->disableOriginalConstructor()
+			->setMethods(array('setConfigModel', 'getConfig', 'setCode', 'getConfigModel', 'sendFile', 'getFile'))
+			->getMock();
+		$testModel->expects($this->once())
+			->method('setConfigModel')
+			->with($this->identicalTo($configModel))
+			->will($this->returnSelf());
+		$testModel->expects($this->once())
+			->method('getConfig')
+			->will($this->returnValue($configData));
+		$testModel->expects($this->once())
+			->method('getConfigModel')
+			->will($this->returnValue($configModel));
+		$testModel->expects($this->once())
+			->method('setCode')
+			->with($this->identicalTo($protocolCode))
+			->will($this->returnSelf());
+		$ctor = $this->cls->getMethod('_construct');
+		$ctor->setAccessible(true);
+		$ctor->invoke($testModel);
+	}
+
 	/**
 	 * Test concrete methods
 	 *

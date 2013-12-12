@@ -13,7 +13,7 @@ abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core
 	protected function _construct()
 	{
 		$this->setConfigModel(
-			new TrueAction_FileTransfer_Model_Protocol_Config($this->getConfig())
+			Mage::getModel('filetransfer/protocol_config', $this->getConfig())
 		);
 		$this->setCode($this->getConfigModel()->getProtocolCode());
 	}
