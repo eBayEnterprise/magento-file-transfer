@@ -20,6 +20,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp_Config extends TrueActio
 		</filetransfer_%1$s_username>
 		<filetransfer_%1$s_password translate="label">
 			<label>Password</label>
+			<validate>required-entry</validate>
 			<frontend_type>obscure</frontend_type>
 			<backend_model>adminhtml/system_config_backend_encrypted</backend_model>
 			<depends>
@@ -28,7 +29,8 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp_Config extends TrueActio
 			</depends>
 		</filetransfer_%1$s_password>
 		<filetransfer_%1$s_ssh_prv_key translate="label">
-			<label>SSH Private Key</label>
+			<label>Private Key</label>
+			<validate>required-entry</validate>
 			<frontend_type>obscure</frontend_type>
 			<backend_model>adminhtml/system_config_backend_encrypted</backend_model>
 			<depends>
