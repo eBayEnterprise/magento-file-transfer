@@ -27,6 +27,11 @@
 				</observers>
 			</activeconfig_filetransfer>
 		</events>
+		<blocks>
+			<filetransfer>
+				<class>TrueAction_FileTransfer_Block</class>
+			</filetransfer>
+		</blocks>
 	</global>
 	<default>
 		<filetransfer>

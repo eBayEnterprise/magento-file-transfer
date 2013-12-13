@@ -85,6 +85,10 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_Sftp_ConfigTest extends 
 		$this->assertSame('encrypted private key', $config->getData('private_key'));
 	}
 
+	/**
+	 * verify the base fields are generated as expected.
+	 * @test
+	 */
 	public function testGetBaseFields()
 	{
 		$config = $this->getModelMockBuilder('filetransfer/protocol_types_sftp_config')
@@ -106,11 +110,17 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_Sftp_ConfigTest extends 
 		$this->assertNotEmpty(
 			$resultNode->xpath('filetransfer_foo_password/validate[.="required-entry"]')
 		);
-		$this->assertNotEmpty(
+		$this->assertEmpty(
 			$resultNode->xpath('filetransfer_foo_ssh_prv_key/validate[.="required-entry"]')
 		);
 		$this->assertNotEmpty(
-			$resultNode->xpath('filetransfer_foo_ssh_prv_key/label[.="Private Key"]')
+			$resultNode->xpath('filetransfer_foo_ssh_prv_key/label[.="Upload Private Key"]')
+		);
+		$this->assertNotEmpty(
+			$resultNode->xpath('filetransfer_foo_ssh_prv_key/backend_model[.="filetransfer/adminhtml_system_config_backend_encrypted_keyfile"]')
+		);
+		$this->assertNotEmpty(
+			$resultNode->xpath('filetransfer_foo_ssh_prv_key/frontend_type[.="file"]')
 		);
 	}
 }
