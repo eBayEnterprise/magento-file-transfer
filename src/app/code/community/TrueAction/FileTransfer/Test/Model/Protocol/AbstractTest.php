@@ -65,6 +65,18 @@ class TrueAction_FileTransfer_Test_Model_Protocol_AbstractTest extends EcomDev_P
 	 */
 	public function testConcreteMethods()
 	{
+		$config = $this->getModelMockBuilder('filetransfer/protocol_config')
+			->disableOriginalConstructor()
+			->setMethods(array('none'))
+			->getMock();
+		$config->setData(array(
+			'host' => self::FAKE_HOST,
+			'user' => self::FAKE_USER,
+			'port' => self::FAKE_PORT,
+			'protocol_code' => 'proto',
+			'remote_path' => 'remote/path'
+		));
+		$this->replaceByMock('model', 'filetransfer/protocol_config', $config);
 		$model = $this->getMockForAbstractClass('TrueAction_FileTransfer_Model_Protocol_Abstract');
 		$this->assertInstanceOf('TrueAction_FileTransfer_Model_Protocol_Abstract', $model);
 
@@ -107,13 +119,17 @@ class TrueAction_FileTransfer_Test_Model_Protocol_AbstractTest extends EcomDev_P
 	 */
 	public function testExceptionMethods($method, $exception, $message)
 	{
-		$config = Mage::getModel('filetransfer/protocol_config');
+		$config = $this->getModelMockBuilder('filetransfer/protocol_config')
+			->disableOriginalConstructor()
+			->setMethods(array('none'))
+			->getMock();
 		$config->setData(array(
 			'host' => 'somehost.com',
 			'user' => 'someuser',
 			'protocol_code' => 'proto',
 			'remote_path' => 'remote/path'
 		));
+		$this->replaceByMock('model', 'filetransfer/protocol_config', $config);
 		$this->setExpectedException($exception, $message);
 		$methods = array('sendFile, getFile');
 		$model = $this->getModelMock('filetransfer/protocol_abstract', $methods, true);
@@ -128,13 +144,17 @@ class TrueAction_FileTransfer_Test_Model_Protocol_AbstractTest extends EcomDev_P
 	 */
 	public function testExceptionMethodsCustomMessage($method, $exception)
 	{
-		$config = Mage::getModel('filetransfer/protocol_config');
+		$config = $this->getModelMockBuilder('filetransfer/protocol_config')
+			->disableOriginalConstructor()
+			->setMethods(array('none'))
+			->getMock();
 		$config->setData(array(
 			'host' => 'somehost.com',
 			'user' => 'someuser',
 			'protocol_code' => 'proto',
 			'remote_path' => 'remote/path'
 		));
+		$this->replaceByMock('model', 'filetransfer/protocol_config', $config);
 		$message = 'this is a completely custom message';
 		$this->setExpectedException($exception, $message);
 		$methods = array('sendFile, getFile');

@@ -1,9 +1,4 @@
 <?php
-/*
-TrueAction_FileTransfer_Test_Model_Config_Ftp
-
-tests for the ftp config generator.
- */
 class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev_PHPUnit_Test_Case
 {
 	private static $_config = array(
@@ -24,8 +19,6 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev_PHP
 		$this->class = new ReflectionClass(
 			'TrueAction_FileTransfer_Model_Protocol_Config'
 		);
-		$this->loadMappedFields = $this->class->getMethod('loadMappedFields');
-		$this->loadMappedFields->setAccessible(true);
 		$this->importOptions = new Varien_Simplexml_Config(
 			'<filetransfer>
 				<sort_order>190</sort_order>
@@ -39,12 +32,17 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev_PHP
 	}
 
 	/**
+	 * verify the configuration is generated.
 	 * @test
-	 * */
+	 */
 	public function testGenerateConfig()
 	{
-		$model = $this->class->newInstance(self::$_config);
+		$model = $this->getModelMockBuilder('filetransfer/protocol_config')
+			->disableOriginalConstructor()
+			->setMethods(array('none'))
+			->getMock();
 		$config = $model->setConfigPath('testsection/testgroup')
+			->setProtocolCode('ftp')
 			->generateFields($this->importOptions);
 		$this->assertInstanceOf('Varien_Simplexml_Config', $config);
 		$node = $config->getNode();
@@ -60,14 +58,13 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev_PHP
 		$this->assertContains('filetransfer_ftp_host', $names);
 		$this->assertContains('filetransfer_ftp_port', $names);
 		$this->assertContains('filetransfer_ftp_remote_path', $names);
-
 	}
 
 	/**
+	 * verify the configuration is read correctly
 	 * @test
 	 * @loadFixture ftpConfig
-	 * @doNotIndexAll
-	 * */
+	 */
 	public function testConfigValues()
 	{
 		$helper = $this->getHelperMock('core/data', array('decrypt'));
@@ -76,10 +73,14 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev_PHP
 			->with($this->identicalTo('0:2:3fbb7c95e7c84df0:ZA2CwPF1DexZjAOEXMLcxA=='))
 			->will($this->returnValue('welcome1'));
 		$this->replaceByMock('helper', 'core', $helper);
-		$cfg = $this->class->newInstance(self::$_config);
+		$cfg = $this->getModelMockBuilder('filetransfer/protocol_config')
+			->disableOriginalConstructor()
+			->setMethods(array('none'))
+			->getMock();
+		$cfg->setData(self::$_config);
 		$this->assertSame('testsection/testgroup', $cfg->getConfigPath());
 		$this->assertSame('ftp', $cfg->getProtocolCode());
-		$this->loadMappedFields->invoke($cfg, self::$_fieldMap);
+		$cfg->loadMappedFields(self::$_fieldMap);
 		$this->assertSame('somename', $cfg->getUsername());
 		$this->assertSame('welcome1', $cfg->getPassword());
 		$this->assertSame('some.host', $cfg->getHost());
@@ -88,12 +89,51 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev_PHP
 	}
 
 	/**
+	 * verify getUrl generates a url using the data stored in the model.
+	 * @test
 	 * @dataProvider dataProvider
 	 */
 	public function testGetUrl($data, $includePath, $url)
 	{
-		$config = Mage::getModel('filetransfer/protocol_config');
+
+		$config = $this->getModelMockBuilder('filetransfer/protocol_config')
+			->disableOriginalConstructor()
+			->setMethods(array('none'))
+			->getMock();
 		$config->setData($data);
 		$this->assertSame($url, $config->getUrl($includePath));
+	}
+
+	/**
+	 * verify TrueAction_FileTransfer_Exception_Configuration is thrown when the protocol code doesn't match a known code.
+	 * @test
+	 */
+	public function testConstructorException()
+	{
+		$helper = $this->getHelperMockBuilder('filetransfer/data')
+			->disableOriginalConstructor()
+			->setMethods(array('getProtocolCodes'))
+			->getMock();
+		$helper->expects($this->atLeastOnce())
+			->method('getProtocolCodes')
+			->will($this->returnValue(array()));
+		$this->replaceByMock('helper', 'filetransfer', $helper);
+
+		$testModel = $this->getModelMockBuilder('filetransfer/protocol_config')
+			->disableOriginalConstructor()
+			->setMethods(array('getProtocolCode', 'loadMappedFields'))
+			->getMock();
+		$testModel->expects($this->any())
+			->method('loadMappedFields');
+		$testModel->expects($this->atLeastOnce())
+			->method('getProtocolCode')
+			->will($this->returnValue(null));
+		$this->setExpectedException(
+			'TrueAction_FileTransfer_Exception_Configuration',
+			'FileTransfer Config Error: Invalid Protocol Code'
+		);
+		$method = new ReflectionMethod($testModel, '_construct');
+		$method->setAccessible(true);
+		$method->invoke($testModel);
 	}
 }

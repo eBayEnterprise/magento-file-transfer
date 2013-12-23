@@ -487,7 +487,10 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 	 */
 	public function testLogin($authType, $loginMethod)
 	{
-		$cfg = $this->getModelMock('filetransfer/protocol_types_sftp_config', array('getAuthType'));
+		$cfg = $this->getModelMockBuilder('filetransfer/protocol_types_sftp_config')
+			->disableOriginalConstructor()
+			->setMethods(array('getAuthType'))
+			->getMock();
 		$sftp = $this
 			->getModelMockBuilder('filetransfer/protocol_types_sftp')
 			->setMethods(array('getConfigModel', '_loginKey', '_loginPass', 'isLoggedIn'))
@@ -516,8 +519,10 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 	{
 		$user = 'fred';
 		$pass = 'derf';
-		$cfg = $this
-			->getModelMock('filetransfer/protocol_types_sftp_config', array('getUsername', 'getPassword'));
+		$cfg = $this->getModelMockBuilder('filetransfer/protocol_types_sftp_config')
+			->disableOriginalConstructor()
+			->setMethods(array('getUsername', 'getPassword'))
+			->getMock();
 		$netSftp = $this
 			->getMockBuilder('Net_SFTP')
 			->setMethods(array('login', 'delete', 'disconnect'))
@@ -563,8 +568,10 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 	{
 		$user = 'fred';
 		$pass = 'derf';
-		$cfg = $this
-			->getModelMock('filetransfer/protocol_types_sftp_config', array('getUsername', 'getPassword'));
+		$cfg = $this->getModelMockBuilder('filetransfer/protocol_types_sftp_config')
+			->disableOriginalConstructor()
+			->setMethods(array('getUsername', 'getPassword'))
+			->getMock();
 		$cfg
 			->expects($this->any())
 			->method('getUsername')
@@ -618,7 +625,10 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 	{
 		$key = 'g minor';
 		$rsa = $this->getMock('Crypt_RSA', array('loadKey'));
-		$cfg = $this->getModelMock('filetransfer/protocol_types_sftp_config', array('getPrivateKey'));
+		$cfg = $this->getModelMockBuilder('filetransfer/protocol_types_sftp_config')
+			->disableOriginalConstructor()
+			->setMethods(array('getPrivateKey'))
+			->getMock();
 		$sftp = $this
 			->getModelMockBuilder('filetransfer/protocol_types_sftp')
 			->setMethods(array('getRsa', 'getConfigModel'))
@@ -664,8 +674,10 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 			->getMockBuilder('Crypt_RSA')
 			->disableOriginalConstructor()
 			->getMock();
-		$cfg = $this
-			->getModelMock('filetransfer/protocol_types_sftp_config', array('getUsername'));
+		$cfg = $this->getModelMockBuilder('filetransfer/protocol_types_sftp_config')
+			->disableOriginalConstructor()
+			->setMethods(array('getUsername'))
+			->getMock();
 		$netSftp = $this
 			->getMockBuilder('Net_SFTP')
 			->setMethods(array('login', 'disconnect'))
@@ -720,8 +732,10 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 			->getMockBuilder('Crypt_RSA')
 			->disableOriginalConstructor()
 			->getMock();
-		$cfg = $this
-			->getModelMock('filetransfer/protocol_types_sftp_config', array('getUsername'));
+		$cfg = $this->getModelMockBuilder('filetransfer/protocol_types_sftp_config')
+			->disableOriginalConstructor()
+			->setMethods(array('getUsername'))
+			->getMock();
 		$netSftp = $this
 			->getMockBuilder('Net_SFTP')
 			->setMethods(array('login', 'disconnect'))
@@ -765,17 +779,19 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 	{
 		$rel = 'foo';
 		$rem = '/foo/bar';
-		$cfg = $this
-			->getModelMock('filetransfer/protocol_types_sftp_config', array('getRemotePath'));
-		$sftp = $this
-			->getModelMockBuilder('filetransfer/protocol_types_sftp')
-			->setMethods(array('getConfigModel'))
+		$cfg = $this->getModelMockBuilder('filetransfer/protocol_types_sftp_config')
 			->disableOriginalConstructor()
+			->setMethods(array('getRemotePath'))
 			->getMock();
 		$cfg
 			->expects($this->once())
 			->method('getRemotePath') // similar method name, different class
 			->will($this->returnValue($rem));
+		$sftp = $this
+			->getModelMockBuilder('filetransfer/protocol_types_sftp')
+			->setMethods(array('getConfigModel'))
+			->disableOriginalConstructor()
+			->getMock();
 		$sftp
 			->expects($this->once())
 			->method('getConfigModel')

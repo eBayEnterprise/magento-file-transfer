@@ -5,6 +5,17 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_Sftp_ConfigTest extends 
 		'config_path' => 'testsection/testgroup',
 		'protocol_code' => 'sftp',
 	);
+
+	private $_fieldMap = array(
+		'filetransfer_sftp_ssh_prv_key' => 'private_key',
+		'filetransfer_sftp_auth_type'   => 'auth_type',
+		'filetransfer_sftp_username'    => 'username',
+		'filetransfer_sftp_password'    => 'password',
+		'filetransfer_sftp_host'        => 'host',
+		'filetransfer_sftp_port'        => 'port',
+		'filetransfer_sftp_remote_path' => 'remote_path',
+	);
+
 	public function setUp()
 	{
 		$this->class = new ReflectionClass(
@@ -39,7 +50,12 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_Sftp_ConfigTest extends 
 			->with($this->identicalTo('encrypted private key in config'))
 			->will($this->returnValue('-----BEGIN RSA PRIVATE KEY----- 0000000000000000000000000000000000000000000000000000000000000000 1111111111111111111111111111111111111111111111111111111111111111 0000000000000000000000000000000000000000000000000000000000000000 1111111111111111111111111111111111111111111111111111111111111111 00000000000000000000000000000000000000000000000000000000000 -----END RSA PRIVATE KEY-----'));
 		$this->replaceByMock('helper', 'core', $helper);
-		$config = Mage::getModel('filetransfer/protocol_types_sftp_config', self::$_config);
+		$config = $this->getModelMockBuilder('filetransfer/protocol_types_sftp_config')
+			->disableOriginalConstructor()
+			->setMethods(array('none'))
+			->getMock();
+		$config->setData(self::$_config)
+			->loadMappedFields($this->_fieldMap);
 		$this->assertSame('-----BEGIN RSA PRIVATE KEY-----
 0000000000000000000000000000000000000000000000000000000000000000
 1111111111111111111111111111111111111111111111111111111111111111
@@ -73,7 +89,12 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_Sftp_ConfigTest extends 
 00000000000000000000000000000000000000000000000000000000000
 -----END RSA PRIVATE KEY-----'));
 		$this->replaceByMock('helper', 'core', $helper);
-		$config = Mage::getModel('filetransfer/protocol_types_sftp_config', self::$_config);
+		$config = $this->getModelMockBuilder('filetransfer/protocol_types_sftp_config')
+			->disableOriginalConstructor()
+			->setMethods(array('none'))
+			->getMock();
+		$config->setData(self::$_config)
+			->loadMappedFields($this->_fieldMap);
 		$this->assertSame('-----BEGIN RSA PRIVATE KEY-----
 0000000000000000000000000000000000000000000000000000000000000000
 1111111111111111111111111111111111111111111111111111111111111111

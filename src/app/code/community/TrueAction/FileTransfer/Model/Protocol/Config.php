@@ -17,7 +17,8 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 
 	/**
 	 * loads the dynamic config and does some validation checks.
-	 * */
+	 * @throws TrueAction_FileTransfer_Exception_Configuration If the protocol code is invalid
+	 */
 	protected function _construct()
 	{
 		// create magic getter/setters for each field
@@ -27,17 +28,13 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 			$this->getProtocolCode(),
 			Mage::helper('filetransfer')->getProtocolCodes()
 		);
-		if ($isProtocolValid === false) {
-			try {
-				Mage::throwException(
-					sprintf(
-						'FileTransfer Config Error: Invalid Protocol Code "%s"',
-						$this->getProtocolCode()
-					)
-				);
-			} catch (Exception $e) {
-				Mage::logException($e);
-			}
+		if (!$isProtocolValid) {
+			throw new TrueAction_FileTransfer_Exception_Configuration(
+				sprintf(
+					'FileTransfer Config Error: Invalid Protocol Code "%s"',
+					$this->getProtocolCode()
+				)
+			);
 		}
 	}
 
