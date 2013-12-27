@@ -1,58 +1,7 @@
 <?php
 class TrueAction_FileTransfer_Model_Protocol_Types_Sftp_Config extends TrueAction_FileTransfer_Model_Protocol_Config
 {
-	const CONFIG_TEMPLATE = '<fields>
-		<filetransfer_protocol translate="label">
-			<label>Protocol</label>
-			<frontend_type>select</frontend_type>
-			<source_model>filetransfer/adminhtml_system_config_source_protocols</source_model>
-		</filetransfer_protocol>
-		<filetransfer_sftp_auth_type translate="label">
-			<label>Authentication Method</label>
-			<frontend_type>select</frontend_type>
-			<source_model>filetransfer/adminhtml_system_config_source_Authtypes</source_model>
-			<depends><filetransfer_protocol>sftp</filetransfer_protocol></depends>
-		</filetransfer_sftp_auth_type>
-		<filetransfer_%1$s_username translate="label">
-			<label>Username</label>
-			<frontend_type>text</frontend_type>
-			<depends><filetransfer_protocol>%1$s</filetransfer_protocol></depends>
-		</filetransfer_%1$s_username>
-		<filetransfer_%1$s_password translate="label">
-			<label>Password</label>
-			<validate>required-entry</validate>
-			<frontend_type>obscure</frontend_type>
-			<backend_model>adminhtml/system_config_backend_encrypted</backend_model>
-			<depends>
-				<filetransfer_protocol>%1$s</filetransfer_protocol>
-				<filetransfer_sftp_auth_type>password</filetransfer_sftp_auth_type>
-			</depends>
-		</filetransfer_%1$s_password>
-		<filetransfer_%1$s_ssh_prv_key translate="label">
-			<label>Upload Private Key</label>
-			<frontend_type>file</frontend_type>
-			<backend_model>filetransfer/adminhtml_system_config_backend_encrypted_keyfile</backend_model>
-			<depends>
-				<filetransfer_protocol>sftp</filetransfer_protocol>
-				<filetransfer_sftp_auth_type>pub_key</filetransfer_sftp_auth_type>
-			</depends>
-		</filetransfer_%1$s_ssh_prv_key>
-		<filetransfer_%1$s_host translate="label">
-			<label>Remote Host</label>
-			<frontend_type>text</frontend_type>
-			<depends><filetransfer_protocol>%1$s</filetransfer_protocol></depends>
-		</filetransfer_%1$s_host>
-		<filetransfer_%1$s_port translate="label">
-			<label>Remote Port</label>
-			<frontend_type>text</frontend_type>
-			<depends><filetransfer_protocol>%1$s</filetransfer_protocol></depends>
-		</filetransfer_%1$s_port>
-		<filetransfer_%1$s_remote_path translate="label">
-			<label>Remote Path</label>
-			<frontend_type>text</frontend_type>
-			<depends><filetransfer_protocol>%1$s</filetransfer_protocol></depends>
-		</filetransfer_%1$s_remote_path>
-	</fields>';
+	const CONFIG_TEMPLATE = 'filetransfer/sftp_fields/template';
 	/**
 	 * initialize the config with sftp specific data.
 	 */
@@ -69,7 +18,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp_Config extends TrueActio
 	 */
 	public function getBaseFields()
 	{
-		return new Varien_Simplexml_Config(sprintf(self::CONFIG_TEMPLATE, $this->getProtocolCode()));
+		return new Varien_Simplexml_Config(sprintf(Mage::getStoreConfig(self::CONFIG_TEMPLATE), $this->getProtocolCode()));
 	}
 	/**
 	 * Fix the key formatting which may have been lost when saving the key in the admin.

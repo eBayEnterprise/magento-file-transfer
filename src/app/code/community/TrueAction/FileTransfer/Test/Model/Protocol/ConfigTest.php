@@ -136,4 +136,69 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev_PHP
 		$method->setAccessible(true);
 		$method->invoke($testModel);
 	}
+	/**
+	 * @test
+	 */
+	public function testGetBaseFields()
+	{
+		$config = $this->getModelMockBuilder('filetransfer/protocol_config')
+			->disableOriginalConstructor()
+			->setMethods(array('getProtocolCode'))
+			->getMock();
+		$config->expects($this->once())
+			->method('getProtocolCode')
+			->will($this->returnValue('SFTP'));
+
+		$fields = $config->getBaseFields();
+
+		$this->assertInstanceOf('Varien_Simplexml_Config', $fields);
+
+		$this->assertSame(
+			preg_replace('/[ ]{2,}|[\t]/', '', str_replace(array("\r\n", "\r", "\n"), '',
+			'<fields>
+				<filetransfer_protocol translate="label">
+				<label>Protocol</label>
+				<frontend_type>select</frontend_type>
+				<source_model>filetransfer/adminhtml_system_config_source_protocols</source_model></filetransfer_protocol>
+				<filetransfer_SFTP_username translate="label">
+					<label>Username</label>
+					<frontend_type>text</frontend_type>
+					<depends>
+						<filetransfer_protocol>SFTP</filetransfer_protocol>
+					</depends>
+				</filetransfer_SFTP_username>
+				<filetransfer_SFTP_password translate="label">
+					<label>Password</label>
+					<frontend_type>obscure</frontend_type>
+					<backend_model>adminhtml/system_config_backend_encrypted</backend_model>
+					<depends>
+						<filetransfer_protocol>SFTP</filetransfer_protocol>
+					</depends>
+				</filetransfer_SFTP_password>
+				<filetransfer_SFTP_host translate="label">
+					<label>Remote Host</label>
+					<frontend_type>text</frontend_type>
+					<depends>
+						<filetransfer_protocol>SFTP</filetransfer_protocol>
+					</depends>
+				</filetransfer_SFTP_host>
+				<filetransfer_SFTP_port translate="label">
+					<label>Remote Port</label>
+					<frontend_type>text</frontend_type>
+					<depends>
+						<filetransfer_protocol>SFTP</filetransfer_protocol>
+					</depends>
+				</filetransfer_SFTP_port>
+				<filetransfer_SFTP_remote_path translate="label">
+					<label>Remote Path</label>
+					<frontend_type>text</frontend_type>
+					<depends>
+						<filetransfer_protocol>SFTP</filetransfer_protocol>
+					</depends>
+				</filetransfer_SFTP_remote_path>
+			</fields>'
+			)),
+			$fields->getXmlString()
+		);
+	}
 }
