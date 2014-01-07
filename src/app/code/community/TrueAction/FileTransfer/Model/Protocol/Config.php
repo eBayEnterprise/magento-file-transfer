@@ -24,10 +24,10 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 	{
 		// create magic getter/setters for each field
 		$this->loadMappedFields($this->_fieldMap);
-
-		$isProtocolValid = array_search(
-			$this->getProtocolCode(),
-			Mage::helper('filetransfer')->getProtocolCodes()
+		$isProtocolValid = in_array(
+			(string) $this->getProtocolCode(),
+			Mage::helper('filetransfer')->getProtocolCodes(),
+			true
 		);
 		if (!$isProtocolValid) {
 			throw new TrueAction_FileTransfer_Exception_Configuration(

@@ -201,4 +201,26 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev_PHP
 			$fields->getXmlString()
 		);
 	}
+	/**
+	 * verify the protocol code check wont fail when the desired code is at index 0 in the array.
+	 * @test
+	 */
+	public function testConstructorProtocolCheck()
+	{
+		$helper = $this->getHelperMock('filetransfer/data', array('getProtocolCodes'));
+		$helper->expects($this->once())
+			->method('getProtocolCodes')
+			->will($this->returnValue(array( 0 => 'the_code')));
+		$this->replaceByMock('helper', 'filetransfer', $helper);
+		$config = $this->getModelMockBuilder('filetransfer/protocol_config')
+			->disableOriginalConstructor()
+			->setMethods(array('getProtocolCode'))
+			->getMock();
+		$config->expects($this->atLeastOnce())
+			->method('getProtocolCode')
+			->will($this->returnValue('the_code'));
+		$ctor = new ReflectionMethod($config, '_construct');
+		$ctor->setAccessible(true);
+		$ctor->invoke($config);
+	}
 }
