@@ -6,7 +6,9 @@ class TrueAction_FileTransfer_Test_Model_Adminhtml_System_Config_Backend_Encrypt
 
 	public static function setUpBeforeClass()
 	{
-		self::$reflectedClass = new ReflectionClass('TrueAction_FileTransfer_Model_Adminhtml_System_Config_Backend_Encrypted_Keyfile');
+		self::$reflectedClass = new ReflectionClass(
+			'TrueAction_FileTransfer_Model_Adminhtml_System_Config_Backend_Encrypted_Keyfile'
+		);
 	}
 
 	/**
@@ -16,32 +18,61 @@ class TrueAction_FileTransfer_Test_Model_Adminhtml_System_Config_Backend_Encrypt
 	public function testBeforeSave()
 	{
 		$keyText = 'fake key text';
-		$encryptedKey = 'sfljalfdjlajflsdfja;fafjdlsdfjl';
 		$testModel = $this->getModelMockBuilder(self::$modelAlias)
 			->disableOriginalConstructor()
-			->setMethods(array('_readKey', '_encryptKey', 'setValue'))
+			->setMethods(array(
+				'_readKey',
+				'_getKeyFieldPath',
+				'_getOriginalFilename',
+				'_deleteUploadedFile',
+				'getScope',
+				'getScopeId',
+				'setValue',
+			))
 			->getMock();
 		$testModel->expects($this->once())
 			->method('_readKey')
 			->will($this->returnValue($keyText));
 		$testModel->expects($this->once())
 			->method('setValue')
-			->with($this->identicalTo($encryptedKey))
+			->with($this->identicalTo('orig file name'))
+			->will($this->returnSelf());
+		$testModel->expects($this->once())
+			->method('getScope')
+			->will($this->returnValue('the scope'));
+		$testModel->expects($this->once())
+			->method('getScopeId')
+			->will($this->returnValue('scope id'));
+		$testModel->expects($this->once())
+			->method('_getKeyFieldPath')
+			->will($this->returnValue('/section/group/filetransfer_sftp_ssh_prv_key'));
+		$testModel->expects($this->once())
+			->method('_getOriginalFilename')
+			->will($this->returnValue('orig file name'));
+		$testModel->expects($this->once())
+			->method('_deleteUploadedFile')
 			->will($this->returnSelf());
 
-		$helper = $this->getHelperMockBuilder('core/data')
+		$configData = $this->getModelMockBuilder('adminhtml/system_config_backend_encrypted')
 			->disableOriginalConstructor()
-			->setMethods(array('encrypt'))
+			->setMethods(array('save', 'addData'))
 			->getMock();
-		$helper->expects($this->once())
-			->method('encrypt')
-			->with($this->identicalTo($keyText))
-			->will($this->returnValue($encryptedKey));
-		$this->replaceByMock('helper', 'core', $helper);
+		$configData->expects($this->once())
+			->method('addData')
+			->with($this->identicalTo(array(
+				'scope' => 'the scope',
+				'scope_id' => 'scope id',
+				'path' => '/section/group/filetransfer_sftp_ssh_prv_key',
+				'value' => $keyText
+			)))
+			->will($this->returnSelf());
+		$configData->expects($this->once())
+			->method('save')
+			->will($this->returnSelf());
+		$this->replaceByMock('model', 'adminhtml/system_config_backend_encrypted', $configData);
 
-		$method = self::$reflectedClass->getMethod('_beforeSave');
-		$method->setAccessible(true);
-		$this->assertSame($testModel, $method->invoke($testModel));
+		$result = EcomDev_Utils_Reflection::invokeRestrictedMethod($testModel, '_beforeSave');
+		$this->assertSame($testModel, $result);
 	}
 
 	/**
@@ -69,37 +100,49 @@ class TrueAction_FileTransfer_Test_Model_Adminhtml_System_Config_Backend_Encrypt
 	}
 
 	/**
-	 * verify the key is decrypted after being loaded.
+	 * verify the key correct path is returned.
 	 * @test
 	 */
-	public function testAfterLoad()
+	public function testGetKeyFieldPath()
 	{
 		$keyText = 'fake key text';
 		$encryptedKey = 'sfljalfdjlajflsdfja;fafjdlsdfjl';
 		$testModel = $this->getModelMockBuilder(self::$modelAlias)
 			->disableOriginalConstructor()
-			->setMethods(array('getValue', 'setValue'))
+			->setMethods(array('getPath'))
 			->getMock();
 		$testModel->expects($this->once())
-			->method('getValue')
-			->will($this->returnValue($encryptedKey));
-		$testModel->expects($this->once())
-			->method('setValue')
-			->with($this->identicalTo($keyText))
-			->will($this->returnSelf());
+			->method('getPath')
+			->will($this->returnValue('/section/group/filetransfer_sftp_ssh_key_file'));
+		$path = EcomDev_Utils_Reflection::invokeRestrictedMethod(
+			$testModel,
+			'_getKeyFieldPath'
+		);
+		$this->assertSame($path, '/section/group/filetransfer_sftp_ssh_prv_key');
+	}
 
-		$helper = $this->getHelperMockBuilder('core/data')
+	/**
+	 * verify the file gets deleted
+	 * @test
+	 * @loadFixture
+	 */
+	public function testDeleteUploadedFile()
+	{
+		$vfs = $this->getFixture()->getVfs();
+		$fileUrl = $vfs->url('tmp/thefile');
+		$this->assertTrue(file_exists($fileUrl));
+		$testModel = $this->getModelMockBuilder(self::$modelAlias)
 			->disableOriginalConstructor()
-			->setMethods(array('decrypt'))
+			->setMethods(array('_getTempName'))
 			->getMock();
-		$helper->expects($this->once())
-			->method('decrypt')
-			->with($this->identicalTo($encryptedKey))
-			->will($this->returnValue($keyText));
-		$this->replaceByMock('helper', 'core', $helper);
-
-		$method = self::$reflectedClass->getMethod('_afterLoad');
-		$method->setAccessible(true);
-		$this->assertSame($testModel, $method->invoke($testModel));
+		$testModel->expects($this->once())
+			->method('_getTempName')
+			->will($this->returnValue($fileUrl));
+		$result = EcomDev_Utils_Reflection::invokeRestrictedMethod(
+			$testModel,
+			'_deleteUploadedFile'
+		);
+		$this->assertFalse(file_exists($fileUrl));
+		$this->assertSame($testModel, $result);
 	}
 }

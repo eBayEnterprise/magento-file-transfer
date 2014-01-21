@@ -24,9 +24,20 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 	{
 		// create magic getter/setters for each field
 		$this->loadMappedFields($this->_fieldMap);
+		$this->_validateProtocolCode();
+	}
+
+	/**
+	 * validate the protocol code
+	 * @throws TrueAction_FileTransfer_Exception_Configuration If the protocol doesnt match a list of implemented models
+	 * @return self
+	 */
+	public function _validateProtocolCode()
+	{
+		$codes = Mage::helper('filetransfer')->getProtocolCodes();
 		$isProtocolValid = in_array(
 			(string) $this->getProtocolCode(),
-			Mage::helper('filetransfer')->getProtocolCodes(),
+			$codes,
 			true
 		);
 		if (!$isProtocolValid) {
@@ -37,6 +48,7 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 				)
 			);
 		}
+		return $this;
 	}
 
 	/**
@@ -91,21 +103,30 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 
 		$sortOrder = isset($moduleSpec->$sortOrder) ?
 			(int) $moduleSpec->$sortOrder : $helper->getGlobalSortOrder();
-		$defaultFlag = isset($moduleSpec->$showInDefault) ?
+		$defaultFlag = isset($moduleSpec->$showInDefault) && (string) $moduleSpec->$showInDefault !== '' ?
 			(string) $moduleSpec->$showInDefault : $helper->getGlobalShowInDefault();
-		$websiteFlag = isset($moduleSpec->$showInWebsite) ?
+		$websiteFlag = isset($moduleSpec->$showInWebsite) && (string) $moduleSpec->$showInWebsite !== '' ?
 			(string) $moduleSpec->$showInWebsite : $helper->getGlobalShowInWebsite();
-		$storeFlag = isset($moduleSpec->$showInStore) ?
+		$storeFlag = isset($moduleSpec->$showInStore) && (string) $moduleSpec->$showInStore !== '' ?
 			(string) $moduleSpec->$showInStore : $helper->getGlobalShowInStore();
 
-		$fields = $this->getBaseFields();
-
 		$increment = 0;
+		$fields = $this->getBaseFields();
 		foreach ($fields->getNode()->children() as $fieldName => $fieldNode) {
 			$fields->setNode($fieldName . '/sort_order', $sortOrder + $increment++);
-			$fields->setNode($fieldName . '/show_in_default', $defaultFlag);
-			$fields->setNode($fieldName . '/show_in_website', $websiteFlag);
-			$fields->setNode($fieldName . '/show_in_store', $storeFlag);
+			// compute field level display flags
+			$fieldDefaultFlag = isset($fieldNode->$showInDefault) && (string) $fieldNode->$showInDefault !== '' ?
+				(string) $fieldNode->$showInDefault :
+				$defaultFlag;
+			$fieldWebsiteFlag = isset($fieldNode->$showInWebsite) && (string) $fieldNode->$showInWebsite !== '' ?
+				(string) $fieldNode->$showInWebsite :
+				$websiteFlag;
+			$fieldStoreFlag = isset($fieldNode->$showInStore) && (string) $fieldNode->$showInStore !== '' ?
+				(string) $fieldNode->$showInStore :
+				$storeFlag;
+			$fields->setNode($fieldName . '/show_in_default', $fieldDefaultFlag);
+			$fields->setNode($fieldName . '/show_in_website', $fieldWebsiteFlag);
+			$fields->setNode($fieldName . '/show_in_store', $fieldStoreFlag);
 		}
 		return $fields;
 	}
@@ -118,7 +139,9 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 	 * */
 	public function getBaseFields()
 	{
-		return new Varien_Simplexml_Config(str_replace('%s', $this->getProtocolCode(), Mage::getStoreConfig(self::DEFAULT_FIELD_TEMPLATE)));
+		return new Varien_Simplexml_Config(
+			str_replace('%s', $this->getProtocolCode(), Mage::getStoreConfig(self::DEFAULT_FIELD_TEMPLATE))
+		);
 	}
 
 	/**

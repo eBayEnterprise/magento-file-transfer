@@ -31,8 +31,9 @@ For example the config path 'testsection/testgroup' matches the following config
 			<testsection>
 				<groups>
 					<testgroup>
-						<activeconfig_import>
-							…
+						<fields>
+							<activeconfig_import>
+								…
 
 Import Specification
 --------------------

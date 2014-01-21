@@ -108,7 +108,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev_PHP
 	 * verify TrueAction_FileTransfer_Exception_Configuration is thrown when the protocol code doesn't match a known code.
 	 * @test
 	 */
-	public function testConstructorException()
+	public function testValidateProtocolCodeException()
 	{
 		$helper = $this->getHelperMockBuilder('filetransfer/data')
 			->disableOriginalConstructor()
@@ -121,10 +121,8 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev_PHP
 
 		$testModel = $this->getModelMockBuilder('filetransfer/protocol_config')
 			->disableOriginalConstructor()
-			->setMethods(array('getProtocolCode', 'loadMappedFields'))
+			->setMethods(array('getProtocolCode'))
 			->getMock();
-		$testModel->expects($this->any())
-			->method('loadMappedFields');
 		$testModel->expects($this->atLeastOnce())
 			->method('getProtocolCode')
 			->will($this->returnValue(null));
@@ -132,7 +130,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev_PHP
 			'TrueAction_FileTransfer_Exception_Configuration',
 			'FileTransfer Config Error: Invalid Protocol Code'
 		);
-		$method = new ReflectionMethod($testModel, '_construct');
+		$method = new ReflectionMethod($testModel, '_validateProtocolCode');
 		$method->setAccessible(true);
 		$method->invoke($testModel);
 	}
@@ -201,11 +199,12 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev_PHP
 			$fields->getXmlString()
 		);
 	}
+
 	/**
 	 * verify the protocol code check wont fail when the desired code is at index 0 in the array.
 	 * @test
 	 */
-	public function testConstructorProtocolCheck()
+	public function testValidateProtocolCodeIndexZero()
 	{
 		$helper = $this->getHelperMock('filetransfer/data', array('getProtocolCodes'));
 		$helper->expects($this->once())
@@ -219,8 +218,87 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev_PHP
 		$config->expects($this->atLeastOnce())
 			->method('getProtocolCode')
 			->will($this->returnValue('the_code'));
-		$ctor = new ReflectionMethod($config, '_construct');
+		$ctor = new ReflectionMethod($config, '_validateProtocolCode');
 		$ctor->setAccessible(true);
 		$ctor->invoke($config);
+	}
+
+	/**
+	 * verify config model attempts to load config data into fields and validate the protocol code.
+	 * @test
+	 */
+	public function testConstructor()
+	{
+		$config = $this->getModelMockBuilder('filetransfer/protocol_config')
+			->disableOriginalConstructor()
+			->setMethods(array('loadMappedFields', '_validateProtocolCode'))
+			->getMock();
+		$config->expects($this->once())
+			->method('loadMappedFields')
+			->will($this->returnSelf());
+		$config->expects($this->once())
+			->method('_validateProtocolCode')
+			->will($this->returnSelf());
+		EcomDev_Utils_Reflection::invokeRestrictedMethod($config, '_construct');
+	}
+
+	/**
+	 * verify the configuration is generated with the correct show_in* flags.
+	 * @test
+	 * @dataProvider dataProvider
+	 */
+	public function testGenerateFieldsShowFlags($global, $spec, $field) {
+		$helper = $this->getHelperMock('filetransfer/data', array(
+			'getGlobalSortOrder',
+			'getGlobalShowInDefault',
+			'getGlobalShowInWebsite',
+			'getGlobalShowInStore',
+		));
+		list($showInDefault, $showInWebsite, $showInStore) = $global;
+		$globalString = sprintf('g%s%s%s', $showInDefault, $showInWebsite, $showInStore);
+		$helper->expects($this->any())
+			->method('getGlobalSortOrder')
+			->will($this->returnValue('10'));
+		$helper->expects($this->any())
+			->method('getGlobalShowInDefault')
+			->will($this->returnValue($showInDefault));
+		$helper->expects($this->any())
+			->method('getGlobalShowInWebsite')
+			->will($this->returnValue($showInWebsite));
+		$helper->expects($this->any())
+			->method('getGlobalShowInStore')
+			->will($this->returnValue($showInStore));
+		$this->replaceByMock('helper', 'filetransfer', $helper);
+
+		list($showInDefault, $showInWebsite, $showInStore) = $spec;
+		$specString = sprintf('s%s%s%s', $showInDefault, $showInWebsite, $showInStore);
+		$spec = Mage::getModel('core/config');
+		$spec->loadString('<filetransfer/>');
+		$path = '';
+		$spec->setNode($path . 'show_in_default', $showInDefault)
+			->setNode($path . 'show_in_website', $showInWebsite)
+			->setNode($path . 'show_in_store', $showInStore);
+
+		list($showInDefault, $showInWebsite, $showInStore) = $field;
+		$fieldString = sprintf('f%s%s%s', $showInDefault, $showInWebsite, $showInStore);
+		$fields = Mage::getModel('core/config');
+		$fields->loadString('<fields><field/></fields>');
+		$path = 'field/';
+		$fields->setNode($path . 'show_in_default', $showInDefault)
+			->setNode($path . 'show_in_website', $showInWebsite)
+			->setNode($path . 'show_in_store', $showInStore);
+
+		$model = $this->getModelMockBuilder('filetransfer/protocol_config')
+			->disableOriginalConstructor()
+			->setMethods(array('getBaseFields'))
+			->getMock();
+		$model->expects($this->once())
+			->method('getBaseFields')
+			->will($this->returnValue($fields));
+		$config = $model->generateFields($spec->getNode());
+		$e = $this->expected('%s-%s-%s', $globalString, $specString, $fieldString);
+		$this->assertSame((string) $e->getShowInDefault(), (string) $config->getNode('field/show_in_default'));
+		$this->assertSame((string) $e->getShowInWebsite(), (string) $config->getNode('field/show_in_website'));
+		$this->assertSame((string) $e->getShowInStore(), (string) $config->getNode('field/show_in_store'));
 	}
 }

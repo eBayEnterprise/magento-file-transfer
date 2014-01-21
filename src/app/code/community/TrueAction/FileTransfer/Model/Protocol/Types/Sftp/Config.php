@@ -7,6 +7,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp_Config extends TrueActio
 	 */
 	protected function _construct()
 	{
+		$this->setProtocolCode('sftp');
 		$this->_fieldMap['filetransfer_sftp_ssh_prv_key'] = 'private_key';
 		$this->_fieldMap['filetransfer_sftp_auth_type']   = 'auth_type';
 		parent::_construct();

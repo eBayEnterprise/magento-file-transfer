@@ -7,19 +7,28 @@ class TrueAction_FileTransfer_Model_Adminhtml_System_Config_Backend_Encrypted_Ke
 	 */
 	protected function _beforeSave()
 	{
-		// read the key from the uploaded temp file
-		$key = $this->_readKey();
+		// save the file name
+		$this->setValue($this->_getOriginalFilename());
 		// encrypt the key and set it to be saved
-		$encryptedKey = Mage::helper('core')->encrypt($key);
-		$this->setValue($encryptedKey);
+		$keyField = Mage::getModel('adminhtml/system_config_backend_encrypted')->addData(array(
+			'scope' => $this->getScope(),
+			'scope_id' => $this->getScopeId(),
+			'path' => $this->_getKeyFieldPath(),
+			'value' => $this->_readKey(),
+		))
+		->save();
+		// delete the file
+		$this->_deleteUploadedFile();
+
 		return $this;
 	}
 
-	protected function _afterLoad()
+	/**
+	 * @return string config path of the key field
+	 */
+	protected function _getKeyFieldPath()
 	{
-		return $this->setValue(
-			Mage::helper('core')->decrypt($this->getValue())
-		);
+		return substr_replace($this->getPath(), 'prv_key', -strlen('key_file'));
 	}
 
 	/**
@@ -37,8 +46,17 @@ class TrueAction_FileTransfer_Model_Adminhtml_System_Config_Backend_Encrypted_Ke
 	}
 
 	/**
-	 * get the temp name of the uploaded file
+	 * @return string original name of the file
+	 * @codeCoverageIgnore
+	 */
+	protected function _getOriginalFilename()
+	{
+		return $_FILES['groups']['name'][$this->getGroupId()]['fields'][$this->getField()]['value'];
+	}
+
+	/**
 	 * @return string name of the temporary file
+	 * @codeCoverageIgnore
 	 */
 	protected function _getTempName()
 	{
@@ -54,5 +72,15 @@ class TrueAction_FileTransfer_Model_Adminhtml_System_Config_Backend_Encrypted_Ke
 	protected function _fileGetContents($path)
 	{
 		return file_get_contents($path);
+	}
+
+	/**
+	 * ensure the uploaded key file is not readily accessible
+	 * @return  self
+	 */
+	protected function _deleteUploadedFile()
+	{
+		@unlink($this->_getTempName());
+		return $this;
 	}
 }
