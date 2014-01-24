@@ -61,10 +61,10 @@ lint() {
 	mkdir -p build
 	pp 'Linting %d PHP files\n' "${#phpFiles[@]}"
 	for phpFile in "${phpFiles[@]}"; do
-		if ! php -l "$phpFile"; then
+		php -l "$phpFile" || {
 			st=$?
 			er 'php -l exited with a status code of %d.\n' "$st"
-		fi
+		}
 	done
 	return "$st"
 }
