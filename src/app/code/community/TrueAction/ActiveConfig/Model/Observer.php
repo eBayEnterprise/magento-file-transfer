@@ -92,7 +92,6 @@ class TrueAction_ActiveConfig_Model_Observer
 	{
 		$config = $observer->getEvent()->getConfig();
 		$sections = $config->getNode('sections');
-		$injector = Mage::getModel('activeconfig/injector');
 		foreach ($sections->children() as $sectionName => $section) {
 			foreach ($section->groups->children() as $groupName => $group) {
 				// only attempt to process groups that have an import spec.

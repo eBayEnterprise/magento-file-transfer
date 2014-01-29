@@ -10,13 +10,12 @@ class TrueAction_FileTransfer_Model_Adminhtml_System_Config_Backend_Encrypted_Ke
 		// save the file name
 		$this->setValue($this->_getOriginalFilename());
 		// encrypt the key and set it to be saved
-		$keyField = Mage::getModel('adminhtml/system_config_backend_encrypted')->addData(array(
+		Mage::getModel('adminhtml/system_config_backend_encrypted')->addData(array(
 			'scope' => $this->getScope(),
 			'scope_id' => $this->getScopeId(),
 			'path' => $this->_getKeyFieldPath(),
 			'value' => $this->_readKey(),
-		))
-		->save();
+		))->save();
 		// delete the file
 		$this->_deleteUploadedFile();
 

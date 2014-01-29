@@ -107,7 +107,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 			return false;
 		}
 
-		foreach ($remoteList as $name => $stat) {
+		foreach (array_keys($remoteList) as $name) {
 			if (fnmatch($pat, $name)) {
 				$names[] = "$remPath/$name";
 			}

@@ -105,8 +105,6 @@ class TrueAction_FileTransfer_Test_Model_Adminhtml_System_Config_Backend_Encrypt
 	 */
 	public function testGetKeyFieldPath()
 	{
-		$keyText = 'fake key text';
-		$encryptedKey = 'sfljalfdjlajflsdfja;fafjdlsdfjl';
 		$testModel = $this->getModelMockBuilder(self::$modelAlias)
 			->disableOriginalConstructor()
 			->setMethods(array('getPath'))
