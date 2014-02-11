@@ -50,27 +50,24 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 		}
 		return $this;
 	}
-
 	/**
-	 * get the unencrypted password
+	 * Get the unencrypted password
+	 *
 	 * @return string
 	 */
 	public function getPassword()
 	{
 		return Mage::helper('core')->decrypt($this->getData('password'));
 	}
-
 	/**
-	 * set and encrypt the password
+	 * Encrypt the passed value and set the field 'password' to it.
+	 *
+	 * @see Varien_Object::setData
 	 */
-	public function setPassword()
+	public function setPassword($pass)
 	{
-		$this->setData(
-			Mage::helper('core')->encrypt($this->getData('password'))
-		);
-		return $this;
+		return $this->setData('password', Mage::helper('core')->encrypt($pass));
 	}
-
 	/**
 	 * loads the config data.
 	 */
