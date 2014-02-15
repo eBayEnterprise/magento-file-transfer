@@ -82,48 +82,37 @@ class TrueAction_FileTransfer_Model_Protocol_Config
 			);
 		}
 	}
-
 	/**
-	 * Returns generated fields
- 	 *
-	 * @todo: Add feature specific options
+	 * Search for a value in a series of objects. Stop when the first one is found.
+	 *
+	 * @param array $objs The objects to look through.
+	 * @param string $name The name to search for.
+	 * @return int The first value found or the value at the helper.
+	 */
+	protected function _searchForFields(array $objs, $name)
+	{
+		foreach ($objs as $o) {
+			if (isset($o->$name) && trim($o->$name) !== '') {
+				return (int) $o->$name;
+			}
+		}
+		return (int) call_user_func(array(Mage::helper('filetransfer'), 'getGlobal' . uc_words($name, '')));
+	}
+	/**
+	 * Return config xml generated fields
 	 */
 	public function generateFields($moduleSpec)
 	{
-		$helper = Mage::helper('filetransfer');
-
-		// This is a rather ham-handed way of avoiding complaints about invalid Camel Case variable names:
-		$sortOrder     = 'sort_order';
-		$showInDefault = 'show_in_default';
-		$showInWebsite = 'show_in_website';
-		$showInStore   = 'show_in_store';
-
-		$sortOrder = isset($moduleSpec->$sortOrder) ?
-			(int) $moduleSpec->$sortOrder : $helper->getGlobalSortOrder();
-		$defaultFlag = isset($moduleSpec->$showInDefault) && (string) $moduleSpec->$showInDefault !== '' ?
-			(string) $moduleSpec->$showInDefault : $helper->getGlobalShowInDefault();
-		$websiteFlag = isset($moduleSpec->$showInWebsite) && (string) $moduleSpec->$showInWebsite !== '' ?
-			(string) $moduleSpec->$showInWebsite : $helper->getGlobalShowInWebsite();
-		$storeFlag = isset($moduleSpec->$showInStore) && (string) $moduleSpec->$showInStore !== '' ?
-			(string) $moduleSpec->$showInStore : $helper->getGlobalShowInStore();
-
-		$increment = 0;
+		$displayLevels = array('show_in_default', 'show_in_website', 'show_in_store');
+		$sortOrder = $this->_searchForFields(array($moduleSpec), 'sort_order');
 		$fields = $this->getBaseFields();
 		foreach ($fields->getNode()->children() as $fieldName => $fieldNode) {
-			$fields->setNode($fieldName . '/sort_order', $sortOrder + $increment++);
+			$fields->setNode("$fieldName/sort_order", $sortOrder++);
 			// compute field level display flags
-			$fieldDefaultFlag = isset($fieldNode->$showInDefault) && (string) $fieldNode->$showInDefault !== '' ?
-				(string) $fieldNode->$showInDefault :
-				$defaultFlag;
-			$fieldWebsiteFlag = isset($fieldNode->$showInWebsite) && (string) $fieldNode->$showInWebsite !== '' ?
-				(string) $fieldNode->$showInWebsite :
-				$websiteFlag;
-			$fieldStoreFlag = isset($fieldNode->$showInStore) && (string) $fieldNode->$showInStore !== '' ?
-				(string) $fieldNode->$showInStore :
-				$storeFlag;
-			$fields->setNode($fieldName . '/show_in_default', $fieldDefaultFlag);
-			$fields->setNode($fieldName . '/show_in_website', $fieldWebsiteFlag);
-			$fields->setNode($fieldName . '/show_in_store', $fieldStoreFlag);
+			$objs = array($fieldNode, $moduleSpec);
+			foreach ($displayLevels as $name) {
+				$fields->setNode("$fieldName/$name", $this->_searchForFields($objs, $name));
+			}
 		}
 		return $fields;
 	}

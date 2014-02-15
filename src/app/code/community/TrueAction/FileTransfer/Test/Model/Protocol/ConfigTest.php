@@ -241,64 +241,62 @@ class TrueAction_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev_PHP
 			->will($this->returnSelf());
 		EcomDev_Utils_Reflection::invokeRestrictedMethod($config, '_construct');
 	}
-
 	/**
-	 * verify the configuration is generated with the correct show_in* flags.
+	 * Verify the configuration falls back to the most specific setting
+	 * for show_in_default, show_in_website and show_in_store.
+	 *
 	 * @test
 	 * @dataProvider dataProvider
+	 * @param array $global least specific show_in_* triple
+	 * @param array $spec show_in_* triple more specific than $global
+	 * @param array $field most specific show_in_* triple
+	 * @param array $expected result
 	 */
-	public function testGenerateFieldsShowFlags($global, $spec, $field) {
-		$helper = $this->getHelperMock('filetransfer/data', array(
+	public function testGenerateFieldsShowFlags(array $global, array $spec, array $field, array $expected) {
+		list($glbDef, $glbWeb, $glbStr) = $global;
+		list($spcDef, $spcWeb, $spcStr) = $spec;
+		list($fldDef, $fldWeb, $fldStr) = $field;
+		list($expDef, $expWeb, $expStr) = $expected;
+		$hlpr = $this->getHelperMock('filetransfer/data', array(
 			'getGlobalSortOrder',
 			'getGlobalShowInDefault',
 			'getGlobalShowInWebsite',
 			'getGlobalShowInStore',
 		));
-		list($showInDefault, $showInWebsite, $showInStore) = $global;
-		$globalString = sprintf('g%s%s%s', $showInDefault, $showInWebsite, $showInStore);
-		$helper->expects($this->any())
+		$hlpr->expects($this->any())
 			->method('getGlobalSortOrder')
-			->will($this->returnValue('10'));
-		$helper->expects($this->any())
+			->will($this->returnValue(10));
+		$hlpr->expects($this->any())
 			->method('getGlobalShowInDefault')
-			->will($this->returnValue($showInDefault));
-		$helper->expects($this->any())
+			->will($this->returnValue($glbDef));
+		$hlpr->expects($this->any())
 			->method('getGlobalShowInWebsite')
-			->will($this->returnValue($showInWebsite));
-		$helper->expects($this->any())
+			->will($this->returnValue($glbWeb));
+		$hlpr->expects($this->any())
 			->method('getGlobalShowInStore')
-			->will($this->returnValue($showInStore));
-		$this->replaceByMock('helper', 'filetransfer', $helper);
-
-		list($showInDefault, $showInWebsite, $showInStore) = $spec;
-		$specString = sprintf('s%s%s%s', $showInDefault, $showInWebsite, $showInStore);
-		$spec = Mage::getModel('core/config');
-		$spec->loadString('<filetransfer/>');
-		$path = '';
-		$spec->setNode($path . 'show_in_default', $showInDefault)
-			->setNode($path . 'show_in_website', $showInWebsite)
-			->setNode($path . 'show_in_store', $showInStore);
-
-		list($showInDefault, $showInWebsite, $showInStore) = $field;
-		$fieldString = sprintf('f%s%s%s', $showInDefault, $showInWebsite, $showInStore);
-		$fields = Mage::getModel('core/config');
-		$fields->loadString('<fields><field/></fields>');
-		$path = 'field/';
-		$fields->setNode($path . 'show_in_default', $showInDefault)
-			->setNode($path . 'show_in_website', $showInWebsite)
-			->setNode($path . 'show_in_store', $showInStore);
-
+			->will($this->returnValue($glbStr));
+		$this->replaceByMock('helper', 'filetransfer', $hlpr);
+		$spc = Mage::getModel('core/config');
+		$spc->loadString('<filetransfer/>');
+		$spc->setNode('show_in_default', $spcDef)
+			->setNode('show_in_website', $spcWeb)
+			->setNode('show_in_store', $spcStr);
+		$flds = Mage::getModel('core/config');
+		$flds->loadString('<fields><field/></fields>');
+		$flds->setNode('field/show_in_default', $fldDef)
+			->setNode('field/show_in_website', $fldWeb)
+			->setNode('field/show_in_store', $fldStr);
 		$model = $this->getModelMockBuilder('filetransfer/protocol_config')
 			->disableOriginalConstructor()
 			->setMethods(array('getBaseFields'))
 			->getMock();
 		$model->expects($this->once())
 			->method('getBaseFields')
-			->will($this->returnValue($fields));
-		$config = $model->generateFields($spec->getNode());
-		$e = $this->expected('%s-%s-%s', $globalString, $specString, $fieldString);
-		$this->assertSame((string) $e->getShowInDefault(), (string) $config->getNode('field/show_in_default'));
-		$this->assertSame((string) $e->getShowInWebsite(), (string) $config->getNode('field/show_in_website'));
-		$this->assertSame((string) $e->getShowInStore(), (string) $config->getNode('field/show_in_store'));
+			->will($this->returnValue($flds));
+		$resultNode = $model->generateFields($spc->getNode())->getNode('field');
+		$failPat = 'Expecting show_in_%s of %d, but got %d instead.';
+		$this->assertTrue($resultNode->is('show_in_default', $expDef), sprintf($failPat, 'default', $expDef, $resultNode->show_in_default));
+		$this->assertTrue($resultNode->is('show_in_website', $expWeb), sprintf($failPat, 'website', $expWeb, $resultNode->show_in_website));
+		$this->assertTrue($resultNode->is('show_in_store', $expStr), sprintf($failPat, 'store', $expStr, $resultNode->show_in_store));
 	}
 }
