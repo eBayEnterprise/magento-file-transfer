@@ -147,46 +147,4 @@ class TrueAction_FileTransfer_Test_Model_Key_MakerTest
 		$fsToolMock->expects($this->any())->method('fileExists')->will($this->returnValue(false));
 		$maker->setFsTool($fsToolMock);
 	}
-
-	/**
-	 * This test will actually write to the file system and is a bit more
-	 * integrations-test-ish than is desirable. Skipping the test but leaving
-	 * it in place in case we ever decide to want such tests.
-	 *
-	 * @test
-	 */
-	public function testActualFileAccess()
-	{
-		$this->markTestSkipped('Too much of an integration test - hits the filesystem. Not a unit test so skipping');
-
-		$pubKey = 'public key file contents';
-		$privKey = 'private key file contents';
-		$baseDir = Mage::getBaseDir('tmp');
-
-		$keyMaker = Mage::getModel('filetransfer/key_maker', array(
-			'tmp_prefix' => 'test'
-		));
-		$this->assertTrue($keyMaker->createKeyFiles($pubKey, $privKey));
-
-		$pubKeyPath = $keyMaker->getPublicKeyPath();
-		$privKeyPath = $keyMaker->getPrivateKeyPath();
-
-		$this->assertStringStartsWith($baseDir, $pubKeyPath);
-		$this->assertStringStartsWith($baseDir, $privKeyPath);
-
-		$this->assertSame($pubKeyPath, $keyMaker->getPublicKeyPath());
-		$this->assertSame($privKeyPath, $keyMaker->getPrivateKeyPath());
-
-		$this->assertFileExists($pubKeyPath);
-		$this->assertFileExists($privKeyPath);
-
-		$this->assertSame($pubKey, file_get_contents($pubKeyPath));
-		$this->assertSame($privKey, file_get_contents($privKeyPath));
-
-		unset($keyMaker);
-
-		$this->assertFileNotExists($pubKeyPath);
-		$this->assertFileNotExists($privKeyPath);
-	}
-
 }
