@@ -107,7 +107,8 @@
 					</filetransfer_%1$s_password>
 					<filetransfer_%1$s_ssh_prv_key translate="label">
 						<label>Private Key</label>
-						<frontend_type>textarea</frontend_type>
+						<!-- 'frontend_model' is really a block: -->
+						<frontend_model>filetransfer/adminhtml_system_config_form_field_privatekey</frontend_model>
 						<backend_model>filetransfer/adminhtml_system_config_backend_encrypted_key</backend_model>
 						<comment>Paste your Private Key here</comment>
 						<depends>

@@ -132,11 +132,5 @@ q1WA3qssq5WCldpmQ8pMfLE/mRYvtbGP7rArdENEHlWJ1bsiXHGN
 		$this->replaceByMock('singleton', $testModel::SESSION_KEY, $session);
 
 		$testModel->setValue('not a key')->_beforeSave();
-
-		// Having reverted back to old key, _afterLoad should set the display value to security mask 
-		$this->assertSame(
-			$this::VALID_TEST_PUBLIC_KEY,
-			$testModel->_afterLoad()->getValue()
-		);
 	}
 }

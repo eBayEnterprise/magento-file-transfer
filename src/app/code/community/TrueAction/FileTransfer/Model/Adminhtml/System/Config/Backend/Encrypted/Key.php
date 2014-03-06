@@ -41,34 +41,32 @@ class TrueAction_FileTransfer_Model_Adminhtml_System_Config_Backend_Encrypted_Ke
 
 	/**
 	 * Checks to see if we have a new and valid private key.
-	 * If it's a valid key, we let our parent process the encryption.
-	 * If it's not a valid key (and not the Security Mask), we restore the previous value, and issue a warning.
+	 * If the new key is valid, our parent processes the encryption, issue a Notice.
+	 * If the new key is not valid, and there is no previous value, issue an Error.
+	 * If the new key is not valid, and there is a previous value, keep the previous value and issue a Warning.
 	 * @return self
 	 */
 	public function _beforeSave()
 	{
-		$publicKey = '';
-		$oldValue  = $this->getOldValue();
-		if(!empty($oldValue)) {
-			$publicKey = $this->_getPublicKeyFromPrivateKey($oldValue);
-		}
+		$sess = Mage::getSingleton($this::SESSION_KEY);
 		$newValue = $this->getValue();
-		if (!empty($newValue) && $newValue !== $publicKey) {
+		if (!empty($newValue)) {
 			if (openssl_pkey_get_private($newValue)) {
-				Mage::getSingleton($this::SESSION_KEY)->addNotice('New Private Key successfully installed.');
+				$this->_dataSaveAllowed = true;
+				$sess->addNotice('New Private Key successfully installed.');
 			} else {
-				if( !empty($oldValue) && openssl_pkey_get_private($oldValue)) {
-					$this->setValue($oldValue);
-					Mage::getSingleton($this::SESSION_KEY)
-						->addWarning('An Invalid Private Key was Specified. The previous value has been retained.');
+				$this->_dataSaveAllowed = false;
+				$oldValue = $this->getOldValue();
+				if (!empty($oldValue)) {
+					$sess->addWarning('An Invalid Private Key was Specified. The previous value has been retained.');
 				} else {
 					// Our new key is invalid, and we had no sensible old value. Error noisily.
-					$this->setValue('');
-					Mage::getSingleton($this::SESSION_KEY)
-						->addError('An Invalid Private Key was Specified. Exchange Platform Batch Feeds will not work until this is corrected.');
+					$sess->addError('An Invalid Private Key was Specified. Exchange Platform Batch Feeds will not work until this is corrected.');
 				}
 			}
 			parent::_beforeSave(); // Our parent does all the right things to save it encrypted.
+		} else {
+			$this->_dataSaveAllowed = false;
 		}
 		return $this;
 	}
