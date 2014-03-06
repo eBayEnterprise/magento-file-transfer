@@ -145,17 +145,6 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_Sftp_ConfigTest extends 
 
 		$paths = array(
 			'filetransfer_protocol/label[.="Protocol"]',
-			'filetransfer_foo_password/validate[.="required-entry"]',
-
-			'filetransfer_foo_ssh_key_file/label[.="Upload Private Key"]',
-			'filetransfer_foo_ssh_key_file/frontend_type[.="file"]',
-			'filetransfer_foo_ssh_key_file/backend_model[.="filetransfer/adminhtml_system_config_backend_encrypted_keyfile"]',
-
-			'filetransfer_foo_ssh_prv_key/frontend_type[.="obscure"]',
-			'filetransfer_foo_ssh_prv_key/backend_model[.="adminhtml/system_config_backend_encrypted"]',
-			'filetransfer_foo_ssh_prv_key/show_in_store[.="0"]',
-			'filetransfer_foo_ssh_prv_key/show_in_website[.="0"]',
-			'filetransfer_foo_ssh_prv_key/show_in_default[.="0"]',
 		);
 		foreach ($paths as $path) {
 			$this->assertNotEmpty(

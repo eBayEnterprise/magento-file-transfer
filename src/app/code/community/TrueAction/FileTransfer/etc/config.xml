@@ -105,22 +105,15 @@
 							<filetransfer_sftp_auth_type>password</filetransfer_sftp_auth_type>
 						</depends>
 					</filetransfer_%1$s_password>
-					<filetransfer_%1$s_ssh_key_file translate="label">
-						<label>Upload Private Key</label>
-						<frontend_type>file</frontend_type>
-						<backend_model>filetransfer/adminhtml_system_config_backend_encrypted_keyfile</backend_model>
+					<filetransfer_%1$s_ssh_prv_key translate="label">
+						<label>Private Key</label>
+						<frontend_type>textarea</frontend_type>
+						<backend_model>filetransfer/adminhtml_system_config_backend_encrypted_key</backend_model>
+						<comment>Paste your Private Key here</comment>
 						<depends>
 							<filetransfer_protocol>sftp</filetransfer_protocol>
 							<filetransfer_sftp_auth_type>pub_key</filetransfer_sftp_auth_type>
 						</depends>
-					</filetransfer_%1$s_ssh_key_file>
-					<filetransfer_%1$s_ssh_prv_key translate="label">
-						<label>Private Key</label>
-						<frontend_type>obscure</frontend_type>
-						<backend_model>adminhtml/system_config_backend_encrypted</backend_model>
-						<show_in_default>0</show_in_default>
-						<show_in_website>0</show_in_website>
-						<show_in_store>0</show_in_store>
 					</filetransfer_%1$s_ssh_prv_key>
 					<filetransfer_%1$s_host translate="label">
 						<label>Remote Host</label>
