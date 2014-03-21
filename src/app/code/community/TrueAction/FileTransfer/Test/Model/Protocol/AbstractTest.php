@@ -21,7 +21,10 @@ class TrueAction_FileTransfer_Test_Model_Protocol_AbstractTest extends EcomDev_P
 			'getCodes'
 		);
 	}
-
+	/**
+	 * Test setting up the config model and protocol code
+	 * @test
+	 */
 	public function testConstructor()
 	{
 		$configData = array();
@@ -37,7 +40,11 @@ class TrueAction_FileTransfer_Test_Model_Protocol_AbstractTest extends EcomDev_P
 
 		$testModel = $this->getModelMockBuilder('filetransfer/protocol_abstract')
 			->disableOriginalConstructor()
-			->setMethods(array('setConfigModel', 'getConfig', 'setCode', 'getConfigModel', 'sendFile', 'getFile'))
+			->setMethods(array(
+				'setConfigModel', 'getConfig', 'setCode', 'getConfigModel',
+				// mock out the abstract methods so the abstract class can be instantiated
+				'getFile', 'getAllFiles', 'sendFile', 'sendAllFiles', 'deleteFile',
+			))
 			->getMock();
 		$testModel->expects($this->once())
 			->method('setConfigModel')
@@ -60,7 +67,6 @@ class TrueAction_FileTransfer_Test_Model_Protocol_AbstractTest extends EcomDev_P
 
 	/**
 	 * Test concrete methods
-	 *
 	 * @test
 	 */
 	public function testConcreteMethods()
@@ -99,69 +105,5 @@ class TrueAction_FileTransfer_Test_Model_Protocol_AbstractTest extends EcomDev_P
 
 		$dataStringTwo = TrueAction_FileTransfer_Model_Protocol_Abstract::getDataUriFromString(self::STRING_DATA);
 		$this->assertStringStartsWith('data:text/plain,', $dataStringTwo);
-	}
-
-	/**
-	 * @test
-	 * */
-	public function testListProtocols()
-	{
-		$ls = $this->getCodes->invoke(null);
-		$this->assertContains('sftp', $ls);
-		$this->assertNotContains('.', $ls);
-		$this->assertNotContains('..', $ls);
-		$lsTwo = $this->getCodes->invoke(null);
-		$this->assertSame($ls, $lsTwo);
-	}
-
-	/**
-	 * @dataProvider dataProvider
-	 */
-	public function testExceptionMethods($method, $exception, $message)
-	{
-		$config = $this->getModelMockBuilder('filetransfer/protocol_config')
-			->disableOriginalConstructor()
-			->setMethods(array('none'))
-			->getMock();
-		$config->setData(array(
-			'host' => 'somehost.com',
-			'user' => 'someuser',
-			'protocol_code' => 'proto',
-			'remote_path' => 'remote/path'
-		));
-		$this->replaceByMock('model', 'filetransfer/protocol_config', $config);
-		$this->setExpectedException($exception, $message);
-		$methods = array('sendFile, getFile');
-		$model = $this->getModelMock('filetransfer/protocol_abstract', $methods, true);
-		$model->setConfigModel($config);
-		$fn = new ReflectionMethod($model, $method);
-		$fn->setAccessible(true);
-		$fn->invoke($model, 'foo');
-	}
-
-	/**
-	 * @dataProvider dataProvider
-	 */
-	public function testExceptionMethodsCustomMessage($method, $exception)
-	{
-		$config = $this->getModelMockBuilder('filetransfer/protocol_config')
-			->disableOriginalConstructor()
-			->setMethods(array('none'))
-			->getMock();
-		$config->setData(array(
-			'host' => 'somehost.com',
-			'user' => 'someuser',
-			'protocol_code' => 'proto',
-			'remote_path' => 'remote/path'
-		));
-		$this->replaceByMock('model', 'filetransfer/protocol_config', $config);
-		$message = 'this is a completely custom message';
-		$this->setExpectedException($exception, $message);
-		$methods = array('sendFile, getFile');
-		$model = $this->getModelMock('filetransfer/protocol_abstract', $methods, true);
-		$model->setConfig($config);
-		$fn = new ReflectionMethod($model, $method);
-		$fn->setAccessible(true);
-		$fn->invoke($model, $message, false);
 	}
 }

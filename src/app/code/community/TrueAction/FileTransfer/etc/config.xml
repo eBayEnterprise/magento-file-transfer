@@ -33,6 +33,18 @@
 			</filetransfer>
 		</blocks>
 	</global>
+	<crontab>
+		<jobs>
+			<filetrasnfer_run_transfers>
+				<schedule>
+					<cron_expr>*/15 * * * *</cron_expr>
+				</schedule>
+				<run>
+					<model>filetransfer/observer::runTransfers</model>
+				</run>
+			</filetrasnfer_run_transfers>
+		</jobs>
+	</crontab>
 	<default>
 		<filetransfer>
 			<global>
@@ -133,6 +145,7 @@
 					</filetransfer_%1$s_remote_path>
 				</fields>]]></template>
 			</sftp_fields>
+			<registry></registry>
 		</filetransfer>
 	</default>
 	<phpunit>

@@ -4,7 +4,7 @@
  * @method TrueAction_ActiveConfig_Model_Config_Abstract getConfigModel()
  * @method string getString(string $remoteFile, string $data)
  */
-abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core_Model_Abstract
+abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Varien_Object
 {
 	/**
 	 * setup a generic config object to be used when reading/generating config
@@ -22,21 +22,50 @@ abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core
 	private static $_protocolCodes = array();
 
 	/**
+	 * Get the specified file from the remote and put in at the specified local
+	 * file path.
 	 * @param string $remoteFile
 	 * @param string $localFile
-	 * */
-	abstract public function sendFile($remoteFile, $localFile);
-
-	/**
-	 * @param string $remoteFile
-	 * @param string $localFile
+	 * @return boolean true if transfer was successful, false otherwise
 	 * */
 	abstract public function getFile($remoteFile, $localFile);
-
+	/**
+	 * Get all files in the remote directory matching the pattern and put them
+	 * in the local directory The array returned will have key/value pairs of
+	 * local and remote paths for each file retrieved.
+	 * @param  string $remoteDirectory
+	 * @param  string $localDirectory
+	 * @param  string $pattern
+	 * @return array Array of 'local' & 'remote' pairs for each file retrieved, e.g. array(array('local' => 'local/path', 'remote' => 'remote/path'), ...)
+	 */
+	abstract public function getAllFiles($remoteDirectory, $localDirectory, $pattern='*');
+	/**
+	 * Send file at the local file path to the remote at the remote file path.
+	 * @param string $remoteFile
+	 * @param string $localFile
+	 * @return boolean true if transfer was successful, false otherwise
+	 * */
+	abstract public function sendFile($remoteFile, $localFile);
+	/**
+	 * Send all files in the local directory matching the pattern to the remote
+	 * directory. The array returned will have key/value pairs of local and remote
+	 * path for each file sent.
+	 * @param  string $remoteDirectory
+	 * @param  string $localDirectory
+	 * @param  string $pattern
+	 * @return array Array of 'local' & 'remote' pairs for each file sent, e.g. array(array('local' => 'local/path', 'remote' => 'remote/path'), ...)
+	 */
+	abstract public function sendAllFiles($remoteDirectory, $localDirectory, $pattern='*');
+	/**
+	 * Delete the file from the remote host.
+	 * @param string $remoteFile
+	 * @return boolean true of delete was successful, false otherwise
+	 */
+	abstract public function deleteFile($remoteFile);
 	/**
 	 * Join the directories in a canonical, platform-agnostic way.
-	 * @param ? Some number of strings
-	 * @return The joined path (string)
+	 * @param string,... $_ Variable number of strings to join to make the path
+	 * @return string the joined path
 	 */
 	public static function normalPaths()
 	{
@@ -48,8 +77,9 @@ abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core
 	}
 
 	/**
-	 * scans the Protocol/Types directory for php files and uses their
+	 * Scans the Protocol/Types directory for php files and uses their
 	 * lowercased basename to get a list of protocol codes.
+	 * @return array string protocol codes
 	 * */
 	public static function getCodes()
 	{
@@ -78,94 +108,44 @@ abstract class TrueAction_FileTransfer_Model_Protocol_Abstract extends Mage_Core
 	{
 		return 'data:text/plain,' . $data;
 	}
-
+	/**
+	 * Set the host on the config model.
+	 * @param string $host
+	 * @return self
+	 */
 	public function setHost($host='')
 	{
 		$this->getConfigModel()->setHost($host);
 		return $this;
 	}
-
+	/**
+	 * Set the port on the config model.
+	 * @param string $port
+	 * @return self
+	 */
 	public function setPort($port=null)
 	{
 		$this->getConfigModel()->setPort($port);
 		return $this;
 	}
-
+	/**
+	 * Set the username on the config model
+	 * @param string $username
+	 * @return self
+	 */
 	public function setUsername($username='')
 	{
 		$this->getConfigModel()->setUsername($username);
 		return $this;
 	}
-
+	/**
+	 * Set the password on the config model
+	 * @param string $password
+	 * @return self
+	 */
 	public function setPassword($password='')
 	{
 		$this->getConfigModel()->setPassword($password);
 		return $this;
-	}
-
-	/**
-	 * throw a connection exception.
-	 * if $useDefaultFormat is false, the $message will be used as the exception
-	 * message without alteration.
-	 * otherwise the following message format will be used.
-	 * sftp://host[/remote_path] connection error[: $message]
-	 * @param  string  $message
-	 * @param  boolean $useDefaultFormat
-	 * @throws TrueAction_FileTransfer_Exception_Connection
-	 */
-	protected function _connectionError($message='', $useDefaultFormat=true)
-	{
-		if ($useDefaultFormat) {
-			$message = sprintf(
-				'%s connection error%s',
-				$this->getConfigModel()->getUrl(),
-				($message) ? ': ' . $message : ''
-			);
-		}
-		throw new TrueAction_FileTransfer_Exception_Connection($message);
-	}
-
-	/**
-	 * throw an authentication exception.
-	 * if $useDefaultFormat is false, the $message will be used as the exception
-	 * message without alteration.
-	 * otherwise the following message format will be used.
-	 * sftp://host[/remote_path] authentication error[: $message]
-	 * @param  string  $message
-	 * @param  boolean $useDefaultFormat
-	 * @throws TrueAction_FileTransfer_Exception_Connection
-	 */
-	protected function _authenticationError($message='', $useDefaultFormat=true)
-	{
-		if ($useDefaultFormat) {
-			$message = sprintf(
-				'%s authentication error%s',
-				$this->getConfigModel()->getUrl(),
-				($message) ? ': ' . $message : ''
-			);
-		}
-		throw new TrueAction_FileTransfer_Exception_Authentication($message);
-	}
-
-	/**
-	 * throw a transfer exception.
-	 * if $useDefaultFormat is false, the $message will be used as the exception
-	 * message without alteration.
-	 * otherwise the following message format will be used.
-	 * sftp://host[/remote_path] transfer error[: $message]
-	 * @param  string  $message
-	 * @param  boolean $useDefaultFormat
-	 * @throws TrueAction_FileTransfer_Exception_Connection
-	 */
-	protected function _transferError($message='', $useDefaultFormat=true)
-	{
-		if ($useDefaultFormat) {
-			$message = sprintf(
-				'%s transfer error%s',
-				$this->getConfigModel()->getUrl(),
-				($message) ? ': ' . $message : ''
-			);
-		}
-		throw new TrueAction_FileTransfer_Exception_Transfer($message);
 	}
 }

@@ -50,6 +50,85 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		$construct->invoke($sftp);
 	}
 	/**
+	 * Test downloading a file from the remote server.
+	 * @mock Net_SFTP::get to check args.
+	 * @mock Net_SFTP::disconnect called by __desctruct to clean up connections
+	 * @stub TrueAction_FileTransfer_Model_Protocol_Types_Sftp::getCon
+	 * @mock TrueAction_FileTransfer_Model_Protocol_Types_Sftp::_getRemotePath to check args
+	 * @test
+	 */
+	public function testGetFile()
+	{
+		$loc = 'local';
+		$rem = 'remote';
+		$netSftp = $this
+			->getMockBuilder('Net_SFTP')
+			->setMethods(array('get', 'disconnect'))
+			->disableOriginalConstructor()
+			->getMock();
+		$sftp = $this
+			->getModelMockBuilder('filetransfer/protocol_types_sftp')
+			->setMethods(array('getCon', '_getRemotePath', '_logGet'))
+			->disableOriginalConstructor()
+			->getMock();
+		$netSftp
+			->expects($this->once())
+			->method('get')
+			->with($this->equalTo('/' . $rem), $this->equalTo($loc))
+			->will($this->returnValue(true));
+		// Assume getCon returns a Net_SFTP object carrying an authenticated, active connection.
+		$sftp
+			->expects($this->any())
+			->method('getCon')
+			->will($this->returnValue($netSftp));
+		// Assume _getRemotePath prepends a slash to the remote file name.
+		$sftp
+			->expects($this->once())
+			->method('_getRemotePath')
+			->with($this->equalTo($rem))
+			->will($this->returnValue('/' . $rem));
+		// Assert that getFile mirrors the return value of Net_SFTP::get
+		$this->assertTrue($sftp->getFile($loc, $rem));
+	}
+	/**
+	 * Test fetching all the files matching a pattern.
+	 * @mock TrueAction_FileTransfer_Model_Protocol_Types_Sftp::listFilesMatchingPattern to check it's called
+	 * @mock TrueAction_FileTransfer_Model_Protocol_Types_Sftp::getFile to check args
+	 * @test
+	 */
+	public function testGetAllFiles()
+	{
+		$loc = 'local';
+		$rem = 'remote';
+		$pat = 'f*';
+		$sftp = $this
+			->getModelMockBuilder('filetransfer/protocol_types_sftp')
+			->setMethods(array('getFile', 'listFilesMatchingPattern'))
+			->disableOriginalConstructor()
+			->getMock();
+		// Assume listFilesMatchingPattern will return two files.
+		$sftp
+			->expects($this->once())
+			->method('listFilesMatchingPattern')
+			->with($this->equalTo($rem), $this->equalTo($pat))
+			->will($this->returnValue(array("/$rem/foo", "/$rem/fred", "/$rem/fran")));
+		$sftp->expects($this->exactly(3))
+			->method('getFile')
+			->will($this->returnValueMap(array(
+				array("$loc/foo", "/$rem/foo", true),
+				array("$loc/fred", "/$rem/fred", true),
+				array("$loc/fran", "/$rem/fran", false),
+			)));
+		// Test that the return value mirrors the anded return values of getFile.
+		$this->assertSame(
+			array(
+				array('local' => "$loc/foo", 'remote' => "/$rem/foo"),
+				array('local' => "$loc/fred", 'remote' => "/$rem/fred"),
+			),
+			$sftp->getAllFiles($loc, $rem, $pat)
+		);
+	}
+	/**
 	 * Test uploading a file to a remote server.
 	 * @mock Net_SFTP::put to check args
 	 * @mock Net_SFTP::disconnect called by __desctruct to clean up connections, stub so it doesn't error out
@@ -92,45 +171,66 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 		$this->assertSame(true, $sftp->sendFile($loc, $rem));
 	}
 	/**
-	 * Test downloading a file from the remote server.
-	 * @mock Net_SFTP::get to check args.
-	 * @mock Net_SFTP::disconnect called by __desctruct to clean up connections
-	 * @stub TrueAction_FileTransfer_Model_Protocol_Types_Sftp::getCon
-	 * @mock TrueAction_FileTransfer_Model_Protocol_Types_Sftp::_getRemotePath to check args
+	 * Test sending all files in a local directory to a remote directory.
+	 * @mock TrueAction_FileTransfer_Model_Protocol_Types_Sftp::sendFile to check args for each file to send
+	 * @mock TrueAction_FileTransfer_Helper_File::listFilesInDirectory to check args and return list of local files
 	 * @test
 	 */
-	public function testGetFile()
+	public function testSendAllFiles()
 	{
 		$loc = 'local';
 		$rem = 'remote';
-		$netSftp = $this
-			->getMockBuilder('Net_SFTP')
-			->setMethods(array('get', 'disconnect'))
-			->disableOriginalConstructor()
-			->getMock();
+		$pat = 'f*';
+
 		$sftp = $this
 			->getModelMockBuilder('filetransfer/protocol_types_sftp')
-			->setMethods(array('getCon', '_getRemotePath', '_logGet'))
 			->disableOriginalConstructor()
+			->setMethods(array('sendFile'))
 			->getMock();
-		$netSftp
-			->expects($this->once())
-			->method('get')
-			->with($this->equalTo('/' . $rem), $this->equalTo($loc))
+		$fileHelper = $this->getHelperMock(
+			'filetransfer/file',
+			array('listFilesInDirectory')
+		);
+		$fileFileInfo = $this->getMockBuilder('SPLFileInfo')
+			->disableOriginalConstructor()
+			->setMethods(array('isFile'))
+			->getMock();
+		$dirFileInfo = $this->getMockBuilder('SPLFileInfo')
+			->disableOriginalConstructor()
+			->setMethods(array('isFile'))
+			->getMock();
+		$this->replaceByMock('helper', 'filetransfer/file', $fileHelper);
+
+		$fileFileInfo->expects($this->any())
+			->method('isFile')
 			->will($this->returnValue(true));
-		// Assume getCon returns a Net_SFTP object carrying an authenticated, active connection.
-		$sftp
-			->expects($this->any())
-			->method('getCon')
-			->will($this->returnValue($netSftp));
-		// Assume _getRemotePath prepends a slash to the remote file name.
-		$sftp
-			->expects($this->once())
-			->method('_getRemotePath')
-			->with($this->equalTo($rem))
-			->will($this->returnValue('/' . $rem));
-		// Assert that getFile mirrors the return value of Net_SFTP::get
-		$this->assertTrue($sftp->getFile($loc, $rem));
+		$dirFileInfo->expects($this->any())
+			->method('isFile')
+			->will($this->returnValue(false));
+
+		// this method returns an iterable with values of string paths to each file
+		// in the directory
+		$fileHelper->expects($this->once())
+			->method('listFilesInDirectory')
+			->with($this->identicalTo($loc), $this->identicalTo($pat))
+			->will($this->returnValue(array(
+				"$loc/foo" => $fileFileInfo,
+				"$loc/fred" => $fileFileInfo,
+				"$loc/fooDirectory" => $dirFileInfo))
+		);
+		$sftp->expects($this->exactly(2))
+			->method('sendFile')
+			->will($this->returnValueMap(array(
+				array("$loc/foo", "$rem/foo", true),
+				array("$loc/fred", "$rem/fred", false),
+			)));
+
+		$this->assertSame(
+			array(
+				array('local' => "$loc/foo", 'remote' => "$rem/foo"),
+			),
+			$sftp->sendAllFiles($loc, $rem, $pat)
+		);
 	}
 	/**
 	 * Test deleting a file from the remote server.
@@ -214,70 +314,7 @@ class TrueAction_FileTransfer_Test_Model_Protocol_Types_SftpTest extends TrueAct
 			->will($this->returnValue('/' . $remote));
 		// We only want regular files starting with 'f' (see $pat)
 		// so we expect to see only 'foo' and 'fred'.
-		$this->assertSame($matchingResults, $sftp->listFilesMatchingPat($remote, $pat));
-	}
-	/**
-	 * Test fetching all the files matching a pattern.
-	 * @mock TrueAction_FileTransfer_Model_Protocol_Types_Sftp::listFilesMatchingPat to check it's called
-	 * @mock TrueAction_FileTransfer_Model_Protocol_Types_Sftp::getFile to check args
-	 * @test
-	 */
-	public function testGetAllFiles()
-	{
-		$loc = 'local';
-		$rem = 'remote';
-		$pat = 'f*';
-		$sftp = $this
-			->getModelMockBuilder('filetransfer/protocol_types_sftp')
-			->setMethods(array('getFile', 'listFilesMatchingPat'))
-			->disableOriginalConstructor()
-			->getMock();
-		// Assume listFilesMatchingPat will return two files.
-		$sftp
-			->expects($this->once())
-			->method('listFilesMatchingPat')
-			->with($this->equalTo($rem), $this->equalTo($pat))
-			->will($this->returnValue(array("/$rem/foo", "/$rem/fred")));
-		$sftp
-			->expects($this->at(1))
-			->method('getFile')
-			->with($this->identicalTo("local/foo"), $this->identicalTo("/$rem/foo"))
-			->will($this->returnValue(true));
-		$sftp
-			->expects($this->at(2))
-			->method('getFile')
-			->with($this->identicalTo("local/fred"), $this->identicalTo("/$rem/fred"))
-			->will($this->returnValue(true));
-		// Test that the return value mirrors the anded return values of getFile.
-		$this->assertTrue($sftp->getAllFiles($loc, $rem, $pat));
-	}
-	/**
-	 * When failing to get a list of files on the remote, getAllFiles should exit with false
-	 * @mock TrueAction_FileTransfer_Model_Protocol_Types_Sftp::listFilesMatchingPat stub list of files on the remote, considered to have failed in this test
-	 * @mock TrueAction_FileTransfer_Model_Protocol_Types_Sftp::getFile to check args
-	 * @test
-	 */
-	public function testGetAllFilesFailure()
-	{
-		$loc = 'local';
-		$rem = 'remote';
-		$pat = 'f*';
-		$sftp = $this
-			->getModelMockBuilder('filetransfer/protocol_types_sftp')
-			->setMethods(array('getFile', 'listFilesMatchingPat'))
-			->disableOriginalConstructor()
-			->getMock();
-		// Assume listFilesMatchingPat will return two files.
-		$sftp
-			->expects($this->once())
-			->method('listFilesMatchingPat')
-			->with($this->equalTo($rem), $this->equalTo($pat))
-			->will($this->returnValue(false));
-		$sftp
-			->expects($this->never())
-			->method('getFile');
-		// Test that the return value mirrors the anded return values of getFile.
-		$this->assertFalse($sftp->getAllFiles($loc, $rem, $pat));
+		$this->assertSame($matchingResults, $sftp->listFilesMatchingPattern($remote, $pat));
 	}
 	/**
 	 * Test writing a string to a remote file.

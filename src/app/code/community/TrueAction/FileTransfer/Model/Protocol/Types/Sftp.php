@@ -54,22 +54,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		return $this;
 	}
 	/**
-	 * Put a file on the remote server.
-	 * @param string $localFile path to a local file
-	 * @param string $remoteFile path to a remote file relative to the configured root remote path
-	 * @return bool true if transfer was successful
-	 */
-	public function sendFile($localFile, $remoteFile)
-	{
-		$remotePath = $this->_getRemotePath($remoteFile);
-		$this->_logPut($localFile, $remotePath);
-		return $this->getCon()->put($remotePath, $localFile, NET_SFTP_LOCAL_FILE);
-	}
-	/**
-	 * Fetch a file from the remote server.
-	 * @param string $localFile path where the local file should go
-	 * @param string $remoteFile path to the remote file relative to the configured root remote path
-	 * @return bool true if transfer was successful
+	 * @see parent::getFile()
 	 */
 	public function getFile($localFile, $remoteFile)
 	{
@@ -78,9 +63,50 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		return $this->getCon()->get($remotePath, $localFile);
 	}
 	/**
-	 * Unlink the remote file via SFTP.
-	 * @param  string $remoteFile File to be unlinked on the remote.
-	 * @return boolean true if remote deletion was successful
+	 * @see parent::getAllFiles()
+	 */
+	public function getAllFiles($localDirectory, $remoteDirectory, $pattern='*')
+	{
+		$fileList = $this->listFilesMatchingPattern($remoteDirectory, $pattern) ?: array();
+		$receivedFiles = array();
+		foreach ($fileList as $remFile) {
+			$locFile = $this->normalPaths($localDirectory, basename($remFile));
+			if ($this->getFile($locFile, $remFile)) {
+				$receivedFiles[] = array('local' => $locFile, 'remote' => $remFile);
+			}
+		}
+		return $receivedFiles;
+	}
+	/**
+	 * @see parent::sendFile()
+	 */
+	public function sendFile($localFile, $remoteFile)
+	{
+		$remotePath = $this->_getRemotePath($remoteFile);
+		$this->_logPut($localFile, $remotePath);
+		return $this->getCon()->put($remotePath, $localFile, NET_SFTP_LOCAL_FILE);
+	}
+	/**
+	 * @see parent::sendAllFiles()
+	 */
+	public function sendAllFiles($localDirectory, $remoteDirectory, $pattern='*')
+	{
+		$fileList = Mage::helper('filetransfer/file')->listFilesInDirectory($localDirectory, $pattern);
+		$sentFiles = array();
+		foreach ($fileList as $locPath => $locFileInfo) {
+			// can't send anything that isn't a file
+			if (!$locFileInfo->isFile()) {
+				continue;
+			}
+			$remFile = $this->normalPaths($remoteDirectory, basename($locPath));
+			if ($this->sendFile($locPath, $remFile)) {
+				$sentFiles[] = array('local' => $locPath, 'remote' => $remFile);
+			}
+		}
+		return $sentFiles;
+	}
+	/**
+	 * @see parent::deleteFile()
 	 */
 	public function deleteFile($remoteFile)
 	{
@@ -94,7 +120,7 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 	 * @param string $pat Pattern to match (default '*' matches all non-dotfiles)
 	 * @return bool|string[] array of absolute path names to each matching file or false if SFTP call fail
 	 */
-	public function listFilesMatchingPat($remPath, $pat='*')
+	public function listFilesMatchingPattern($remPath, $pat='*')
 	{
 		$remPath = $this->_getRemotePath($remPath);
 		$con = $this->getCon();
@@ -113,29 +139,6 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 			}
 		}
 		return $names;
-	}
-	/**
-	 * Retrieve all files in the given remote directory, optionally matching the given
-	 * pattern and copy them to the provided local directory
-	 * @param string $locPath Path to local target directory
-	 * @param string $remPath Path to the source directory on the remote server
-	 * @param string $pattern Glob pattern the files must match (default '*')
-	 * @return boolean true if all transfers were successful or no files were found
-	 */
-	public function getAllFiles($locPath, $remPath, $pattern='*')
-	{
-		$success = true;
-		$fileList = $this->listFilesMatchingPat($remPath, $pattern);
-
-		if ($fileList === false) {
-			return false;
-		}
-
-		foreach ($fileList as $remFile) {
-			$locFile = $this->normalPaths($locPath, basename($remFile));
-			$success = $success && $this->getFile($locFile, $remFile);
-		}
-		return $success;
 	}
 	/**
 	 * Write a string to a specified remote file
@@ -223,7 +226,9 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 		$sftp = $this->getData('con');
 		$cfg = $this->getConfigModel();
 		if (!$sftp->login($cfg->getUsername(), $cfg->getPassword())) {
-			throw new TrueAction_FileTransfer_Exception_Authentication();
+			throw new TrueAction_FileTransfer_Exception_Authentication(
+				sprintf('Could not authenticate to %s', $cfg->getUrl())
+			);
 		}
 		return $this;
 	}
@@ -235,8 +240,11 @@ class TrueAction_FileTransfer_Model_Protocol_Types_Sftp extends TrueAction_FileT
 	{
 		// use getData to avoid actual getCon method which which would result in loop
 		$sftp = $this->getData('con');
-		if (!$sftp->login($this->getConfigModel()->getUsername(), $this->_getPrivateKey())) {
-			throw new TrueAction_FileTransfer_Exception_Authentication();
+		$cfg = $this->getConfigModel();
+		if (!$sftp->login($cfg->getUsername(), $this->_getPrivateKey())) {
+			throw new TrueAction_FileTransfer_Exception_Authentication(
+				sprintf('Could not authenticate to %s', $cfg->getUrl())
+			);
 		}
 		return $this;
 	}

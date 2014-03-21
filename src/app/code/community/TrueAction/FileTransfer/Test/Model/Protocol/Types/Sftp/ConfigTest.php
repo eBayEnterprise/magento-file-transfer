@@ -1,21 +1,6 @@
 <?php
 class TrueAction_FileTransfer_Test_Model_Protocol_Types_Sftp_ConfigTest extends EcomDev_PHPUnit_Test_Case
 {
-	private static $_config = array(
-		'config_path' => 'testsection/testgroup',
-		'protocol_code' => 'sftp',
-	);
-
-	private $_fieldMap = array(
-		'filetransfer_sftp_ssh_prv_key' => 'private_key',
-		'filetransfer_sftp_auth_type'   => 'auth_type',
-		'filetransfer_sftp_username'    => 'username',
-		'filetransfer_sftp_password'    => 'password',
-		'filetransfer_sftp_host'        => 'host',
-		'filetransfer_sftp_port'        => 'port',
-		'filetransfer_sftp_remote_path' => 'remote_path',
-	);
-
 	public function setUp()
 	{
 		$this->class = new ReflectionClass(
