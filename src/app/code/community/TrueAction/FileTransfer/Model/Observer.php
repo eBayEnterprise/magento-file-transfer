@@ -7,6 +7,8 @@ class TrueAction_FileTransfer_Model_Observer
 	const IMPORT_COMPLETE_EVENT = 'filetransfer_import_complete';
 	// event to dispatch after export is complete
 	const EXPORT_COMPLTE_EVENT = 'filetransfer_export_complete';
+	// permissions mode to use when creating directories
+	const CREATE_DIRECTORY_MODE = 0750;
 
 	public function handleConfigImport($observer)
 	{
@@ -242,12 +244,14 @@ class TrueAction_FileTransfer_Model_Observer
 	{
 		$file = Mage::getModel('Varien_Io_File');
 		$file->open(array('path' => Mage::getBaseDir('var')));
-		$file->checkAndCreateFolder($file->getCleanPath(
-			Mage::getBaseDir('var') . DS . $dirPair['local_directory'])
+		$file->checkAndCreateFolder(
+			$file->getCleanPath(Mage::getBaseDir('var') . DS . $dirPair['local_directory']),
+			self::CREATE_DIRECTORY_MODE
 		);
 		if (isset($dirPair['sent_directory'])) {
-			$file->checkAndCreateFolder($file->getCleanPath(
-				Mage::getBaseDir('var') . DS . $dirPair['sent_directory'])
+			$file->checkAndCreateFolder(
+				$file->getCleanPath(Mage::getBaseDir('var') . DS . $dirPair['sent_directory']),
+				self::CREATE_DIRECTORY_MODE
 			);
 		}
 		return $this;
