@@ -35,14 +35,14 @@
 	</global>
 	<crontab>
 		<jobs>
-			<filetrasnfer_run_transfers>
+			<filetransfer_run_transfers>
 				<schedule>
 					<cron_expr>*/15 * * * *</cron_expr>
 				</schedule>
 				<run>
 					<model>filetransfer/observer::runTransfers</model>
 				</run>
-			</filetrasnfer_run_transfers>
+			</filetransfer_run_transfers>
 		</jobs>
 	</crontab>
 	<default>
