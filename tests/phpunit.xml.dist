@@ -20,8 +20,8 @@
 	</testsuite>
 	<groups>
 		<include>
-			<group>TrueAction_ActiveConfig</group>
-			<group>TrueAction_FileTransfer</group>
+			<group>EbayEnterprise_ActiveConfig</group>
+			<group>EbayEnterprise_FileTransfer</group>
 		</include>
 	</groups>
 	<filter>

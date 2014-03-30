@@ -1,0 +1,5 @@
+<?php
+class EbayEnterprise_FileTransfer_Exception_Authentication
+	extends EbayEnterprise_FileTransfer_Exception_Base
+{
+}

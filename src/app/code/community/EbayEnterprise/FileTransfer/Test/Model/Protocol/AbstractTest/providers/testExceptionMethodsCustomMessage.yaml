@@ -1,0 +1,9 @@
+-
+  - _connectionError
+  - EbayEnterprise_FileTransfer_Exception_Connection
+-
+  - _transferError
+  - EbayEnterprise_FileTransfer_Exception_Transfer
+-
+  - _authenticationError
+  - EbayEnterprise_FileTransfer_Exception_Authentication

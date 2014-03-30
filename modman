@@ -1,4 +1,4 @@
 # filetransfer
 src/app/etc/modules/*.xml app/etc/modules/
-src/app/code/community/TrueAction/ActiveConfig app/code/community/TrueAction/ActiveConfig
-src/app/code/community/TrueAction/FileTransfer app/code/community/TrueAction/FileTransfer
+src/app/code/community/EbayEnterprise/ActiveConfig app/code/community/EbayEnterprise/ActiveConfig
+src/app/code/community/EbayEnterprise/FileTransfer app/code/community/EbayEnterprise/FileTransfer

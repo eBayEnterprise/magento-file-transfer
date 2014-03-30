@@ -1,0 +1,11 @@
+<config>
+	<modules>
+		<EbayEnterprise_FileTransfer>
+			<active>true</active>
+			<codePool>community</codePool>
+			<depends>
+				<EbayEnterprise_ActiveConfig/>
+			</depends>
+		</EbayEnterprise_FileTransfer>
+	</modules>
+</config>

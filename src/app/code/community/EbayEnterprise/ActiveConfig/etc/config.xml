@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<config>
+	<modules>
+		<EbayEnterprise_ActiveConfig>
+			<version>0.1.0</version>
+		</EbayEnterprise_ActiveConfig>
+	</modules>
+	<global>
+		<blocks>
+			<activeconfig>
+				<class>EbayEnterprise_ActiveConfig_Block</class>
+			</activeconfig>
+		</blocks>
+		<models>
+			<activeconfig>
+				<class>EbayEnterprise_ActiveConfig_Model</class>
+			</activeconfig>
+		</models>
+		<events>
+			<adminhtml_init_system_config>
+				<observers>
+					<config_imports_observer>
+						<type>singleton</type>
+						<class>EbayEnterprise_ActiveConfig_Model_Observer</class>
+						<method>processConfigImports</method>
+					</config_imports_observer>
+				</observers>
+			</adminhtml_init_system_config>
+		</events>
+	</global>
+	<phpunit>
+		<suite>
+			<modules>
+				<EbayEnterprise_ActiveConfig />
+			</modules>
+		</suite>
+	</phpunit>
+</config>
