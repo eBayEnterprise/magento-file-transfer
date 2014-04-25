@@ -9,6 +9,7 @@ class EbayEnterprise_FileTransfer_Model_Observer
 	const EXPORT_COMPLTE_EVENT = 'filetransfer_export_complete';
 	// permissions mode to use when creating directories
 	const CREATE_DIRECTORY_MODE = 0750;
+	const MISSING_FIELD_MESSAGE = '[%s] Configured remote directory pair is missing %s.';
 
 	public function handleConfigImport($observer)
 	{
@@ -226,7 +227,7 @@ class EbayEnterprise_FileTransfer_Model_Observer
 		);
 		if ($missingFields = array_diff($requiredFields, array_keys($dirPair))) {
 			Mage::log(
-				sprintf('Configured remote directory pair is missing %s.', implode(' and ', $missingFields)),
+				sprintf(static::MISSING_FIELD_MESSAGE, __METHOD__, implode(' and ', $missingFields)),
 				Zend_Log::DEBUG
 			);
 			return false;
