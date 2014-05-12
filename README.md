@@ -13,3 +13,11 @@ FileTransfer
 The FileTransfer (FT) module provides simplified mechanisms for transferring files to and from a remote server.
 
 For more details, see [FileTransfer](docs/filetransfer/)
+
+License and Copyright
+=====================
+
+Copyright © 2014 eBay Enterprise
+
+Licensed under the terms of the Open Software License v. 3.0 (OSL-3.0). See [LICENSE.md](LICENSE.md) or http://opensource.org/licenses/OSL-3.0 for the full text of the license.
+
