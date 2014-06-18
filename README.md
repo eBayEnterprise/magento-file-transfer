@@ -1,3 +1,5 @@
+[Contributing to This Project](CONTRIBUTING.md)
+
 ActiveConfig
 ============
 
@@ -13,6 +15,8 @@ FileTransfer
 The FileTransfer (FT) module provides simplified mechanisms for transferring files to and from a remote server.
 
 For more details, see [FileTransfer](docs/filetransfer/)
+
+
 
 License and Copyright
 =====================
