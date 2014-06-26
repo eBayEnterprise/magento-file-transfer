@@ -20,7 +20,7 @@ class EbayEnterprise_FileTransfer_Model_Observer
 	// event to dispatch after import is complete
 	const IMPORT_COMPLETE_EVENT = 'filetransfer_import_complete';
 	// event to dispatch after export is complete
-	const EXPORT_COMPLTE_EVENT = 'filetransfer_export_complete';
+	const EXPORT_COMPLETE_EVENT = 'filetransfer_export_complete';
 	// permissions mode to use when creating directories
 	const CREATE_DIRECTORY_MODE = 0750;
 	const MISSING_FIELD_MESSAGE = '[%s] Configured remote directory pair is missing %s.';
@@ -93,7 +93,7 @@ class EbayEnterprise_FileTransfer_Model_Observer
 			$remoteHostConfigPaths,
 			'filetransfer_exports',
 			array($this, '_exportToRemote')
-		)->_dispatchEvent(self::EXPORT_COMPLTE_EVENT);
+		)->_dispatchEvent(self::EXPORT_COMPLETE_EVENT);
 	}
 	/**
 	 * Perform the given callback on all remote host configs that have the given
