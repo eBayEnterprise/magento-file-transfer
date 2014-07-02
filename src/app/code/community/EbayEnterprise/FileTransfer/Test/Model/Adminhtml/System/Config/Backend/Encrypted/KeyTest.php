@@ -61,7 +61,6 @@ q1WA3qssq5WCldpmQ8pMfLE/mRYvtbGP7rArdENEHlWJ1bsiXHGN
 
 	/**
 	 * Given a valid key, we should call addNotice and return the security mask from getValue
-	 * @test
 	 */
 	public function testValidKey()
 	{
@@ -88,7 +87,6 @@ q1WA3qssq5WCldpmQ8pMfLE/mRYvtbGP7rArdENEHlWJ1bsiXHGN
 	/**
 	 * When we are given an invalid value and we do not have an existing value, we should instigate an addError - this means
 	 * we have no values at all.
-	 * @test
 	 */
 	public function testNewKeyInvalidSoWeIssueError()
 	{
@@ -122,7 +120,6 @@ q1WA3qssq5WCldpmQ8pMfLE/mRYvtbGP7rArdENEHlWJ1bsiXHGN
 	/**
 	 * When we are given an invalid value and we have an existing value, we should instigate an addWarning - this means
 	 * we are reverting back to an old value.
-	 * @test
 	 */
 	public function testNewKeyInvalidSoWeKeepOriginal()
 	{

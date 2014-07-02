@@ -24,7 +24,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Key_MakerTest
 	/**
 	 * Test key paths.
 	 *
-	 * @test
 	 */
 	public function testGettingKeyPaths()
 	{
@@ -60,7 +59,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Key_MakerTest
 	/**
 	 * Test the creation and destruction of the keys.
 	 *
-	 * @test
 	 */
 	public function testCreateKeyFiles()
 	{
@@ -133,7 +131,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Key_MakerTest
 	/**
 	 * Test that default data is set when none is passed to the constructor.
 	 *
-	 * @test
 	 */
 	public function testSetupWithDefaults()
 	{

@@ -34,7 +34,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_Types_Sftp_ConfigTest exte
 	}
 	/**
 	 * verify the constructor sets the protocol code for the model.
-	 * @test
 	 */
 	public function testConstructorProtocolCode()
 	{
@@ -51,7 +50,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_Types_Sftp_ConfigTest exte
 
 	/**
 	 * verify the base fields are generated as expected.
-	 * @test
 	 */
 	public function testGetBaseFields()
 	{

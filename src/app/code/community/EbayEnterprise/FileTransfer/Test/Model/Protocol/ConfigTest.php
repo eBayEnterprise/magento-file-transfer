@@ -47,7 +47,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev
 
 	/**
 	 * verify the configuration is generated.
-	 * @test
 	 */
 	public function testGenerateConfig()
 	{
@@ -76,7 +75,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev
 
 	/**
 	 * verify the configuration is read correctly
-	 * @test
 	 * @loadFixture ftpConfig
 	 */
 	public function testConfigValues()
@@ -104,7 +102,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev
 
 	/**
 	 * verify getUrl generates a url using the data stored in the model.
-	 * @test
 	 * @dataProvider dataProvider
 	 */
 	public function testGetUrl($data, $includePath, $url)
@@ -120,7 +117,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev
 
 	/**
 	 * verify EbayEnterprise_FileTransfer_Exception_Configuration is thrown when the protocol code doesn't match a known code.
-	 * @test
 	 */
 	public function testValidateProtocolCodeException()
 	{
@@ -149,7 +145,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev
 		$method->invoke($testModel);
 	}
 	/**
-	 * @test
 	 */
 	public function testGetBaseFields()
 	{
@@ -216,7 +211,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev
 
 	/**
 	 * verify the protocol code check wont fail when the desired code is at index 0 in the array.
-	 * @test
 	 */
 	public function testValidateProtocolCodeIndexZero()
 	{
@@ -239,7 +233,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev
 
 	/**
 	 * verify config model attempts to load config data into fields and validate the protocol code.
-	 * @test
 	 */
 	public function testConstructor()
 	{
@@ -259,7 +252,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_ConfigTest extends EcomDev
 	 * Verify the configuration falls back to the most specific setting
 	 * for show_in_default, show_in_website and show_in_store.
 	 *
-	 * @test
 	 * @dataProvider dataProvider
 	 * @param array $global least specific show_in_* triple
 	 * @param array $spec show_in_* triple more specific than $global

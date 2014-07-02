@@ -37,7 +37,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_AbstractTest extends EcomD
 	}
 	/**
 	 * Test setting up the config model and protocol code
-	 * @test
 	 */
 	public function testConstructor()
 	{
@@ -81,7 +80,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_AbstractTest extends EcomD
 
 	/**
 	 * Test concrete methods
-	 * @test
 	 */
 	public function testConcreteMethods()
 	{

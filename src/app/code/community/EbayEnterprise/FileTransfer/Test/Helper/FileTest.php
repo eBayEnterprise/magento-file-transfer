@@ -20,7 +20,6 @@ class EbayEnterprise_FileTransfer_Test_Helper_FileTest
 	/**
 	 * Move the file at the given path to the speficied directory, creating any
 	 * necessary target directories in the process.
-	 * @test
 	 */
 	public function testMvToDir()
 	{
@@ -69,7 +68,6 @@ class EbayEnterprise_FileTransfer_Test_Helper_FileTest
 	}
 	/**
 	 * If an absolute target path is given, an exception should be thrown.
-	 * @test
 	 */
 	public function testMvToDirAbsoluteTargetPath()
 	{
@@ -107,7 +105,6 @@ class EbayEnterprise_FileTransfer_Test_Helper_FileTest
 	}
 	/**
 	 * Don't attempt to move a file that doesn't exist - should throw an exception.
-	 * @test
 	 */
 	public function testMvToDirNonExistentFile()
 	{
@@ -147,7 +144,6 @@ class EbayEnterprise_FileTransfer_Test_Helper_FileTest
 	 * If the target directory cannot be created, the Varien_Io_File will throw
 	 * an exception, the exception should bubble up for higher level processes
 	 * to deal with.
-	 * @test
 	 */
 	public function testMvToDirUnableToCreateTargetDir()
 	{

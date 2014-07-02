@@ -117,7 +117,6 @@ class EbayEnterprise_FileTransfer_Test_Model_ObserverTest
 	/**
 	 * Running all file transfers should collect the remote host configuration,
 	 * run all imports and then run all exports.
-	 * @test
 	 */
 	public function testRunTransfers()
 	{
@@ -145,7 +144,6 @@ class EbayEnterprise_FileTransfer_Test_Model_ObserverTest
 	/**
 	 * Use the filetransfer/registry configuration to get a list of all other
 	 * configuration setup within other modules for FileTransfer
-	 * @test
 	 */
 	public function testGetRegisteredConfigurations()
 	{
@@ -166,7 +164,6 @@ class EbayEnterprise_FileTransfer_Test_Model_ObserverTest
 	/**
 	 * When no additional FileTransfer config has been set up, config will return
 	 * and empty string, this method should still return an array
-	 * @test
 	 */
 	public function testGetRemoteConfigurationsEmpty()
 	{
@@ -240,7 +237,6 @@ class EbayEnterprise_FileTransfer_Test_Model_ObserverTest
 	 * directory, and retrieve them to the configured local directory.
 	 * @param array $configPaths array of registered config paths
 	 * @param array $configData array of FT configurations
-	 * @test
 	 * @dataProvider provideRemoteHostConfig
 	 */
 	public function testImportFiles($configPaths, $configData)
@@ -284,7 +280,6 @@ class EbayEnterprise_FileTransfer_Test_Model_ObserverTest
 	 * the data from teh provider, this is only ever the first set of data.
 	 * @param array $configPaths config path to filetransfer remote host config - only the first is used in this test
 	 * @param array $configData sets of remote host configuration - only the first is used in this test
-	 * @test
 	 * @dataProvider provideRemoteHostConfig
 	 */
 	public function testImportFromRemote($configPaths, $configData)
@@ -350,7 +345,6 @@ class EbayEnterprise_FileTransfer_Test_Model_ObserverTest
 	 * directory and put them on the remote.
 	 * @param array $configPaths config path to filetransfer remote host config
 	 * @param array $configData sets of remote host configuration
-	 * @test
 	 * @dataProvider provideRemoteHostConfig
 	 */
 	public function testExportFiles($configPaths, $configData)
@@ -392,7 +386,6 @@ class EbayEnterprise_FileTransfer_Test_Model_ObserverTest
 	 * the data from teh provider, this is only ever the first set of data.
 	 * @param array $configPaths Config path to filetransfer remote host config - only the first actually matters to this test
 	 * @param array $configData All configured remote hosts - only the first actually matters to this test
-	 * @test
 	 * @dataProvider provideRemoteHostConfig
 	 */
 	public function testExportToRemote($configPaths, $configData)
@@ -499,7 +492,6 @@ class EbayEnterprise_FileTransfer_Test_Model_ObserverTest
 	 * @param array   $dirPair   array of configured directories
 	 * @param boolean $isExport  is export pair validation required
 	 * @param boolean $isValid   are all configured pairs valid
-	 * @test
 	 * @dataProvider provideDirectoryPairs
 	 */
 	public function testIsDirectoryPairValid($dirPair, $isExport, $isValid)

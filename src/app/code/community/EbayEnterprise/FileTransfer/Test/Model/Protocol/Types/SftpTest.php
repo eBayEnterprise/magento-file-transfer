@@ -31,7 +31,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_Types_SftpTest extends Eba
 	 * @mock EbayEnterprise_FileTransfer_Model_Protocol_Types_Sftp::_login make sure the connection is logged in
 	 * @mock EbayEnterprise_FileTransfer_Model_Protocol_Types_Sftp::getConfigModel
 	 * @mock EbayEnterprise_FileTransfer_Model_Protocol_Types_Sftp::setConfigModel ensure a SFTP config model is set up
-	 * @test
 	 */
 	public function testConstruct()
 	{
@@ -69,7 +68,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_Types_SftpTest extends Eba
 	 * @mock Net_SFTP::disconnect called by __desctruct to clean up connections
 	 * @stub EbayEnterprise_FileTransfer_Model_Protocol_Types_Sftp::getCon
 	 * @mock EbayEnterprise_FileTransfer_Model_Protocol_Types_Sftp::_getRemotePath to check args
-	 * @test
 	 */
 	public function testGetFile()
 	{
@@ -108,7 +106,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_Types_SftpTest extends Eba
 	 * Test fetching all the files matching a pattern.
 	 * @mock EbayEnterprise_FileTransfer_Model_Protocol_Types_Sftp::listFilesMatchingPattern to check it's called
 	 * @mock EbayEnterprise_FileTransfer_Model_Protocol_Types_Sftp::getFile to check args
-	 * @test
 	 */
 	public function testGetAllFiles()
 	{
@@ -149,7 +146,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_Types_SftpTest extends Eba
 	 * @stub EbayEnterprise_FileTransfer_Model_Protocol_Types_Sftp::getCon swap out the mock SFTP instance
 	 * @mock EbayEnterprise_FileTransfer_Model_Protocol_Types_Sftp::_getRemotePath to check args
 	 * @stub EbayEnterprise_FileTransfer_Model_Protocol_Types_Sftp::_logPut
-	 * @test
 	 */
 	public function testSendFile()
 	{
@@ -188,7 +184,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_Types_SftpTest extends Eba
 	 * Test sending all files in a local directory to a remote directory.
 	 * @mock EbayEnterprise_FileTransfer_Model_Protocol_Types_Sftp::sendFile to check args for each file to send
 	 * @mock EbayEnterprise_FileTransfer_Helper_File::listFilesInDirectory to check args and return list of local files
-	 * @test
 	 */
 	public function testSendAllFiles()
 	{
@@ -252,7 +247,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_Types_SftpTest extends Eba
 	 * @mock Net_SFTP::disconnect called by __desctruct to clean up connections
 	 * @stub EbayEnterprise_FileTransfer_Model_Protocol_Types_Sftp::getCon
 	 * @mock EbayEnterprise_FileTransfer_Model_Protocol_Types_Sftp::_getRemotePath to check args
-	 * @test
 	 */
 	public function testDeleteFile()
 	{
@@ -293,7 +287,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_Types_SftpTest extends Eba
 	 * @mock Net_SFTP::disconnect called by __desctruct to clean up connections
 	 * @stub EbayEnterprise_FileTransfer_Model_Protocol_Types_Sftp::getCon
 	 * @mock EbayEnterprise_FileTransfer_Model_Protocol_Types_Sftp::_getRemotePath to check args
-	 * @test
 	 * @dataProvider dataProvider
 	 */
 	public function testListFilesMatchingPat($remote, $rawlistResults, $matchingResults)
@@ -336,7 +329,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_Types_SftpTest extends Eba
 	 * @mock EbayEnterprise_FileTransfer_Model_Protocol_Types_Sftp::_getRemotePath to check args
 	 * @mock Net_SFTP::put to check arguments
 	 * @mock Net_SFTP::disconnect called by __desctruct to clean up connections
-	 * @test
 	 */
 	public function testSendString()
 	{
@@ -375,7 +367,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_Types_SftpTest extends Eba
 	 * @mock EbayEnterprise_FileTransfer_Model_Protocol_Types_Sftp::_getRemotePath to check args
 	 * @mock Net_SFTP::get to check arguments
 	 * @mock Net_SFTP::disconnect called by __desctruct to clean up connections
-	 * @test
 	 */
 	public function testGetString()
 	{
@@ -451,7 +442,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_Types_SftpTest extends Eba
 	 * @param  boolean $loggedIn should the Net_SFTP instance be considered logged in
 	 * @mock EbayEnterprise_FileTransfer_Model_Protocol_Types_Sftp::getData return the stub Net_SFTP instance
 	 * @mock Net_SFTP
-	 * @test
 	 * @dataProvider providerIsLoggedIn
 	 */
 	public function testIsLoggedIn($bitmap, $loggedIn)
@@ -485,7 +475,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_Types_SftpTest extends Eba
 	 * @mock EbayEnterprise_FileTransfer_Protocol_Types_Sftp::_loginPass make sure it is never called
 	 * @mock EbayEnterprise_FileTransfer_Protocol_Types_sftp::getConfigModel swap out a stubbed config
 	 * @mock EbayEnterprise_FileTransfer_Protocol_Types_Sftp_Config::getAuthType make sure that if the auth is attempted, it should hit the password login we want to avoid
-	 * @test
 	 */
 	public function testDoNotLoginAlreadyLoggedInConnection()
 	{
@@ -533,7 +522,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_Types_SftpTest extends Eba
 	 * @stub EbayEnterprise_FileTransfer_Protocol_Types_Sftp::isLoggedIn
 	 * @mock EbayEnterprise_FileTransfer_Protocol_Types_Sftp::_loginKey to check that it's called
 	 * @mock EbayEnterprise_FileTransfer_Protocol_Types_Sftp::_loginPass to check that it's called
-	 * @test
 	 * @dataProvider providerLoginAuthType
 	 */
 	public function testLogin($authType, $loginMethod)
@@ -613,7 +601,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_Types_SftpTest extends Eba
 	}
 	/**
 	 * When a login fails, an exception should be thrown
-	 * @test
 	 */
 	public function testLoginPassFailure()
 	{
@@ -670,7 +657,6 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_Types_SftpTest extends Eba
 	 * @mock EbayEnterprise_FileTransfer_Protocol_Types_Sftp_Config::getPrivateKey stub config value
 	 * @stub EbayEnterprise_FileTransfer_Protocol_Types_Sftp::getConfigModel get the stubbed config
 	 * @stub EbayEnterprise_FileTransfer_Protocol_Types_Sftp::getRsa get the mocked Crypt_RSA object
-	 * @test
 	 */
 	public function testGetPrivateKey()
 	{

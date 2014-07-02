@@ -44,7 +44,6 @@ class EbayEnterprise_FileTransfer_Test_Helper_DataTest extends EbayEnterprise_Fi
 	/**
 	 * My go-to - just instantiate and assert 'it is what it is'
 	 *
-	 * @test
 	 */
 	public function testConstruct()
 	{
@@ -54,7 +53,6 @@ class EbayEnterprise_FileTransfer_Test_Helper_DataTest extends EbayEnterprise_Fi
 	/**
 	 * Get list of all protocols we support. Notice only 0th element is examined,
 	 * as of this writing only the 0th element - sftp - is supported.
-	 * @test
 	 */
 	public function testGetProtocolCodes()
 	{
@@ -65,7 +63,6 @@ class EbayEnterprise_FileTransfer_Test_Helper_DataTest extends EbayEnterprise_Fi
 	/**
 	 * Tests the various config getters
 	 *
-	 * @test
 	 * @loadFixture
 	 */
 	public function testConfigGetters()
@@ -79,7 +76,6 @@ class EbayEnterprise_FileTransfer_Test_Helper_DataTest extends EbayEnterprise_Fi
 	/**
 	 * Test getInitData(); loads protocol from defined-config-path fixture
 	 *
-	 * @test
 	 * @loadFixture
 	 */
 	public function testGetInitData()
@@ -91,7 +87,6 @@ class EbayEnterprise_FileTransfer_Test_Helper_DataTest extends EbayEnterprise_Fi
 	/**
 	 * Test getInitData(); loads protocol from default-config-path fixture
 	 *
-	 * @test
 	 * @loadFixture
 	 */
 	public function testGetInitDataDefault()
@@ -107,7 +102,6 @@ class EbayEnterprise_FileTransfer_Test_Helper_DataTest extends EbayEnterprise_Fi
 	/**
 	 * Test getInitData() failure; no config path given
 	 *
-	 * @test
 	 * @expectedException Mage_Core_Exception
 	 */
 	public function testGetInitDataFail()
@@ -118,7 +112,6 @@ class EbayEnterprise_FileTransfer_Test_Helper_DataTest extends EbayEnterprise_Fi
 	/**
 	 * Test failure path of getProtocolModel, by sending in an unsupported protocol
 	 *
-	 * @test
 	 * @expectedException Exception
 	 */
 	public function testInvalidProtocolModel()
