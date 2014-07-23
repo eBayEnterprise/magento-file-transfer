@@ -20,8 +20,7 @@ dropAllTables
 
 # Fetch Magento ee and untar it.
 mv magento magento.deleteme && rm magento.deleteme &
-  wget -O- https://ebay.box.com/shared/static/q2peu39zawc8px9vdun8.gz |
-  tar -xzpf-
+	tar -xJpf /usr/local/shared/enterprise-1.13.1.0.tar-2013-11-19-03-06-28.xz
 
 cd magento
 # Run the Magento installer.
@@ -50,12 +49,13 @@ php -f install.php -- \
 
 # Initialize the extensions via modman
 modman init
-modman link --copy "$(cd -P ../.. && pwd)" # PHPUnit does not respect symlinks.
-modman clone --copy https://github.com/kojiromike/EcomDev_PHPUnit.git
+modman link --copy "$(cd ../.. && pwd)" # PHPUnit does not respect symlinks.
 
 # Set up the phpunit configurations
+# Configs must be in place before EcomDev
 cp ../../tests/local.xml.phpunit app/etc # Magento configuration
 cp ../../tests/phpunit.xml.dist . # PHPUnit configuration
+modman clone --copy https://github.com/kojiromike/EcomDev_PHPUnit.git
 
 # Run phpunit
-phpunit
+phpunit "$@" # This argument list should usually be empty, but can be switched to --debug or other flags for quick checks. Such as when phpunit suddenly starts segfaulting on Jenkins.
