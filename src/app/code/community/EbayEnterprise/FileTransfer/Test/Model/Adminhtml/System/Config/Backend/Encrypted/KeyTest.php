@@ -1,14 +1,14 @@
 <?php
 /**
  * Copyright (c) 2013-2014 eBay Enterprise, Inc.
- * 
+ *
  * NOTICE OF LICENSE
- * 
+ *
  * This source file is subject to the Open Software License (OSL 3.0)
  * that is bundled with this package in the file LICENSE.md.
  * It is also available through the world-wide-web at this URL:
  * http://opensource.org/licenses/osl-3.0.php
- * 
+ *
  * @copyright   Copyright (c) 2013-2014 eBay Enterprise, Inc. (http://www.ebayenterprise.com/)
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
@@ -30,7 +30,7 @@ oQIDAQAB
 -----END PUBLIC KEY-----
 ";
 
-	const VALID_TEST_PRIVATE_KEY   =
+	const VALID_TEST_PRIVATE_KEY =
 "-----BEGIN RSA PRIVATE KEY-----
 MIIEowIBAAKCAQEArcpMSN1Sg5QmpnL4PYdYsnmQZMspQZyxVTi/j7z5OuJaVoCR
 b2YXBJzihkjHvmhrWfc951vmjUu9Uz4LrVW23j+YP7eDQya9VmaHz7uxk4VHK2AF
@@ -60,61 +60,49 @@ q1WA3qssq5WCldpmQ8pMfLE/mRYvtbGP7rArdENEHlWJ1bsiXHGN
 -----END RSA PRIVATE KEY-----";
 
 	/**
-	 * Given a valid key, we should call addNotice and return the security mask from getValue
+	 * Provide the private key, public key and method name that should be used
+	 * to add messages to the user depending on the validity of the priviate key
+	 * @return array Args array of strings
 	 */
-	public function testValidKey()
+	public function provideKeys()
 	{
-		$testModel = Mage::getModel($this::MODEL_UNDER_TEST);
-
-		$session = $this->getModelMockBuilder($testModel::SESSION_KEY)
-			->disableOriginalConstructor()
-			->setMethods(array( 'addNotice',))
-			->getMock();
-
-		// addNotice will be called once, when the VALID_TEST_PRIVATE_KEY is passed
-		$session->expects($this->exactly(1))
-			->method('addNotice')
-			->will($this->returnValue(true));
-		$this->replaceByMock('singleton', $testModel::SESSION_KEY, $session);
-
-		$testModel->setValue($this::VALID_TEST_PRIVATE_KEY)->_beforeSave(); // Calls addNotice
-		// With a valid key, _afterLoad will set the display value to the public key
-		$this->assertSame(
-			self::VALID_TEST_PUBLIC_KEY,
-			$testModel->_afterLoad()->getValue()
+		return array(
+			array(self::VALID_TEST_PRIVATE_KEY, self::VALID_TEST_PUBLIC_KEY, 'addNotice'),
+			array('bad key', '', 'addError'),
 		);
 	}
 	/**
-	 * When we are given an invalid value and we do not have an existing value, we should instigate an addError - this means
-	 * we have no values at all.
+	 * Test getting a public keys for a loaded private key - for valid keys,
+	 * this should return a public key and add a notice to the session. For
+	 * invalid keys, this should return an empty string and add an error to
+	 * the session.
+	 * @param string $privKey
+	 * @param string $pubKey
+	 * @param string $messageMethod
+	 * @dataProvider provideKeys
 	 */
-	public function testNewKeyInvalidSoWeIssueError()
+	public function testHandlingKey($privKey, $pubKey, $messageMethod)
 	{
-		$testModel = $this->getModelMockBuilder($this::MODEL_UNDER_TEST)
-			->setMethods(array('getOldValue',))
-            ->getMock();
-		$testModel->expects($this->exactly(1))
-			->method('getOldValue')
-			->will($this->returnValue(''));
+		$testModel = Mage::getModel($this::MODEL_UNDER_TEST, array('value' => $privKey));
 
 		$session = $this->getModelMockBuilder($testModel::SESSION_KEY)
 			->disableOriginalConstructor()
-			->setMethods(array('addError',))
+			->setMethods(array($messageMethod,))
 			->getMock();
-
-		// addError will be called once, when _beforeSave realizes it doesn't have a pre-existing key,
-		// and that the 1 passed in is invalid.
+		// expect the $messageMethod to be called once to pass messages on to the
+		// user after validating the private key
 		$session->expects($this->exactly(1))
-			->method('addError')
+			->method($messageMethod)
 			->will($this->returnValue(true));
 		$this->replaceByMock('singleton', $testModel::SESSION_KEY, $session);
 
-		$testModel->setValue('not a key')->_beforeSave();
+		// trigger _beforeSave to add session messages when validating the key
+		EcomDev_Utils_Reflection::invokeRestrictedMethod($testModel, '_beforeSave');
 
-		// Assert that when we have no key, we get empty back
+		// Make sure _afterLoad changes the model's "value" to the public key
 		$this->assertSame(
-			'',
-			$testModel->_afterLoad()->getValue()
+			$pubKey,
+			EcomDev_Utils_Reflection::invokeRestrictedMethod($testModel, '_afterLoad')->getValue()
 		);
 	}
 	/**
@@ -125,7 +113,7 @@ q1WA3qssq5WCldpmQ8pMfLE/mRYvtbGP7rArdENEHlWJ1bsiXHGN
 	{
 		$testModel = $this->getModelMockBuilder($this::MODEL_UNDER_TEST)
 			->setMethods(array('getOldValue',))
-            ->getMock();
+			->getMock();
 		$testModel->expects($this->exactly(1))
 			->method('getOldValue')
 			->will($this->returnValue($this::VALID_TEST_PRIVATE_KEY));
@@ -142,6 +130,7 @@ q1WA3qssq5WCldpmQ8pMfLE/mRYvtbGP7rArdENEHlWJ1bsiXHGN
 			->will($this->returnValue(true));
 		$this->replaceByMock('singleton', $testModel::SESSION_KEY, $session);
 
-		$testModel->setValue('not a key')->_beforeSave();
+		$testModel->setValue('not a key');
+		EcomDev_Utils_Reflection::invokeRestrictedMethod($testModel, '_beforeSave');
 	}
 }

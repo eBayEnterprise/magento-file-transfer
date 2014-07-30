@@ -1,14 +1,14 @@
 <?php
 /**
  * Copyright (c) 2013-2014 eBay Enterprise, Inc.
- * 
+ *
  * NOTICE OF LICENSE
- * 
+ *
  * This source file is subject to the Open Software License (OSL 3.0)
  * that is bundled with this package in the file LICENSE.md.
  * It is also available through the world-wide-web at this URL:
  * http://opensource.org/licenses/osl-3.0.php
- * 
+ *
  * @copyright   Copyright (c) 2013-2014 eBay Enterprise, Inc. (http://www.ebayenterprise.com/)
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
@@ -41,7 +41,7 @@ class EbayEnterprise_FileTransfer_Model_Adminhtml_System_Config_Backend_Encrypte
 	 * If it's a valid key, sets the Private Key field to display the Public Key.
 	 * @return self
 	 */
-	public function _afterLoad()
+	protected function _afterLoad()
 	{
 		parent::_afterLoad();
 		$publicDisplay  = '';
@@ -60,7 +60,7 @@ class EbayEnterprise_FileTransfer_Model_Adminhtml_System_Config_Backend_Encrypte
 	 * If the new key is not valid, and there is a previous value, keep the previous value and issue a Warning.
 	 * @return self
 	 */
-	public function _beforeSave()
+	protected function _beforeSave()
 	{
 		$sess = Mage::getSingleton($this::SESSION_KEY);
 		$newValue = $this->getValue();
