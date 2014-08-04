@@ -33,7 +33,6 @@
 	</testsuite>
 	<groups>
 		<include>
-			<group>EbayEnterprise_ActiveConfig</group>
 			<group>EbayEnterprise_FileTransfer</group>
 		</include>
 	</groups>
