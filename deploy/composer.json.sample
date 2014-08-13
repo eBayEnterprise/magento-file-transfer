@@ -1,0 +1,59 @@
+{
+	"name": "ebayenterprise/magento-with-retail-order-management",
+	"description": "Installation of the eBay Enterprise Retail Order Management modules in Magento",
+	"type": "project",
+	"version": "dev-master",
+	"require": {
+		"composer/composer": "*",
+		"magento-hackathon/magento-composer-installer": "~2.0",
+		"magento-hackathon/composer-command-integrator": "~1.0",
+		"ebayenterprise/magento-file-transfer": "dev-master"
+	},
+	"require-dev": {
+		"squizlabs/php_codesniffer": "~1.5",
+		"phpunit/php-invoker": "~1.1",
+		"phpunit/phpunit": "~3.7",
+		"phpunit/dbunit": "~1",
+		"phpunit/phpunit-selenium": "~1",
+		"phpunit/phpunit-story": "~1",
+		"sebastian/phpcpd": "~2.0",
+		"phpdocumentor/phpdocumentor":"~2.4",
+		"pdepend/pdepend": "~1.1",
+		"phpmd/phpmd": "~1.5",
+		"phploc/phploc": "~2.0",
+		"ivanchepurnyi/ecomdev_phpunit": "*"
+	},
+	"minimum-stability": "dev",
+	"prefer-stable": true,
+	"repositories": [
+		{
+			"type": "composer",
+			"url": "http://packages.firegento.com"
+		},
+		{
+			"type": "git",
+			"url": "/home/stack/git/magento-active-config.git"
+		},
+		{
+			"type": "git",
+			"url": "/home/stack/git/magento-file-transfer.git"
+		},
+		{
+			"type": "git",
+			"url": "git@github.com:magento-hackathon/composer-command-integrator.git"
+		},
+		{
+			"type": "git",
+			"url": "git@github.com:dweeves/magmi-git.git"
+		},
+		{
+			"type": "git",
+			"url": "git@github.com:kojiromike/EcomDev_PHPUnit.git"
+		}
+	],
+	"extra": {
+		"magento-root-dir": "./magento/",
+		"magento-deploystrategy": "copy",
+		"magento-force": true
+	}
+}

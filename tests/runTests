@@ -1,12 +1,8 @@
 #!/bin/bash -e
 
 ##
-# Set up ecomdev testing for FileTransfer
+# Set up ecomdev testing for Magento File Transfer
 #
-
-# Set up the Magento 'webroot' in the 'build' directory.
-mkdir -p build
-cd build
 
 ##
 # Drop any existing tables without needing to drop the database.
@@ -19,8 +15,14 @@ dropAllTables() {
 dropAllTables
 
 # Fetch Magento ee and untar it.
-mv magento magento.deleteme && rm magento.deleteme &
-	tar -xJpf /usr/local/shared/enterprise-1.13.1.0.tar-2013-11-19-03-06-28.xz
+mv magento magento.deleteme && rm -r magento.deleteme &
+	tar -xJpf /usr/local/share/magento-1.14.0.1.tar.xz
+
+# Checkout EcomDev submodules prior to deploy - composer doesn't play nice w/ submodules
+cd vendor/ivanchepurnyi/ecomdev_phpunit && git submodule init && git submodule update && cd -
+
+# Update dependencies
+vendor/bin/composerCommandIntegrator.php magento-module-deploy
 
 cd magento
 # Run the Magento installer.
@@ -47,15 +49,10 @@ php -f install.php -- \
 	--use_secure_admin 'yes' \
 	--skip_url_validation 'yes'
 
-# Initialize the extensions via modman
-modman init
-modman link --copy "$(cd ../.. && pwd)" # PHPUnit does not respect symlinks.
-
 # Set up the phpunit configurations
 # Configs must be in place before EcomDev
-cp ../../tests/local.xml.phpunit app/etc # Magento configuration
-cp ../../tests/phpunit.xml.dist . # PHPUnit configuration
-modman clone --copy https://github.com/kojiromike/EcomDev_PHPUnit.git
+cp ../vendor/ebayenterprise/magento-file-transfer/tests/local.xml.phpunit app/etc # Magento configuration
+cp ../vendor/ebayenterprise/magento-file-transfer/tests/phpunit.xml.dist . # PHPUnit configuration
 
 # Run phpunit
-phpunit "$@" # This argument list should usually be empty, but can be switched to --debug or other flags for quick checks. Such as when phpunit suddenly starts segfaulting on Jenkins.
+../vendor/bin/phpunit "$@" # This argument list should usually be empty, but can be switched to --debug or other flags for quick checks. Such as when phpunit suddenly starts segfaulting on Jenkins.

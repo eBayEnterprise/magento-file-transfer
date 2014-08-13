@@ -1,0 +1,50 @@
+{
+	"name": "ebayenterprise/magento-file-transfer",
+	"description": "The FileTransfer (FT) module provides simplified mechanisms for transferring files to and from a remote server.",
+	"license": "OSL-3.0",
+	"authors": [
+		{
+			"name": "Scott van Brug",
+			"email": "svanbrug@ebay.com"
+		},
+		{
+			"name": "Michael Phang",
+			"email": "mphang@ebay.com"
+		},
+		{
+			"name": "Michael A. Smith",
+			"email": "msmith3@ebay.com"
+		},
+		{
+			"name": "Mike West",
+			"email": "micwest@ebay.com"
+		},
+		{
+			"name": "Reginald Gabriel",
+			"email": "rgabriel@ebay.com"
+		}
+	],
+	"type": "magento-module",
+	"minimum-stability": "dev",
+	"prefer-stable": true,
+	"require": {
+		"ebayenterprise/magento-active-config": "dev-master#df3a736"
+	},
+	"require-dev": {
+		"squizlabs/php_codesniffer": "~1.5",
+		"phpunit/php-invoker": "~1.1",
+		"phpunit/phpunit": "~3.7",
+		"phpunit/dbunit": "~1",
+		"phpunit/phpunit-selenium": "~1",
+		"phpunit/phpunit-story": "~1",
+		"sebastian/phpcpd": "~2.0",
+		"phpdocumentor/phpdocumentor":"~2.4",
+		"pdepend/pdepend": "~1.1",
+		"phpmd/phpmd": "~1.5",
+		"phploc/phploc": "~2.0",
+		"ivanchepurnyi/ecomdev_phpunit": "*"
+	},
+	"suggest": {
+		"magento-hackathon/magento-composer-installer": "Properly installs the module within a Magento instance"
+	}
+}
