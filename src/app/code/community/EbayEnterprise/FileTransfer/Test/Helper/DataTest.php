@@ -1,14 +1,14 @@
 <?php
 /**
  * Copyright (c) 2013-2014 eBay Enterprise, Inc.
- * 
+ *
  * NOTICE OF LICENSE
- * 
+ *
  * This source file is subject to the Open Software License (OSL 3.0)
  * that is bundled with this package in the file LICENSE.md.
  * It is also available through the world-wide-web at this URL:
  * http://opensource.org/licenses/osl-3.0.php
- * 
+ *
  * @copyright   Copyright (c) 2013-2014 eBay Enterprise, Inc. (http://www.ebayenterprise.com/)
  * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
@@ -40,6 +40,13 @@ class EbayEnterprise_FileTransfer_Test_Helper_DataTest extends EbayEnterprise_Fi
 		);
 		$this->_vRemoteFile = $this->_vfs->url(self::TESTBASE_DIR_NAME . '/' . self::FILE1_NAME);
 		$this->_vLocalFile  = $this->_vfs->url(self::TESTBASE_DIR_NAME . '/' . self::FILE2_NAME);
+		$this->replaceByMock(
+			'model',
+			'filetransfer/protocol_types_sftp',
+			$this->getModelMockBuilder('filetransfer/protocol_types_sftp')
+				->disableOriginalConstructor()
+				->getMock()
+		);
 	}
 	/**
 	 * My go-to - just instantiate and assert 'it is what it is'
@@ -121,4 +128,34 @@ class EbayEnterprise_FileTransfer_Test_Helper_DataTest extends EbayEnterprise_Fi
 			'SomeStrangeAndUnnaturalValueForAProtocol8D82507D585D579A01235E6A51288E0A1B186EED'
 		);
 	}
+	/**
+	 * Tests by pulling protocol argument from config
+	 *
+	 * @loadFixture config.yaml
+	 */
+	public function testGetProtocolModel()
+	{
+		$model = $this->_helper
+			->getProtocolModel('testsection/testgroup');
+		$this->assertInstanceOf(
+			'EbayEnterprise_FileTransfer_Model_Protocol_Types_Sftp',
+			$model
+		);
+	}
+
+	/**
+	 * Tests with specifically-named argument for protocol
+	 *
+	 * @loadFixture config.yaml
+	 */
+	public function testGetProtocolModelWithProtocol()
+	{
+		$model = $this->_helper
+			->getProtocolModel('testsection/testgroup', 'sftp');
+		$this->assertInstanceOf(
+			'EbayEnterprise_FileTransfer_Model_Protocol_Types_Sftp',
+			$model
+		);
+	}
+
 }
