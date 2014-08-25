@@ -1,0 +1,44 @@
+{
+	"name": "ebayenterprise/magento-file-with-transfer",
+	"description": "The FileTransfer (FT) module provides simplified mechanisms for transferring files to and from a remote server.",
+	"license": "OSL-3.0",
+	"type": "project",
+	"require": {
+		"ebayenterprise/magento-file-transfer": "dev-master",
+		"ecomdev/ecomdev_phpunit": "~0.3",
+		"pdepend/pdepend": "~1.1",
+		"phpdocumentor/phpdocumentor":"~2.4",
+		"phploc/phploc": "~2.0",
+		"phpmd/phpmd": "~1.5",
+		"phpunit/dbunit": "~1",
+		"phpunit/php-invoker": "~1.1",
+		"phpunit/phpunit-selenium": "~1",
+		"phpunit/phpunit-story": "~1",
+		"sebastian/phpcpd": "~2.0",
+		"squizlabs/php_codesniffer": "~1.5"
+	},
+	"minimum-stability": "dev",
+	"prefer-stable": true,
+	"repositories": [
+		{
+			"type": "composer",
+			"url": "http://packages.firegento.com"
+		},
+		{
+			"type": "vcs",
+			"url": "/home/stack/git/EcomDev_PHPUnit.git"
+		},
+		{
+			"type": "vcs",
+			"url": "/home/stack/git/magento-active-config.git"
+		},
+		{
+			"type": "vcs",
+			"url": "/home/stack/git/magento-file-transfer.git"
+		}
+	],
+	"extra": {
+		"magento-deploystrategy": "copy",
+		"magento-root-dir": "build/magento"
+	}
+}

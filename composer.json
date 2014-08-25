@@ -24,27 +24,40 @@
 			"email": "rgabriel@ebay.com"
 		}
 	],
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/kojiromike/EcomDev_PHPUnit"
+		},
+		{
+			"type": "composer",
+			"url": "http://packages.firegento.com"
+		}
+	],
 	"type": "magento-module",
 	"minimum-stability": "dev",
 	"prefer-stable": true,
 	"require": {
-		"ebayenterprise/magento-active-config": "dev-master#df3a736"
+		"ebayenterprise/magento-active-config": "~1.0",
+		"magento-hackathon/magento-composer-installer": "~2"
 	},
 	"require-dev": {
-		"squizlabs/php_codesniffer": "~1.5",
-		"phpunit/php-invoker": "~1.1",
-		"phpunit/phpunit": "~3.7",
+		"ecomdev/ecomdev_phpunit": "~0.3",
+		"pdepend/pdepend": "~1.1",
+		"phpdocumentor/phpdocumentor":"~2.4",
+		"phploc/phploc": "~2.0",
+		"phpmd/phpmd": "~1.5",
 		"phpunit/dbunit": "~1",
+		"phpunit/php-invoker": "~1.1",
 		"phpunit/phpunit-selenium": "~1",
 		"phpunit/phpunit-story": "~1",
 		"sebastian/phpcpd": "~2.0",
-		"phpdocumentor/phpdocumentor":"~2.4",
-		"pdepend/pdepend": "~1.1",
-		"phpmd/phpmd": "~1.5",
-		"phploc/phploc": "~2.0",
-		"ivanchepurnyi/ecomdev_phpunit": "*"
+		"squizlabs/php_codesniffer": "~1.5"
 	},
-	"suggest": {
-		"magento-hackathon/magento-composer-installer": "Properly installs the module within a Magento instance"
+	"extra": {
+		"magento-root-dir": "build/magento",
+		"branch-alias": {
+			"dev-master": "1.0.x-dev"
+		}
 	}
 }

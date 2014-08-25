@@ -6,6 +6,7 @@ declare -r SCRIPTNAME=checkPhpStyle
 ##
 # Gather arguments and execute script
 main() {
+	local PATH="${PWD}/vendor/bin:$PATH"
 	local -a phpFiles
 	getCsStandard
 	checkStyle "$@"
@@ -37,7 +38,7 @@ getCsStandard() {
 	(
 		mkdir -p build/codeAnalysis
 		if cd build/codeAnalysis; then
-			git clone https://github.scm.corp.ebay.com/Cheetah/php-code-sniffer-ruleset . ||
+			git clone ~stack/git/php-code-sniffer-ruleset . ||
 			git pull
 		else
 			echo "$PWD"

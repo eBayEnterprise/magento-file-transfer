@@ -1,58 +1,89 @@
 #!/bin/bash -e
 
-##
-# Set up ecomdev testing for Magento File Transfer
-#
+if [[ ! $MAGEPKG ]]; then
+	printf 'Expected MAGEPKG to define where to find the desired Magento package file.\n' >&2
+	exit 1
+fi
+db_name='mage'
+db_pass=$(dd if=/dev/urandom bs=32 count=1 | base64)
+db_sock="$PWD/mysql/mysql.sock"
+db_user='root'
 
-##
-# Drop any existing tables without needing to drop the database.
-dropAllTables() {
-	local IFS=$'\n'
-	tables=( $(mysql --skip-column-names jenkins_mage_filetransfer -e 'show tables;') )
-	IFS=';'
-	mysql jenkins_mage_filetransfer <<< "SET FOREIGN_KEY_CHECKS = 0;${tables[*]/#/DROP TABLE IF EXISTS };SET FOREIGN_KEY_CHECKS = 1;"
-}
-dropAllTables
-
-# Fetch Magento ee and untar it.
-mv magento magento.deleteme && rm -r magento.deleteme &
-	tar -xJpf /usr/local/share/magento-1.14.0.1.tar.xz
-
-# Checkout EcomDev submodules prior to deploy - composer doesn't play nice w/ submodules
-cd vendor/ivanchepurnyi/ecomdev_phpunit && git submodule init && git submodule update && cd -
-
-# Update dependencies
-vendor/bin/composerCommandIntegrator.php magento-module-deploy
-
-cd magento
-# Run the Magento installer.
-php -f install.php -- \
-	--admin_frontname 'admin' \
-	--admin_email 'foo@bar.com' \
-	--admin_firstname 'First' \
-	--admin_lastname 'Last' \
-	--admin_password 'testing123' \
-	--admin_username 'admin' \
-	--db_host 'localhost' \
-	--db_name 'jenkins_mage_filetransfer' \
-	--db_pass "$(sed -n 's/password=//p' "$HOME/.my.cnf")" \
-	--db_user 'jenkins' \
-	--default_currency 'USD' \
-	--license_agreement_accepted 'yes' \
-	--locale 'en_US' \
-	--secure_base_url 'https://example.com' \
-	--session_save 'files' \
-	--timezone 'America/New_York' \
-	--url 'http://example.com' \
-	--use_rewrites 'yes' \
-	--use_secure 'yes' \
-	--use_secure_admin 'yes' \
-	--skip_url_validation 'yes'
+(
+if cd build; then
+	tar -xf "$MAGEPKG"
+fi
+)
 
 # Set up the phpunit configurations
 # Configs must be in place before EcomDev
-cp ../vendor/ebayenterprise/magento-file-transfer/tests/local.xml.phpunit app/etc # Magento configuration
-cp ../vendor/ebayenterprise/magento-file-transfer/tests/phpunit.xml.dist . # PHPUnit configuration
+cp tests/phpunit.xml.dist build/magento/
+xmlstarlet ed -u /config/global/resources/default_setup/connection/dbname -v "$db_name" tests/local.xml.phpunit > build/magento/app/etc/local.xml.phpunit
 
+##
+# Set up ecomdev testing for EB2C
+#
+(
+	if mkdir -p mysql/data && cd mysql; then
+		[[ -f mysql.pid ]] && kill $(<mysql.pid)
+		client_opts=(
+			--no-defaults
+			--socket="$db_sock"
+		)
+		server_opts=(
+			"${client_opts[@]}"
+			--basedir="$(nix-store -qR $(type -P mysqld) | tail -n 1)"
+			--datadir="$PWD/data"
+			--log-error="$PWD/error.log"
+			--pid-file="$PWD/mysql.pid"
+			--skip-networking
+		)
+		mysql_install_db "${server_opts[@]}"
+		mysqld_safe "${server_opts[@]}" &
+		counter=6
+		echo 'Waiting for mysql to come up.'
+		until mysql "${client_opts[@]}" -e 'SELECT TRUE;' 2>/dev/null; do
+			sleep 1
+			if (( counter-- < 1 )); then
+				printf 'Gave up waiting for MySQL to start.\n' >&2
+				exit 1
+			fi
+		done 
+		mysqladmin "${client_opts[@]}" -u root password "$db_pass" create "$db_name"
+	fi
+)
+
+(
+if cd build/magento; then
+	# Run the Magento installer.
+	php -f install.php -- \
+		--admin_email 'foo@bar.com' \
+		--admin_firstname 'First' \
+		--admin_frontname 'admin' \
+		--admin_lastname 'Last' \
+		--admin_password 'testing123' \
+		--admin_username 'admin' \
+		--db_host "$db_sock" \
+		--db_name "$db_name" \
+		--db_pass "$db_pass" \
+		--db_user "$db_user" \
+		--default_currency 'USD' \
+		--license_agreement_accepted 'yes' \
+		--locale 'en_US' \
+		--secure_base_url 'https://example.com' \
+		--session_save 'files' \
+		--skip_url_validation 'yes' \
+		--timezone 'America/New_York' \
+		--url 'http://example.com' \
+		--use_rewrites 'yes' \
+		--use_secure 'yes' \
+		--use_secure_admin 'yes'
+fi
+)
+
+(
 # Run phpunit
-../vendor/bin/phpunit "$@" # This argument list should usually be empty, but can be switched to --debug or other flags for quick checks. Such as when phpunit suddenly starts segfaulting on Jenkins.
+cd build/magento && ../../vendor/bin/phpunit "$@" # This argument list should usually be empty, but can be switched to --debug or other flags for quick checks. Such as when phpunit suddenly starts segfaulting on Jenkins.
+)
+
+kill $(<mysql/mysql.pid)

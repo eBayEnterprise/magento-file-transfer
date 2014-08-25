@@ -6,6 +6,7 @@ declare -r SCRIPTNAME=validatePhp
 ##
 # Gather arguments and execute script
 main() {
+	local PATH="${PWD}/vendor/bin:$PATH"
 	local -a phpFiles
 	gatherPhp "$@"
 	lint "${phpFiles[@]}"
