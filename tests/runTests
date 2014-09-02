@@ -87,4 +87,4 @@ cd build/magento && ../../vendor/bin/phpunit "$@" # This argument list should us
 )
 st=$?
 kill $(<mysql/mysql.pid)
-exit "$st"
+exit $st
