@@ -190,6 +190,7 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_Types_SftpTest extends Eba
 		$loc = 'local';
 		$rem = 'remote';
 		$pat = 'f*';
+		$dummy_filename = 'dummy_file';
 
 		$sftp = $this
 			->getModelMockBuilder('filetransfer/protocol_types_sftp')
@@ -201,11 +202,11 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_Types_SftpTest extends Eba
 			array('listFilesInDirectory')
 		);
 		$fileFileInfo = $this->getMockBuilder('SPLFileInfo')
-			->disableOriginalConstructor()
+			->setConstructorArgs(array($dummy_filename))
 			->setMethods(array('isFile'))
 			->getMock();
 		$dirFileInfo = $this->getMockBuilder('SPLFileInfo')
-			->disableOriginalConstructor()
+			->setConstructorArgs(array($dummy_filename))
 			->setMethods(array('isFile'))
 			->getMock();
 		$this->replaceByMock('helper', 'filetransfer/file', $fileHelper);
