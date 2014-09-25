@@ -48,7 +48,7 @@ xmlstarlet ed -u /config/global/resources/default_setup/connection/dbname -v "$d
 				printf 'Gave up waiting for MySQL to start.\n' >&2
 				exit 1
 			fi
-		done 
+		done
 		mysqladmin "${client_opts[@]}" -u root password "$db_pass" create "$db_name"
 	fi
 )
@@ -80,10 +80,11 @@ if cd build/magento; then
 		--use_secure_admin 'yes'
 fi
 )
-
+xdebug_extension='lib/php/extensions/xdebug.so';
+xdebug_location="$(nix-store -qR ~/.nix-profile | fgrep xdebug | head -n 1)/${xdebug_extension}";
 (
 # Run phpunit
-cd build/magento && ../../vendor/bin/phpunit "$@" # This argument list should usually be empty, but can be switched to --debug or other flags for quick checks. Such as when phpunit suddenly starts segfaulting on Jenkins.
+cd build/magento && php -d zend_extension="${xdebug_location}" ../../vendor/bin/phpunit "$@" # This argument list should usually be empty, but can be switched to --debug or other flags for quick checks. Such as when phpunit suddenly starts segfaulting on Jenkins.
 )
 st=$?
 kill $(<mysql/mysql.pid)
