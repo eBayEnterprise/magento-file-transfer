@@ -190,7 +190,7 @@ class EbayEnterprise_FileTransfer_Test_Model_Protocol_Types_SftpTest extends Eba
 		$loc = 'local';
 		$rem = 'remote';
 		$pat = 'f*';
-        $dummy_filename = 'dummy_file';
+		$dummy_filename = 'dummy_file';
 
 		$sftp = $this
 			->getModelMockBuilder('filetransfer/protocol_types_sftp')
