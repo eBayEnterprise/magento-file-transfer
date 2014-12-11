@@ -24,22 +24,11 @@
 			"email": "rgabriel@ebay.com"
 		}
 	],
-	"repositories": [
-		{
-			"type": "vcs",
-			"url": "https://github.com/kojiromike/EcomDev_PHPUnit"
-		},
-		{
-			"type": "composer",
-			"url": "http://packages.firegento.com"
-		}
-	],
 	"type": "magento-module",
 	"minimum-stability": "dev",
 	"prefer-stable": true,
 	"require": {
-		"ebayenterprise/magento-active-config": "~1.0",
-		"magento-hackathon/magento-composer-installer": "~2"
+		"ebayenterprise/magento-active-config": "~1.0"
 	},
 	"require-dev": {
 		"ecomdev/ecomdev_phpunit": "~0.3",
@@ -55,7 +44,6 @@
 		"squizlabs/php_codesniffer": "~1.5"
 	},
 	"extra": {
-		"magento-root-dir": "build/magento",
 		"branch-alias": {
 			"dev-master": "1.0.x-dev"
 		}
