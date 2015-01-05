@@ -6,6 +6,7 @@
 	"require": {
 		"ebayenterprise/magento-file-transfer": "dev-master",
 		"ecomdev/ecomdev_phpunit": "~0.3",
+		"mikey179/vfsStream": "~1.0",
 		"pdepend/pdepend": "~1.1",
 		"phpdocumentor/phpdocumentor":"~2.4",
 		"phploc/phploc": "~2.0",

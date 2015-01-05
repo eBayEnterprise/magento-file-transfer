@@ -119,7 +119,7 @@ class EbayEnterprise_FileTransfer_Test_Helper_DataTest extends EbayEnterprise_Fi
 	/**
 	 * Test failure path of getProtocolModel, by sending in an unsupported protocol
 	 *
-	 * @expectedException Exception
+	 * @expectedException EbayEnterprise_FileTransfer_Model_Protocol_Exception
 	 */
 	public function testInvalidProtocolModel()
 	{
