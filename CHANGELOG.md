@@ -3,11 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased][unreleased]
 
-## [] - 2015-01-05
+## [v1.0.0] - 2015-01-15
 ### Added
+- Initial release
 
-### Removed
-
-### Fixed
-- Resolve fails unit test by making the target method behave exactly how the test expected to
-
+[unreleased]: https://github.com/eBayEnterprise/magento-retail-order-management/compare/v1.0.0...HEAD
+[v1.0.0]: https://github.com/eBayEnterprise/magento-retail-order-management/compare/v0.1...v1.0.0
