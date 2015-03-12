@@ -1,51 +1,29 @@
 {
 	"name": "ebayenterprise/magento-file-transfer",
-	"description": "The FileTransfer (FT) module provides simplified mechanisms for transferring files to and from a remote server.",
+	"description": "Simplifies transferring files to and from a remote server in Magento",
 	"license": "OSL-3.0",
-	"authors": [
-		{
-			"name": "Scott van Brug",
-			"email": "svanbrug@ebay.com"
-		},
-		{
-			"name": "Michael Phang",
-			"email": "mphang@ebay.com"
-		},
-		{
-			"name": "Michael A. Smith",
-			"email": "msmith3@ebay.com"
-		},
-		{
-			"name": "Mike West",
-			"email": "micwest@ebay.com"
-		},
-		{
-			"name": "Reginald Gabriel",
-			"email": "rgabriel@ebay.com"
-		}
-	],
 	"type": "magento-module",
-	"minimum-stability": "dev",
-	"prefer-stable": true,
+	"authors": [
+		{ "name": "Michael A. Smith", "email": "msmith3@ebay.com" },
+		{ "name": "Michael Phang", "email": "mphang@ebay.com" },
+		{ "name": "Mike West", "email": "micwest@ebay.com" },
+		{ "name": "Reginald Gabriel", "email": "rgabriel@ebay.com" },
+		{ "name": "Scott van Brug", "email": "svanbrug@ebay.com" }
+	],
 	"require": {
 		"ebayenterprise/magento-active-config": "~1.0"
 	},
 	"require-dev": {
-		"ecomdev/ecomdev_phpunit": "~0.3",
-		"pdepend/pdepend": "~1.1",
-		"phpdocumentor/phpdocumentor":"~2.4",
-		"phploc/phploc": "~2.0",
-		"phpmd/phpmd": "~1.5",
-		"phpunit/dbunit": "~1",
-		"phpunit/php-invoker": "~1.1",
-		"phpunit/phpunit-selenium": "~1",
-		"phpunit/phpunit-story": "~1",
-		"sebastian/phpcpd": "~2.0",
-		"squizlabs/php_codesniffer": "~1.5"
-	},
-	"extra": {
-		"branch-alias": {
-			"dev-master": "1.0.x-dev"
-		}
+		"ecomdev/ecomdev_phpunit": ">=0.3",
+		"pdepend/pdepend": ">=1.1",
+		"phpdocumentor/phpdocumentor":">=2.4",
+		"phploc/phploc": ">=2.0",
+		"phpmd/phpmd": ">=1.5",
+		"phpunit/dbunit": ">=1",
+		"phpunit/php-invoker": ">=1.1",
+		"phpunit/phpunit-selenium": ">=1",
+		"phpunit/phpunit-story": ">=1",
+		"sebastian/phpcpd": ">=2.0",
+		"squizlabs/php_codesniffer": ">=1.5"
 	}
 }
