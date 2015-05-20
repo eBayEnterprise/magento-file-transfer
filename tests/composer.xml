@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <global>
+        <composer_vendor_path><![CDATA[{{root_dir}}/vendor]]></composer_vendor_path>
+    </global>
+</config>

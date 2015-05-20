@@ -1,0 +1,29 @@
+{
+	"repositories": [
+		{ "type": "vcs", "url": "/git/this" },
+		{ "type": "composer", "url": "http://satis.sandbox.gspt.net:7001/" },
+		{ "type": "composer", "url": "http://packages.firegento.com" }
+	],
+	"extra": {
+		"composer-command-registry": [
+			"MagentoHackathon\\Composer\\Magento\\Command\\DeployCommand"
+		],
+		"magento-root-dir": "."
+	},
+	"require": {
+		"composer/composer": "~1.0@dev",
+		"magento-hackathon/composer-command-integrator": "~1.2",
+		"magento-hackathon/magento-composer-installer": "~2.1",
+		"n98/magerun": "~1.95",
+		"ebayenterprise/magento-file-transfer": "dev-master as 1.0.x-dev"
+	},
+	"require-dev": {
+		"ecomdev/ecomdev_phpunit": "dev-dev#9742b6a as 0.3.x-dev",
+		"mikey179/vfsStream": "~1.5",
+		"phpdocumentor/phpdocumentor": "~2.8",
+		"phploc/phploc": "~2.1",
+		"phpmd/phpmd": "~2.2",
+		"sebastian/phpcpd": "~2.0",
+		"squizlabs/php_codesniffer": "~2.3"
+	}
+}

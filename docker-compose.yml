@@ -1,0 +1,171 @@
+#  Dockerized testing and analysis tools for developers
+# ======================================================
+#
+# 1. Make sure you have docker set up.
+# 2. Make sure you have docker-compose installed.
+# 3. Source devutils for some shell shortcuts and convenience functions.
+# 4. Run `compost setup` to create necessary directories. It's safe to rerun
+# this. You can specify a Magento version, too, like
+# `docker-compose run --rm setup 1.14.1.0`
+# 5. Run `compost composer install` to install the extension itself.
+# 6. Run `compost "$test"`, where `$test` is the name of the test to run.
+# For example, `compost phpunit`.
+# 7. For advanced options, you can still pass commandline flags to the
+# containers, like `compost phpcpd --help`.
+# 8. To start a webstore, do `compose up -d webapp`. Use the `browse`
+# convenience function to visit it in your browser.
+#
+# Some commands produce output on standard output.
+# Other commands put files in the `build` directory.
+
+dbdata:
+    image: mysql:5
+    command: echo 'MySQL data volume'
+db:
+    image: mysql:5
+    environment:
+        - MYSQL_ROOT_PASSWORD=mage
+        - MYSQL_USER=mage
+        - MYSQL_PASSWORD=mage
+        - MYSQL_DATABASE=mage
+    volumes_from:
+        - dbdata
+    ports:
+        - 3306
+unitdb:
+    image: mysql:5
+    environment:
+        - MYSQL_ROOT_PASSWORD=mage
+        - MYSQL_USER=mage
+        - MYSQL_PASSWORD=mage
+        - MYSQL_DATABASE=unit
+setup:
+    image: kojiromike/magento_tools
+    volumes:
+        - .:/srv/magento
+        - ~/.composer/auth.json:/root/.composer/auth.json
+    links:
+        - db
+    entrypoint: /srv/magento/docker-setup
+    command: 1.14.2.0
+webapp:
+    image: kojiromike/magento_apache
+    volumes:
+        - build/magento:/srv/magento
+    links:
+        - db
+    ports:
+        - 80
+composer:
+    image: kojiromike/magento_tools
+    volumes:
+        - .:/git/this
+        - build/magento:/srv/magento
+        - ~/.composer/auth.json:/root/.composer/auth.json
+    entrypoint: composer
+    command: list
+document:
+    image: kojiromike/magento_tools
+    volumes:
+        - .:/srv/magento
+    entrypoint: /srv/magento/build/magento/vendor/bin/phpdoc
+    command: -d src -t build/doc
+pdepend:
+    image: kojiromike/magento_tools
+    volumes:
+        - .:/srv/magento
+    entrypoint: /srv/magento/build/magento/vendor/bin/pdepend
+    command: --jdepend-chart=build/pdepend-chart.svg
+             --overview-pyramid=build/pdepend-overview-pyramid.svg
+             src
+phpcpd:
+    image: kojiromike/magento_tools
+    volumes:
+        - .:/srv/magento
+    entrypoint: /srv/magento/build/magento/vendor/bin/phpcpd
+    command: --fuzzy --progress src
+phpcs:
+    image: kojiromike/magento_tools
+    volumes:
+        - .:/srv/magento
+    entrypoint: /srv/magento/build/magento/vendor/bin/phpcs
+    command: -p --standard=PSR2 src
+phplint:
+    image: kojiromike/magento_tools
+    volumes:
+        - .:/srv/magento
+    command: sh -c 'find src \( -name "*.php" -o -name "*.phtml" \) -print0 |
+                    xargs -0 -n1 -P6 -- php -l > /dev/null && echo "no errors"'
+phploc:
+    image: kojiromike/magento_tools
+    volumes:
+        - .:/srv/magento
+    entrypoint: /srv/magento/build/magento/vendor/bin/phploc
+    command: --count-tests --progress src
+phpmd:
+    image: kojiromike/magento_tools
+    volumes:
+        - .:/srv/magento
+    entrypoint: ["php", "-d", "date.timezone=UTC", "/srv/magento/build/magento/vendor/bin/phpmd"]
+    command: src text tests/phpmd.xml
+phpunit:
+    image: kojiromike/magento_tools
+    volumes:
+        - ./build/magento:/srv/magento
+    links:
+        - db
+        - unitdb
+    entrypoint:
+        - "php"
+        - "-d"
+        - "memory_limit=-1"
+        - "vendor/bin/phpunit"
+coverage:
+    image: kojiromike/magento_tools
+    volumes:
+        - ./build/magento:/srv/magento
+        - ./build/phpunit:/srv/phpunit
+    links:
+        - db
+        - unitdb
+    entrypoint:
+        - "php"
+        - "-d"
+        - "zend_extension=/usr/local/lib/php/extensions/no-debug-non-zts-20100525/xdebug.so"
+        - "-d"
+        - "memory_limit=-1"
+        - "vendor/bin/phpunit"
+    command: --coverage-html=/srv/phpunit/coverage
+xmllint:
+    image: kojiromike/magento_tools
+    volumes:
+        - .:/srv/magento
+    command: sh -c 'find src \( -name "*.xml" -o -name "*.xsd" -o -name "*.xsl" \) -print0 |
+                    xargs -0 -n1 -P6 -- xmllint --noout'
+tools:
+    image: kojiromike/magento_tools
+    volumes:
+        - ./build/magento:/srv/magento
+    volumes_from:
+        - dbdata
+    links:
+        - db
+    command: bash
+magerun:
+    image: kojiromike/magento_tools
+    volumes:
+        - ./build/magento:/srv/magento
+    links:
+        - db
+    entrypoint: ["/srv/magento/vendor/bin/n98-magerun", "--skip-root-check"]
+    command: list commands
+composerCommandIntegrator:
+    image: kojiromike/magento_tools
+    volumes:
+        - ./build/magento:/srv/magento
+    entrypoint:
+        - "php"
+        - "-d"
+        - "date.timezone=UTC"
+        - "/srv/magento/vendor/bin/composerCommandIntegrator.php"
+    command: list

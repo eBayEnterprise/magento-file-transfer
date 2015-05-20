@@ -1,0 +1,148 @@
+#!/bin/bash -xe
+
+main() {
+    local magento_version="${1:- 1.9.1.0}"
+    if [[ $1 = bash ]]; then
+        shift
+        exec bash "$@"
+    fi
+    makedirs
+    composer_install "$@"
+    fetch_unpack_magento "$magento_version"
+    install_magento
+    copy_testkit
+    validate
+}
+
+composer_install() {
+    for arg; do
+        case "$arg" in
+            --skip-composer|-s) return;;
+        esac
+    done
+    # Directory/finding issues make it a mess to install the extension
+    # from this script. Temporarily remove the extension from the list
+    # of things to install.
+    # Ugh.
+    php -r '
+        $lock = json_decode(file_get_contents("tests/composer.docker.lock"), true);
+        $lock["packages"] = array_filter($lock["packages"], function($p) {
+            return $p["name"] !== "ebayenterprise/magento-file-transfer";
+        });
+        echo json_encode($lock);
+    ' > build/magento/composer.lock
+    cp tests/composer.docker.json build/magento/composer.json
+    composer install --no-interaction \
+                     --optimize-autoloader \
+                     --working-dir build/magento
+    cp tests/composer.docker.lock build/magento/composer.lock
+    PATH="/srv/magento/build/magento/vendor/bin:$PATH"
+}
+
+makedirs() {
+    mkdir -p build/magetars build/magento build/doc build/pdepend build/phpmd build/phpunit
+}
+
+fetch_unpack_magento() (
+    local magento_version="${1:- 1.9.1.0}"
+    local magento_urls=(
+        "http://10.9.67.238/pkgs/magento-${magento_version}.tar.xz"
+        "http://www.magentocommerce.com/downloads/assets/${magento_version}/magento-${magento_version}.tar.bz2"
+    )
+    local magento_tarballs=("${magento_urls[@]##*/}")
+    local url
+    local file
+    local file_found=0
+    cd build/magetars
+    for file in "${magento_tarballs[@]}"; do
+        if [[ -f "$file" ]]; then
+            file_found=1
+            break
+        fi
+    done
+    if (( ! file_found )); then
+        for url in "${magento_urls[@]}"; do
+            # Magento site doesn't support resuming downloads.
+            if curl -f -#O "$url"; then
+                file="${url##*/}"
+                break
+            fi
+        done
+    fi
+    cd ../magento
+    [[ -d app/code/core ]] || tar --strip-components=1 -xf "../magetars/${file}"
+)
+
+mysql() {
+    command mysql -h db_1 \
+                  -u "$DB_1_ENV_MYSQL_USER" \
+                  --password="$DB_1_ENV_MYSQL_PASSWORD" \
+                  "$DB_1_ENV_MYSQL_DATABASE" \
+                  "$@"
+}
+
+is_db_up() {
+    local -i counter="$1"
+    while (( counter-- > 0 )); do
+        mysql -e 'SELECT 1\g' &> /dev/null && return
+        sleep 1
+    done
+    return 1
+}
+
+install_magento() (
+    local db_timeout=12 # Seconds to wait for db to come up
+    cd build/magento
+    is_db_up "$db_timeout"
+    if [[ ! -f app/etc/local.xml ]]; then
+        php install.php \
+            --admin_email admin@example.com \
+            --admin_firstname ad \
+            --admin_lastname min \
+            --admin_password testing123 \
+            --admin_username admin \
+            --db_host db_1 \
+            --db_name "$DB_1_ENV_MYSQL_DATABASE" \
+            --db_pass "$DB_1_ENV_MYSQL_PASSWORD" \
+            --db_user "$DB_1_ENV_MYSQL_USER" \
+            --default_currency USD \
+            --license_agreement_accepted yes \
+            --locale en_US \
+            --secure_base_url "http://${MAGENTO_HOST-example.com}/" \
+            --skip_url_validation yes \
+            --timezone America/New_York \
+            --url "http://${MAGENTO_HOST-example.com}/" \
+            --use_rewrites yes \
+            --use_secure no \
+            --use_secure_admin no
+    fi
+    chown -R :www-data media var
+    chmod -R g+sw media var
+    if [[ ! $MAGENTO_HOST ]]; then
+        # No base url was specified, so disable redirecting to base url.
+        mysql -e 'DELETE FROM core_config_data WHERE path LIKE "web/%secure/base_url"\g'
+        magerun cache:disable config
+        magerun dev:log --on --global .
+        magerun dev:symlinks --on --global .
+        magerun index:reindex:all
+    fi
+    if cd errors && [[ ! -f local.xml.sample ]]; then
+        ln -s local.xml.sample local.xml
+    fi
+)
+
+magerun() {
+    n98-magerun --skip-root-check "$@"
+}
+
+copy_testkit() {
+    cp tests/composer.xml build/magento/app/etc/
+    cp tests/local.xml.phpunit.docker build/magento/app/etc/local.xml.phpunit
+    cp tests/phpunit.xml.dist build/magento/
+}
+
+validate() (
+    cd build/magento && magerun sys:check
+)
+
+main "$@"
