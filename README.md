@@ -1,7 +1,8 @@
-[Contributing to This Project](CONTRIBUTING.md)
+[![ebay logo](docs/static/logo-vert.png)](http://www.ebayenterprise.com/)
 
-FileTransfer
-============
+# Magento File Transfer Extension
+
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/eBayEnterprise/magento-file-transfer/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/eBayEnterprise/magento-file-transfer/?branch=master)
 
 The FileTransfer (FT) module provides simplified mechanisms for transferring files to and from a remote server.
 
@@ -244,10 +245,9 @@ _Event Parameters: none_
 
 This event will be dispatched after the FT module has completed sending all files found in all configured local directories to the remote hosts. This event will _always_ be dispatched, even if no files were transferred.
 
-License and Copyright
-=====================
-
-Copyright © 2014 eBay Enterprise
+## License
 
 Licensed under the terms of the Open Software License v. 3.0 (OSL-3.0). See [LICENSE.md](LICENSE.md) or http://opensource.org/licenses/OSL-3.0 for the full text of the license.
 
+- - -
+Copyright © 2014 eBay Enterprise, Inc.
