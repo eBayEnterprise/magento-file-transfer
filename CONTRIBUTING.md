@@ -13,7 +13,7 @@ The eBay Enterprise development team will review all issues and contributions su
 ## Contribution Process
 1. Search current [listed issues](https://github.com/eBayEnterprise/magento-file-transfer/issues) (open or closed) for similar proposals of intended contribution before starting work on a new contribution. If you don't find an existing to match your request, please create a new issue so we can track your proposal.
 1. If this is your first time contributing, please review the [Contributor License Agreement](#contributor-license-agreement).
-1. Fork the eBay Enterprise ROM Magento Extension repository.
+1. Fork the repository.
 1. Test and develop your work.
 1. When you are ready, send us a Pull Request.
 1. Once your contribution is received, the eBay Enterprise development team will review your contribution and collaborate with you as needed.
